@@ -180,8 +180,6 @@ public class Manager
 					window.println("<" + x.getNick() + "> ", n, C.VIOLET);
 					window.print(msg, n, C.BLACK);
 				}
-				
-				System.out.println(rawIn);
 			}
 			else if (code == C.NOTICE)
 			{

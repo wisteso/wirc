@@ -2,10 +2,10 @@ package wIRC;
 import java.util.ArrayList;
 
 /**
- * <b>User-data structural-object</b>
+ * User-data structural-object
  * <br><br>
- * This class holds data about a user.
- * 
+ * This class holds server-wide data about a user.
+ * <br><br>
  * @author wisteso@gmail.com
  */
 public class User 

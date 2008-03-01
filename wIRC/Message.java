@@ -1,11 +1,11 @@
 package wIRC;
 
 /**
- * <b>Message structural-object</b>
+ * Message structural-object
  * <br><br>
  * This class takes in raw data for it's constructor 
  * value and creates an organized data-structure object.
- * 
+ * <br><br>
  * @author wisteso@gmail.com
  */
 public class Message 

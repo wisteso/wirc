@@ -4,21 +4,22 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 /**
- * <b>Global constants</b>
+ * Global constants
  * <br><br>
  * Rather than use a memory intensive object to store 
  * our constant values, we'll just use nice low-memory primitives with 
  * descriptive variable names.
  * <br><br>
- * Protocol constants use exact values required by the IRC specification 
- * while proprietary constants have values based on our usage of them.
- * However, both cases relate to real commands used by IRC specification.
- * 
+ * "Protocol IRC code" constants use exact values required by the IRC 
+ * specification while proprietary constants have values based on our 
+ * usage of them. However, both cases relate to real commands used by 
+ * IRC specification.
+ * <br><br>
  * @author wisteso@gmail.com
  */
 public final class C 
 {
-	// Protocol codes:
+	// Protocol IRC codes:
 	
 	public static final int CHAN_TOPIC = 332;
 	
@@ -29,7 +30,7 @@ public final class C
 	public static final int MOTD_CONTENT = 372;
 	public static final int MOTD_FOOTER = 376;
 	
-	// Proprietary codes:
+	// Proprietary IRC codes:
 	
 	public static final int NULL = 0;
 	

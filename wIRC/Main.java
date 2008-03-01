@@ -5,12 +5,13 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 /**
- * <b>Root structural-object</b>
+ * Root structural-object
  * <br><br>
- * This class will eventually become an I/O class while 
- * processMessage will likely become a data routing class.
- * 
- * @author wisteso@gmail.com
+ * This class serves as the root structure of the client but 
+ * is gradually forming a specialized socket class which will 
+ * eventually branch off and become an IRCSocket class.
+ * <br><br>
+ * @author	wisteso@gmail.com
  */
 public class Main
 {

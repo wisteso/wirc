@@ -5,6 +5,15 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
+/**
+ * Plug-in loading library
+ * <br><br>
+ * This class is responsible for the translation 
+ * of a file path (remote or local) to a useable 
+ * Class of unknown type which may cast later on.
+ * <br><br>
+ * @author wisteso@gmail.com
+ */
 public class PlugInLoader extends ClassLoader
 {
 	public Class<?> findClass(String name)

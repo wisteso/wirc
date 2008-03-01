@@ -7,11 +7,12 @@ import java.awt.event.*;
 import SortedListModel.*;
 
 /**
- * <b>User IO structural-object</b>
+ * User IO structural-object
  * <br><br>
  * This class handles the input and output from the user, 
- * but it really doesn't compute anything critical.
- * 
+ * and is not critical to the core operation. It will 
+ * eventually be complemented with a command-line GUI.
+ * <br><br>
  * @author wisteso@gmail.com
  */
 public class ChatWindow implements ActionListener, MouseListener

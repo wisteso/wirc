@@ -6,11 +6,13 @@ import SortedListModel.*;
 import wIRC.interfaces.Plugin;
 
 /**
- * <b>Chat structural-object</b>
+ * Chat structural-object
  * <br><br>
- * This class handles the functions of chat. Eventually it should become static 
- * and replace ChatNode's function. ChatWindows will be stored in TreeMaps.
- * 
+ * This class manages the logical operations which happen between 
+ * users IO and remote IO. It also serves as the medium by which 
+ * both are allowed to communicate through, ideally. Though there 
+ * are currently some hacks in place.
+ * <br><br>
  * @author wisteso@gmail.com
  */
 public class Manager 

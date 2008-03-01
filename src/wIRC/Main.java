@@ -21,8 +21,8 @@ public class Main
 	
 	protected static Manager x;
 	
-	protected static String hostName = "chat.freenode.net";
-	protected static String nickName = "wIRC-Newbie";
+	protected static String hostName = "st0rage.org";
+	protected static String nickName = "Nullname" + (int)(Math.random() * 10000);
 	protected static String realName = "Anonymous";
 	protected static String userInfo = "No info set.";
 	

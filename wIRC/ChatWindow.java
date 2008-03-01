@@ -237,7 +237,7 @@ public class ChatWindow implements ActionListener, MouseListener
 		print("\n" + input, channel, color);
 	}
 	
-	public void print(String input, String channel, SimpleAttributeSet color)
+	public void print(String input, String channel, SimpleAttributeSet style)
 	{	
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{
@@ -265,7 +265,7 @@ public class ChatWindow implements ActionListener, MouseListener
 		
 		try
 		{
-			p.getDocument().insertString(p.getDocument().getLength(), input, color);
+			p.getDocument().insertString(p.getDocument().getLength(), input, style);
 		}
 		catch (Exception e)
 		{
@@ -286,17 +286,14 @@ public class ChatWindow implements ActionListener, MouseListener
 		{
 			for (int x = 0; x < usrs.length; ++x)
 			{
-				for (int i = 0; i < l.getSize(); i++)
-				{
-					if (l.getElementAt(i).toString().equalsIgnoreCase(usrs[x]));
-						return;
-				}
+				if (l.contains(usrs[x]))
+					l.add(usrs[x]);
 				
-				l.add(usrs[x]);
+				l.update();
 			}
 		}
 		else
-			System.err.println("Chan not found to add nick: " + chan);
+			System.err.println("List model not found to add nick: " + chan);
 	}
 	
 	public void remNicks(String chan, String... usrs)

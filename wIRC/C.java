@@ -1,11 +1,5 @@
 package wIRC;
 import java.awt.Color;
-import java.io.File;
-import java.util.ArrayList;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
@@ -60,7 +54,6 @@ public final class C
 	
 	protected static SimpleAttributeSet BLACK = new SimpleAttributeSet();
 	protected static SimpleAttributeSet GREY = new SimpleAttributeSet();
-	
 	protected static SimpleAttributeSet RED = new SimpleAttributeSet();
 	protected static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
 	protected static SimpleAttributeSet GREEN = new SimpleAttributeSet();
@@ -68,19 +61,19 @@ public final class C
 	protected static SimpleAttributeSet BLUEGREY = new SimpleAttributeSet();
 	protected static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
 	
+	protected static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
+	
 	// Misc constants:
 	
 	public static final String NULL_CHAR = String.valueOf(0);
 	public static final String CTCP_CHAR = String.valueOf(1);
 	
-	public static ArrayList<DefaultPlugin> PLUGINS;
-	
 	public static void init()
 	{
 		StyleConstants.setFontFamily(BASE, "Monospace");
 		StyleConstants.setFontSize(BASE, 11);
-		
 		StyleConstants.setBold(BOLD, true);
+		
 		BOLD.addAttributes(BASE);
 		
 		BLACK.addAttributes(BASE);
@@ -92,6 +85,8 @@ public final class C
 		BLUEGREY.addAttributes(BASE);
 		VIOLET.addAttributes(BASE);
 		
+		BLUE_BOLD.addAttributes(BOLD);
+		
 		StyleConstants.setForeground(BLACK,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.000)));
 		StyleConstants.setForeground(GREY,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.666)));
 		StyleConstants.setForeground(RED,		Color.getHSBColor(new Float(0.000), new Float(0.666), new Float(0.666)));
@@ -101,24 +96,6 @@ public final class C
 		StyleConstants.setForeground(BLUEGREY,	Color.getHSBColor(new Float(0.666), new Float(0.333), new Float(0.777)));
 		StyleConstants.setForeground(VIOLET,	Color.getHSBColor(new Float(0.888), new Float(0.666), new Float(0.666)));
 		
-		if (true) return;
-		
-		try
-		{
-			URL plugins = new File("plugins/").toURI().toURL();
-		    URL[] urls = new URL[]{plugins};
-		 
-		    ClassLoader cl = new URLClassLoader(urls);
-		 
-		    // Load in the class; MyClass.class should be located in the directory 
-		    // file:/c:/myclasses/com/mycompany via cl.loadClass("com.mycompany.MyClass")
-		    DefaultPlugin p1 = DefaultPlugin.class.cast(cl.loadClass("MyPlugin"));
-		    
-		    PLUGINS.add(p1);
-		    
-		    System.out.println("Loaded: " + p1.toString());
-		}
-		catch (MalformedURLException e) {}
-		catch (ClassNotFoundException e) {}
+		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
 	}
 }

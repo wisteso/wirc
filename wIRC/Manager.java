@@ -77,8 +77,8 @@ public class Manager
 			if (!chanName.equals("Console"))
 			{
 				Main.sendData("PRIVMSG " + chanName + " :" + msg);
-				window.println("<" + Main.nickName + "> ", chanName.toLowerCase(), C.BLUE);
-				window.print(msg, chanName.toLowerCase(), C.BOLD);
+				window.println("<" + Main.nickName + "> ", chanName.toLowerCase(), C.BLUE_BOLD);
+				window.print(msg, chanName.toLowerCase(), C.BASE);
 			}
 		}
 	}
@@ -124,15 +124,22 @@ public class Manager
 	{
 		Message x = new Message(rawIn);
 		
-		if (!plugins.isEmpty())
-		{
-			for (int i = 0; i < plugins.size(); ++i)
-				plugins.get(i).processMessage(rawIn);
-		}
-		
 		int code = x.getCode();
 		String msg = x.getMessage();
 		String n = x.getChannel();
+		
+		if (!plugins.isEmpty())
+		{
+			String output;
+			
+			for (int i = 0; i < plugins.size(); ++i)
+			{
+				output = plugins.get(i).processMessage(rawIn, n);
+				
+				if (output != null)
+					Main.sendData(output);
+			}
+		}
 
 		if (code < 0)
 		{
@@ -141,13 +148,38 @@ public class Manager
 				if (x.getChannel().charAt(0) == 0x23)
 				{
 					window.println("<" + x.getNick() + "> ", n, C.BLUE);
-					window.print(msg, n, C.BLACK);
+					
+					int i = msg.indexOf(Main.nickName);
+					
+					if (i > -1)
+					{
+						int j = 0;
+						
+						while (i > -1)
+						{
+							window.print(msg.substring(j, i), n, C.BLACK);
+							
+							j = i + Main.nickName.length();
+							
+							window.print(msg.substring(i, j), n, C.BOLD);
+							
+							i = msg.indexOf(Main.nickName, j);
+						}
+						
+						window.print(msg.substring(j), n, C.BOLD);
+					}
+					else
+					{
+						window.print(msg, n, C.BLACK);
+					}
 				}
 				else
 				{
 					window.println("<" + x.getNick() + "> ", n, C.VIOLET);
 					window.print(msg, n, C.BLACK);
 				}
+				
+				System.out.println(rawIn);
 			}
 			else if (code == C.NOTICE)
 			{

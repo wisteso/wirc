@@ -32,7 +32,7 @@ public class SortedListModel extends AbstractListModel
     
     public void add(Object o)
     {
-    	if (o.toString().length() == 0)
+    	if (o.toString().length() < 1)
     		return;
     	
     	list.add(new StringIRC(o.toString()));
@@ -51,7 +51,10 @@ public class SortedListModel extends AbstractListModel
     
     public boolean contains(Object o)
     {
-    	return list.contains(o.toString());
+    	for (int i = 0; i < list.size(); ++i)
+    		if (list.get(i).equals(o)) return true;
+    	
+    	return false;
     }
     
     public Object getElementAt(int index)

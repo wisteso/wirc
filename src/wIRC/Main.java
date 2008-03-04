@@ -22,7 +22,7 @@ public class Main
 	protected static Manager x;
 	
 	protected static String hostName = "st0rage.org";
-	protected static String nickName = "Nullname" + (int)(Math.random() * 10000);
+	protected static String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected static String realName = "Anonymous";
 	protected static String userInfo = "No info set.";
 	

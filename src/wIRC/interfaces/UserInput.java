@@ -1,26 +1,29 @@
 package wIRC.interfaces;
-
 import javax.swing.text.SimpleAttributeSet;
-
 import SortedListModel.SortedListModel;
 
 public interface UserInput
 {
-	public Object[] addChat(String title);
+	public abstract Object[] addChat(String title);
 	
-	public boolean remChat(String title);
+	public abstract boolean removeChat(String title);
 	
-	public String getChat();
+	public abstract String getFocusedChat();
 	
-	public void println(String input, SimpleAttributeSet color);
+	public abstract void println(String input, SimpleAttributeSet color);
 	
-	public void println(String input, String channel, SimpleAttributeSet color);
+	public abstract void println(String input, String channel, SimpleAttributeSet style);
 	
-	public void print(String input, String channel, SimpleAttributeSet color);
+	public abstract void print(String input, String channel, SimpleAttributeSet style);
 	
-	public void addNicks(String chan, String... usrs);
+	public abstract void addNicks(String channel, String... nicks);
 	
-	public void remNicks(String chan, String... usrs);
+	public abstract void removeNicks(String channel, String... nicks);
 	
-	public SortedListModel getList(String channel);
+	public abstract void removeNick(String nick);
+	
+	public abstract void replaceNick(String oldNick, String newNick);
+	
+	public abstract SortedListModel getNickList(String channel);
 }
+

@@ -6,7 +6,7 @@ package wIRC;
  * This class takes in raw data for it's constructor 
  * value and creates an organized data-structure object.
  * <br><br>
- * @author wisteso@gmail.com
+ * @author 	wisteso@gmail.com
  */
 public class Message 
 {
@@ -82,7 +82,11 @@ public class Message
 			
 			if (code == 332 || code == 333 || code == 353 || code == 366)
 			{
-				channel = rawMsg.substring(rawMsg.indexOf("#"), rawMsg.indexOf(" ", rawMsg.indexOf("#")));
+				int x = rawMsg.indexOf("#");
+				int y = rawMsg.indexOf(" ", x);
+				
+				if (x > -1 && y > -1)
+					channel = rawMsg.substring(x, y);
 			}
 		}
 		else  // Textual command.

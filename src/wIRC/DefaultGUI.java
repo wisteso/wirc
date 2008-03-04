@@ -5,17 +5,18 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import SortedListModel.*;
+import wIRC.interfaces.UserInput;
 
 /**
- * User IO structural-object
+ * Default GUI object
  * <br><br>
- * This class handles the input and output from the user, 
- * and is not critical to the core operation. It will 
- * eventually be complemented with a command-line GUI.
+ * This class handles the input and output from the user 
+ * via the java swing class set and is not critical to 
+ * the core operation.
  * <br><br>
- * @author wisteso@gmail.com
+ * @author 	wisteso@gmail.com
  */
-public class ChatWindow implements ActionListener, MouseListener
+public class DefaultGUI implements UserInput, ActionListener, MouseListener
 {
     protected static final String INPUTBOX = "INPUTBOX";
     protected static final String OUTPUTBOX = "OUTPUTBOX";
@@ -37,14 +38,8 @@ public class ChatWindow implements ActionListener, MouseListener
     private TreeMap<String, SortedListModel> usrList = new TreeMap<String, SortedListModel>();
     
     private boolean isReading = false;
-    
-	public ChatWindow(Manager source)
-	{
-		this("(Untitled)", source);
-		n = source;
-	}
 	
-	public ChatWindow(String subtitle, Manager source)
+	public DefaultGUI(String subtitle, Manager source)
 	{	
 		n = source;
 		
@@ -178,7 +173,7 @@ public class ChatWindow implements ActionListener, MouseListener
         else return null;
 	}
 	
-	public boolean remChat(String title)
+	public boolean removeChat(String title)
 	{	
 		int x;
 		
@@ -201,7 +196,7 @@ public class ChatWindow implements ActionListener, MouseListener
 		}	
 	}
 	
-	public String getChat()
+	public String getFocusedChat()
 	{
 		return tabs.getTitleAt(tabs.getSelectedIndex());
 	}
@@ -228,14 +223,14 @@ public class ChatWindow implements ActionListener, MouseListener
         }
     }
 	
-	public void println(String input, SimpleAttributeSet color)
+	public void println(String input, SimpleAttributeSet style)
 	{
-		print("\n" + input, "Console", color);
+		print("\n" + input, "Console", style);
 	}
 	
-	public void println(String input, String channel, SimpleAttributeSet color)
+	public void println(String input, String channel, SimpleAttributeSet style)
 	{
-		print("\n" + input, channel, color);
+		print("\n" + input, channel, style);
 	}
 	
 	public void print(String input, String channel, SimpleAttributeSet style)
@@ -279,48 +274,48 @@ public class ChatWindow implements ActionListener, MouseListener
 		}
 	}
 	
-	public void addNicks(String chan, String... usrs)
+	public void addNicks(String channel, String... nicks)
 	{
-		SortedListModel l = usrList.get(chan.toLowerCase());
+		SortedListModel l = usrList.get(channel.toLowerCase());
 		
 		if (l != null)
 		{
-			for (int x = 0; x < usrs.length; ++x)
+			for (int x = 0; x < nicks.length; ++x)
 			{
-				if (l.contains(usrs[x]))
-					l.add(usrs[x]);
+				if (l.contains(nicks[x]))
+					l.add(nicks[x]);
 				
 				l.update();
 			}
 		}
 		else
-			System.err.println("List model not found to add nick: " + chan);
+			System.err.println("List model not found to add nick: " + channel);
 	}
 	
-	public void remNicks(String chan, String... usrs)
+	public void removeNicks(String channel, String... nicks)
 	{
-		SortedListModel l = usrList.get(chan.toLowerCase());
+		SortedListModel l = usrList.get(channel.toLowerCase());
 		
 		if (l != null)
 		{
-			for (int x = 0; x < usrs.length; ++x)
+			for (int x = 0; x < nicks.length; ++x)
 			{
-				if (l.contains(usrs[x]))
-					l.remove(usrs[x]);
+				if (l.contains(nicks[x]))
+					l.remove(nicks[x]);
 				else
-					System.err.println(usrs[x] + " not found in user-list.");
+					System.err.println(nicks[x] + " not found in user-list.");
 			}
 		}
 		else
-			System.err.println("Chan not found to remove nick: " + chan);
+			System.err.println("Chan not found to remove nick: " + channel);
 	}
 	
-	public void remNick(String nick)
+	public void removeNick(String nick)
 	{
-		repNick(nick, null);
+		replaceNick(nick, null);
 	}
 	
-	public void repNick(String oldNick, String newNick)
+	public void replaceNick(String oldNick, String newNick)
 	{
 		Iterator<SortedListModel> i = usrList.values().iterator();
 		
@@ -341,7 +336,7 @@ public class ChatWindow implements ActionListener, MouseListener
 		}
 	}
 	
-	public SortedListModel getList(String channel)
+	public SortedListModel getNickList(String channel)
 	{
 		return usrList.get(channel);
 	}

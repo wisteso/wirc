@@ -15,7 +15,7 @@ import javax.swing.text.StyleConstants;
  * usage of them. However, both cases relate to real commands used by 
  * IRC specification.
  * <br><br>
- * @author wisteso@gmail.com
+ * @author 	wisteso@gmail.com
  */
 public final class C 
 {

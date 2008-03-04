@@ -3,7 +3,7 @@ import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.ArrayList;
 import SortedListModel.*;
-import wIRC.interfaces.Plugin;
+import wIRC.interfaces.*;
 
 /**
  * Chat structural-object
@@ -13,17 +13,17 @@ import wIRC.interfaces.Plugin;
  * both are allowed to communicate through, ideally. Though there 
  * are currently some hacks in place.
  * <br><br>
- * @author wisteso@gmail.com
+ * @author 	wisteso@gmail.com
  */
 public class Manager 
 {
 	protected TreeMap<String, User> users = new TreeMap<String, User>();
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
-	protected ChatWindow window;
+	protected UserInput window;
 	
 	public Manager ()
 	{
-        window = new ChatWindow(Main.hostName, this);
+        window = new DefaultGUI(Main.hostName, this);
 	}
 	
 	protected void sendData(String msg)
@@ -111,7 +111,7 @@ public class Manager
 	
 	protected void closeChat(String chan)
 	{
-		if (window.remChat(chan) == true)
+		if (window.removeChat(chan) == true)
 		{
 			if (chan.charAt(0) == '#')
 				Main.sendData("PART " + chan);
@@ -213,7 +213,7 @@ public class Manager
 					else
 						window.println("<" + x.getNick() + " has left - " + msg + ">", n, C.BLUEGREY);
 					
-					window.remNicks(x.getChannel(), x.getNick());
+					window.removeNicks(x.getChannel(), x.getNick());
 					
 					if (!removeUser(x.getNick()))
 						System.err.println(x.getNick() + " not found in user-map. (PART)");
@@ -227,7 +227,7 @@ public class Manager
 					
 					for (int a = 0; a < chans.length; ++a)
 					{
-						window.remNicks(chans[a], x.getNick());
+						window.removeNicks(chans[a], x.getNick());
 						
 						if (msg.length() < 2)
 							window.println("<" + x.getNick() + " has quit>", chans[a], C.BLUEGREY);
@@ -248,7 +248,7 @@ public class Manager
 				if (x.getNick() != Main.hostName)
 				{
 					window.println("<" + x.getNick() + " is now " + msg + ">", n, C.BLUEGREY);
-					window.repNick(x.getNick(), msg);
+					window.replaceNick(x.getNick(), msg);
 				}
 				else
 					window.println("<" + x.getChannel() + " is now " + msg + ">", n, C.BLUEGREY);
@@ -259,8 +259,8 @@ public class Manager
 				if (x.getNick().equals(Main.nickName) == true)
 				{
 					Main.nickName = msg;
-					window.repNick(x.getNick(), msg);
-					window.println("<You are now known as " + msg + ">", window.getChat(), C.BLUE);
+					window.replaceNick(x.getNick(), msg);
+					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), C.BLUE);
 				}
 				else
 				{
@@ -359,7 +359,7 @@ public class Manager
 			{
 				if (code == 353)
 				{
-					SortedListModel l = window.getList(x.getChannel());
+					SortedListModel l = window.getNickList(x.getChannel());
 					
 					if (l == null) return;
 					

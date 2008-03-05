@@ -1,6 +1,7 @@
 package wIRC;
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -19,7 +20,7 @@ public class Main
 	private static PrintWriter out = null;
 	private static BufferedReader in = null;
 	
-	protected static Manager x;
+	private static HashMap<String, Manager> managers = new HashMap<String, Manager>();
 	
 	protected static String hostName = "st0rage.org";
 	protected static String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
@@ -40,18 +41,18 @@ public class Main
             System.out.println("Cannot find resources for default style interface.");
         }
 		
-		if (args.length == 3)  // host, nick, real
+		if (args.length == 3)
 		{
 			hostName = args[0];
 			nickName = args[1];
 			realName = args[2];
 		}
-		else if (args.length == 2)  // host, nick
+		else if (args.length == 2)
 		{
 			hostName = args[0];
 			nickName = args[1];
 		}
-		else if (args.length == 1)  // host
+		else if (args.length == 1)
 		{
 			hostName = args[0];
 		}
@@ -72,9 +73,9 @@ public class Main
 		
 		C.init();
 		
-		x = new Manager();
-		
-		connect(args);
+		Manager m = new Manager();
+
+		connect(managers.put(hostName, m), true);
 	}
 	
 	protected static void sendData(String output)
@@ -83,33 +84,7 @@ public class Main
 			out.println(output);
 	}
 	
-	protected static void cycle()
-	{
-		mode = 2;
-		
-		String dataIn;
-		
-		try
-		{
-			while (true)
-			{	
-				if ((dataIn = in.readLine()) != null)
-					x.ProcessMessage(dataIn);  // so this can access it.
-			}
-		}
-		catch (SocketException e)
-		{
-			disconnect(e.toString());
-			x.window.println("(NOTICE) You have been disconnected.", C.ORANGE);
-		}
-		catch (IOException e)
-		{
-			disconnect(e.toString());
-			x.window.println("(NOTICE) You have been disconnected.", C.ORANGE);
-		}
-	}
-	
-	protected static void connect(String[] arguments)
+	protected static void connect(Manager m, boolean retry)
 	{
 		mode = 1;
 		
@@ -117,22 +92,22 @@ public class Main
 		{
 			try
 			{
-				mainSock = new Socket(hostName, 6667);  // Port range: 6660-6669
+				mainSock = new Socket(hostName, 6667);
 			} 
 			catch (UnknownHostException e)
 			{
-				if (arguments.length > 0)
-				{
-					System.err.println(e.toString() + hostName);
-		            System.exit(1);
-				}
-				else
+				if (retry)
 				{
 					mainSock = null;
 					
 					String arg = JOptionPane.showInputDialog("Invalid Host. Re-enter the host-name:", hostName);
 					if (arg == null) System.exit(0);
 					else hostName = arg;
+				}
+				else
+				{
+					System.err.println(e.toString() + hostName);
+		            System.exit(1);
 				}
 			}
 			catch (IOException e)
@@ -157,9 +132,31 @@ public class Main
 		sendData("NICK " + nickName);
 		sendData("USER " + nickName + " 0 * :" + realName);
 		
-		cycle();
+		cycle(m);
 		
-		if (reconnect == true && mode > -2) connect(arguments);
+		if (reconnect && mode > -2)
+			connect(m, retry);
+	}
+	
+	protected static void cycle(Manager m)
+	{
+		mode = 2;
+		
+		try
+		{
+			String dataIn;
+			
+			while (true)
+			{
+				if ((dataIn = in.readLine()) != null)
+					m.ProcessMessage(dataIn);  // so this can access it.
+			}
+		}
+		catch (Exception e)
+		{
+			disconnect(e.toString());
+			m.window.println("(NOTICE) You have been disconnected.", C.ORANGE);
+		}
 	}
 	
 	protected static void disconnect(String reason)
@@ -168,9 +165,10 @@ public class Main
 		{
 			mode = -1;
 			
-			if (reason.equals("termination via interface")) mode = -2;
+			if (reason.equals("termination via interface"))
+				mode = -2;
 			
-			System.out.println("Connection terminated: " + reason);
+			System.out.println("Connection closed: " + reason);
 			
 			try
 			{

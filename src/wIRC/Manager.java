@@ -21,7 +21,7 @@ public class Manager
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	protected UserInput window;
 	
-	public Manager ()
+	public Manager()
 	{
         window = new DefaultGUI(Main.hostName, this);
 	}
@@ -33,38 +33,59 @@ public class Manager
 	
 	protected void sendMsg(String msg, String chanName)
 	{
-		if (msg.charAt(0) == 0x2F)
+		if (msg.charAt(0) == '/')
 		{
-			if (msg.toUpperCase().indexOf("MSG") == 1)
+			String command = new String();
+			int spaceIndex = msg.indexOf(' ');
+			
+			if (spaceIndex > -1)
 			{
-				int m1 = msg.indexOf(" ") + 1;
-				int m2 = msg.indexOf(" ", m1 + 1);
-				
-				if (m2 > m1 && m1 > -1)
-					Main.sendData("PRIVMSG " + msg.substring(m1, m2) + " :" + msg.substring(m2 + 1));
+				command = msg.substring(1, spaceIndex).toUpperCase();
 			}
-			else if (msg.toUpperCase().indexOf("JOIN") == 1)
+			else
 			{
-				Main.sendData(msg.substring(1));
+				command = msg.substring(1).toUpperCase();
 			}
-			else if (msg.toUpperCase().indexOf("PART") == 1)
+			
+			if (command.equals("MSG"))
 			{
-				closeChat(msg.substring(msg.indexOf(" ") + 1));
+				if (spaceIndex > -1)
+				{
+					int m1 = spaceIndex + 1;
+					int m2 = msg.indexOf(" ", m1 + 1);
+					
+					if (m2 > m1)
+						Main.sendData("PRIVMSG " + msg.substring(m1, m2) + " :" + msg.substring(m2 + 1));
+				}
 			}
-			else if (msg.toUpperCase().indexOf("AUTH") == 1)
+			else if (command.equals("JOIN"))
 			{
-				Main.sendData("PRIVMSG NICKSERV :IDENTIFY " + msg.substring(msg.indexOf(" ") + 1));
+				if (spaceIndex > -1)
+					Main.sendData(msg.substring(1));
+				else if (!chanName.equals("Console"))
+					Main.sendData("JOIN " + chanName);
 			}
-			else if (msg.toUpperCase().indexOf("RECONNECT") == 1)
+			else if (command.equals("PART"))
+			{
+				if (spaceIndex > -1)
+					closeChat(msg.substring(spaceIndex + 1));
+				else if (!chanName.equals("Console"))
+					closeChat(chanName);
+			}
+			else if (command.equals("AUTH"))
+			{
+				Main.sendData("PRIVMSG NICKSERV :IDENTIFY " + msg.substring(spaceIndex + 1));
+			}
+			else if (command.equals("RECONNECT"))
 			{
 				Main.disconnect("reconnecting");
 				window.println("\n(SYSTEM) Reconnecting...", chanName.toLowerCase(), C.ORANGE);
 			}
-			else if (msg.toUpperCase().indexOf("LOAD") == 1)
+			else if (command.equals("LOAD"))
 			{
 				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
 				
-				String p = loadPlugin(msg.substring(msg.indexOf(' ')).trim());
+				String p = loadPlugin(msg.substring(spaceIndex).trim());
 				
 				if (p != null)
 					window.println("(SYSTEM) " + p + " loaded.", chanName.toLowerCase(), C.BLUE);

@@ -1,7 +1,6 @@
 package wIRC;
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -19,8 +18,6 @@ public class Main
 	private static Socket mainSock = null;
 	private static PrintWriter out = null;
 	private static BufferedReader in = null;
-	
-	private static HashMap<String, Manager> managers = new HashMap<String, Manager>();
 	
 	protected static String hostName = "st0rage.org";
 	protected static String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
@@ -74,8 +71,8 @@ public class Main
 		C.init();
 		
 		Manager m = new Manager();
-
-		connect(managers.put(hostName, m), true);
+		
+		connect(m, true);
 	}
 	
 	protected static void sendData(String output)

@@ -40,6 +40,8 @@ public class SortedListModel extends AbstractListModel
     	Collections.sort(list);
     	
     	fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, list.size() - 1);
+    	
+    	fireIntervalAdded(this, 0, list.size() - 1);
     }
     
     public void remove(Object o)

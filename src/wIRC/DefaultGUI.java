@@ -91,9 +91,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 					int tab = tabbedPane.indexAtLocation(e.getX(), e.getY());
 					
 					if (tab > 0)
-					{
 						n.closeChat(tabs.getTitleAt(tab));
-					}
 				}
 			}
 		});

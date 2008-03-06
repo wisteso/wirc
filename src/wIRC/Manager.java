@@ -24,7 +24,7 @@ public class Manager
 	public Manager()
 	{
 		plugins.add(new TestPlugin());
-        window = new DefaultGUI(Main.hostName, this);
+		window = new DefaultGUI(Main.hostName, this);
 	}
 	
 	protected void sendData(String msg)

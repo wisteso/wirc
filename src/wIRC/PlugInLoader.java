@@ -50,7 +50,12 @@ public class PlugInLoader extends ClassLoader
 			}
 			else
 			{
-				in = new BufferedInputStream(new FileInputStream(new File(path)));
+				File f = new File(path);
+				
+				if (!f.canRead())
+					System.err.println("can't read file: " + f.getAbsolutePath());
+				
+				in = new BufferedInputStream(new FileInputStream(f));
 			}
 			
 			ArrayList<Byte> out = new ArrayList<Byte>();

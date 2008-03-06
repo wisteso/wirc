@@ -192,7 +192,7 @@ public class Manager
 							i = msg.indexOf(Main.nickName, j);
 						}
 						
-						window.print(msg.substring(j), n, C.BOLD);
+						window.print(msg.substring(j), n, C.BLACK);
 					}
 					else
 					{

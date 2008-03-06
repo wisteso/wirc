@@ -87,7 +87,7 @@ public class Manager
 				
 				String pluginPath = "bin/plugins/" + msg.substring(spaceIndex + 1).trim();
 				
-				if (pluginPath.indexOf(".class") != pluginPath.length() - 6);
+				if (pluginPath.indexOf(".class") != pluginPath.length() - 6)
 					pluginPath += ".class";
 				
 				String pluginName = loadPlugin(pluginPath);

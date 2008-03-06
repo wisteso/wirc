@@ -23,7 +23,6 @@ public class Manager
 	
 	public Manager()
 	{
-		plugins.add(new TestPlugin());
 		window = new DefaultGUI(Main.hostName, this);
 	}
 	
@@ -85,6 +84,22 @@ public class Manager
 			else if (command.equals("LOAD"))
 			{
 				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
+				
+				String pluginPath = "bin/plugins/" + msg.substring(spaceIndex + 1).trim();
+				
+				if (pluginPath.indexOf(".class") != pluginPath.length() - 6);
+					pluginPath += ".class";
+				
+				String pluginName = loadPlugin(pluginPath);
+				
+				if (pluginName != null)
+					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
+				else
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
+			}
+			else if (command.equals("SLOAD"))
+			{
+				window.println("(SYSTEM) Loading plugin (strict)...", chanName.toLowerCase(), C.BLUE);
 				
 				String pluginPath = msg.substring(spaceIndex + 1).trim();
 				

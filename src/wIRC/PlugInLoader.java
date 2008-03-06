@@ -60,13 +60,10 @@ public class PlugInLoader extends ClassLoader
 			
 			ArrayList<Byte> out = new ArrayList<Byte>();
 			
-			byte b = (byte)in.read();
-
-			while (b != -1)
-			{
-				out.add(b);
-				b = (byte)in.read();
-			}
+			int a = in.available();
+			
+			for (int i = 0; i < a; ++i)
+				out.add((byte)in.read());
 			
 			byte[] data = new byte[out.size()];
 			

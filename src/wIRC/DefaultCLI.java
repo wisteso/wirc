@@ -15,8 +15,9 @@ import java.util.Scanner;
  */
 public class DefaultCLI implements UserInput
 {
-	Manager m;
-	String focus = "Console";
+	private Manager m;
+	
+	private String focus = "Console";
 	
 	public DefaultCLI(String subtitle, Manager source)
 	{

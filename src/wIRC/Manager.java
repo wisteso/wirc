@@ -23,6 +23,7 @@ public class Manager
 	
 	public Manager()
 	{
+		plugins.add(new TestPlugin());
         window = new DefaultGUI(Main.hostName, this);
 	}
 	
@@ -85,12 +86,14 @@ public class Manager
 			{
 				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
 				
-				String p = loadPlugin(msg.substring(spaceIndex).trim());
+				String pluginPath = msg.substring(spaceIndex + 1).trim();
 				
-				if (p != null)
-					window.println("(SYSTEM) " + p + " loaded.", chanName.toLowerCase(), C.BLUE);
+				String pluginName = loadPlugin(pluginPath);
+				
+				if (pluginName != null)
+					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
 				else
-					window.println("(SYSTEM) Plugin loading failed.", chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
 			}
 			else
 				Main.sendData(msg.substring(1));
@@ -124,10 +127,10 @@ public class Manager
 	    }
 	    catch (Exception e)
 	    {
-	    	System.err.println("Plugin load error: " + e.toString());
-	    	
-	    	return null;
+	    	System.err.println(e.toString());
 	    }
+	    
+	    return null;
 	}
 	
 	protected void closeChat(String chan)

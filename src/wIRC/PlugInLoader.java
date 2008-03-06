@@ -31,7 +31,7 @@ public class PlugInLoader extends ClassLoader
 	    	}
 	    	catch (java.lang.ClassFormatError e)
 	    	{
-	    		return null;
+	    		System.err.println(e.toString());
 	    	}
 	    }
 	    
@@ -72,8 +72,9 @@ public class PlugInLoader extends ClassLoader
 		}
 		catch (Exception e)
 		{
-			System.err.println("Error loading class data for " + path);
-			return null;
+			System.err.println(e.toString());
 		}
+		
+		return null;
     }
 }

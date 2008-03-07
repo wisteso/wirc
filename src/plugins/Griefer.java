@@ -34,6 +34,11 @@ public class Griefer implements Plugin
 		return null;
 	}
 	
+	public String onLoad()
+	{
+		return null;
+	}
+	
 	public String getVersion()
 	{
 		return ID + " v" + VERSION;

@@ -280,10 +280,8 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		{
 			for (int x = 0; x < nicks.length; ++x)
 			{
-				if (l.contains(nicks[x]))
+				if (!l.contains(nicks[x]))
 					l.add(nicks[x]);
-				
-				l.update();
 			}
 		}
 		else
@@ -296,10 +294,14 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		
 		if (l != null)
 		{
+			int i;
+			
 			for (int x = 0; x < nicks.length; ++x)
 			{
-				if (l.contains(nicks[x]))
-					l.remove(nicks[x]);
+				i = l.indexOf(nicks[x]);
+				
+				if (i > -1)
+					l.remove(i);
 				else
 					System.err.println(nicks[x] + " not found in user-list.");
 			}
@@ -315,21 +317,24 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 	public void replaceNick(String oldNick, String newNick)
 	{
-		Iterator<SortedListModel> i = usrList.values().iterator();
+		Iterator<SortedListModel> iter = usrList.values().iterator();
 		
-		while (i.hasNext())
+		while (iter.hasNext())
 		{
-			SortedListModel l = i.next();
+			SortedListModel l = iter.next();
 			
 			if (l != null)
 			{
-					if (l.contains(oldNick))
-					{
-						l.remove(oldNick);
-						if (newNick != null) l.add(newNick);
-					}
-					else
-						System.err.println(oldNick + " not found in user-list.");
+				int i = l.indexOf(oldNick);
+				
+				if (i > -1)
+				{
+					l.remove(i);
+					
+					if (newNick != null) l.add(newNick);
+				}
+				else
+					System.err.println(oldNick + " not found in user-list.");
 			}
 		}
 	}

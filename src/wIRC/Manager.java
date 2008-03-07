@@ -138,6 +138,8 @@ public class Manager
     		
 	    	plugins.add(t);
 	    	
+	    	sendData(t.onLoad());
+	    	
 	    	return t.getVersion();
 	    }
 	    catch (Exception e)
@@ -240,22 +242,30 @@ public class Manager
 				}
 			}
 			else if (code == C.PART)
-			{
-				if (x.getNick().equals(Main.nickName))
+			{	
+				if (!n.equals("Console"))
 				{
-					window.println("<" + x.getNick() + " has left " + n + ">", C.BLUEGREY);
+					if (x.getNick().equals(Main.nickName))
+					{
+						window.println("<You have left " + n + ">", C.BLUEGREY);
+					}
+					else
+					{
+						if (msg.length() < 2)
+							window.println("<" + x.getNick() + " has left>", n, C.BLUEGREY);
+						else
+							window.println("<" + x.getNick() + " has left - " + msg + ">", n, C.BLUEGREY);
+						
+						window.removeNicks(n, x.getNick());
+						
+						if (!removeUser(x.getNick()))
+							System.err.println(x.getNick() + " not found in user-map. (PART)");
+					}
 				}
 				else
 				{
-					if (msg.length() < 2)
-						window.println("<" + x.getNick() + " has left>", n, C.BLUEGREY);
-					else
-						window.println("<" + x.getNick() + " has left - " + msg + ">", n, C.BLUEGREY);
-					
-					window.removeNicks(x.getChannel(), x.getNick());
-					
-					if (!removeUser(x.getNick()))
-						System.err.println(x.getNick() + " not found in user-map. (PART)");
+					System.err.println(x.getNick() + " cannot be removed from the Console. (PART)");
+					System.err.println(x.getMessage() + " | " + rawIn);
 				}
 			}
 			else if (code == C.QUIT)

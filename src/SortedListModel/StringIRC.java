@@ -17,6 +17,11 @@ public class StringIRC implements Comparable<StringIRC>
 		return t1.compareTo(t2);
 	}
 	
+	public boolean equals(Object o)
+	{
+		return s.equals(o.toString());
+	}
+	
 	public String toString()
 	{
 		return s;

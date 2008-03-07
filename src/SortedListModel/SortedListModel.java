@@ -6,7 +6,7 @@ import java.util.Collections;
 
 public class SortedListModel extends AbstractListModel
 {
-	static final long serialVersionUID = 1;
+	static final long serialVersionUID = 1L;
     
 	private LinkedList<StringIRC> list;
     
@@ -44,24 +44,35 @@ public class SortedListModel extends AbstractListModel
     	fireIntervalAdded(this, 0, list.size() - 1);
     }
     
-    public void remove(Object o)
+    public void remove(int index)
     {
-    	list.remove(o.toString());
+    	list.remove(index);
     	
     	fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, list.size() - 1);
     }
     
+    public int indexOf(Object o)
+    {
+		String temp = o.toString();
+		
+    	for (int i = 0; i < list.size(); ++i)
+    		if (list.get(i).equals(temp))
+    			return i;
+    	
+    	return -1;
+    }
+    
     public boolean contains(Object o)
     {
-    	for (int i = 0; i < list.size(); ++i)
-    		if (list.get(i).equals(o)) return true;
+		if (indexOf(o) > -1)
+    		return true;
     	
     	return false;
     }
     
     public Object getElementAt(int index)
     {
-        if (list.size() <= index || index < 0)
+        if (index >= list.size()|| index < 0)
         	throw new IndexOutOfBoundsException("Index of " + index + " does not exist.");
         else
         	return list.get(index);

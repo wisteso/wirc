@@ -160,13 +160,13 @@ public class Manager
 		}
 	}
 	
-	protected String loadPlugin(String file)
+	protected String loadPlugin(String path)
 	{
 	    PlugInLoader l = new PlugInLoader();
 	    
 	    try
 	    {
-	    	Class<?> p = l.findClass(file);
+	    	Class<?> p = l.findClass(path);
 	    	
 	    	Object o = p.newInstance();
 	    	
@@ -180,7 +180,14 @@ public class Manager
 	    }
 	    catch (Exception e)
 	    {
-	    	System.err.println(e.toString());
+	    	if (!path.startsWith("bin" + File.separator))
+	    	{
+	    		System.err.println("Attempting to correct...");
+	    		
+	    		return loadPlugin("bin" + File.separator + path);
+	    	}
+	    	
+	    	System.err.println(e.toString() + " LP: " + Main.localPath.getAbsolutePath());
 	    }
 	    
 	    return null;
@@ -193,11 +200,18 @@ public class Manager
 	    	Scanner in = new Scanner(new File(path));
 			
 			while (in.hasNextLine())
-				sendData(in.nextLine().trim());
+				sendMsg(in.nextLine().trim(), "Console");
 	    }
 	    catch (Exception e)
 	    {
-	    	System.err.println(e.toString());
+	    	if (!path.startsWith("bin" + File.separator))
+	    	{
+	    		System.err.println(e.toString() + "\nAttempting to correct...");
+	    		
+	    		executeScript("bin" + File.separator + path);
+	    	}
+	    	else
+	    		System.err.println(e.toString() + " LP: " + Main.localPath.getAbsolutePath());
 	    }
 	}
 	
@@ -501,6 +515,9 @@ public class Manager
 			else if (code > 371 && code < 377)  // Message of the day.
 			{
 				window.println("(MOTD) " + msg, n, C.GREEN);
+				
+				if (code == 376)
+					sendMsg("/SCRIPT default.script", "Console");
 			}
 			else if (code == 433)
 			{

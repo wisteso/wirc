@@ -29,7 +29,7 @@ public class PlugInLoader extends ClassLoader
 	    		if (x != null)
 			    	return x;
 	    	}
-	    	catch (java.lang.ClassFormatError e)
+	    	catch (Exception e)
 	    	{
 	    		System.err.println(e.toString());
 	    	}
@@ -51,9 +51,6 @@ public class PlugInLoader extends ClassLoader
 			else
 			{
 				File f = new File(path);
-				
-				if (!f.canRead())
-					System.err.println("can't read file: " + f.getAbsolutePath());
 				
 				in = new BufferedInputStream(new FileInputStream(f));
 			}

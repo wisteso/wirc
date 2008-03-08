@@ -19,14 +19,13 @@ public class Main
 	private static PrintWriter out = null;
 	private static BufferedReader in = null;
 	
-	protected static File localPath = new File(".");
+	protected static File localPath = new File("");
 	
 	protected static String hostName = "st0rage.org";
 	protected static String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected static String realName = "Anonymous";
 	protected static String userInfo = "No info set.";
 	
-	protected static boolean reconnect = true;
 	protected static int mode = 0;
 	
 	public static void main(String[] args)
@@ -133,7 +132,7 @@ public class Main
 		
 		cycle(m);
 		
-		if (reconnect && mode > -2)
+		if (mode > -2)
 			connect(m, retry);
 	}
 	

@@ -19,7 +19,7 @@ public class Main
 	private static PrintWriter out = null;
 	private static BufferedReader in = null;
 	
-	protected static File localPath = new File("");
+	protected static File localPath = new File(".");
 	
 	protected static String hostName = "st0rage.org";
 	protected static String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
@@ -164,7 +164,7 @@ public class Main
 		{
 			mode = -1;
 			
-			if (reason.equals("termination via interface"))
+			if (reason.equals("user termination"))
 				mode = -2;
 			
 			System.out.println("Connection closed: " + reason);

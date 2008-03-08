@@ -58,7 +58,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				
 				Main.sendData("QUIT :program terminated");
 				
-				Main.disconnect("termination via interface");
+				Main.disconnect("user termination");
 		    }
 	    });
         

@@ -133,10 +133,24 @@ public class Message
 			else if (command.indexOf("PART") == 0)
 			{
 				code = C.PART;
-				message = rawMsg.substring(rawMsg.indexOf(":") + 1).trim();
 				
-				if (rawMsg.indexOf("#") > -1 && rawMsg.indexOf(":") > -1)  // Apparently this is optional...
-					channel = rawMsg.substring(rawMsg.indexOf("#"), rawMsg.indexOf(":") - 1);
+				int cIndex = rawMsg.indexOf(" PART ") + 1;
+				int mIndex = rawMsg.indexOf(":", cIndex + 5);
+				
+				if (mIndex > -1)
+					message = rawMsg.substring(mIndex + 1).trim();
+				
+				if (rawMsg.charAt(cIndex + 5) == '#')
+				{
+					channel = rawMsg.substring(cIndex + 5);
+					
+					int sIndex = channel.indexOf(' ');
+					
+					if (sIndex > -1)
+						channel.substring(0, sIndex);
+				}
+				else
+					channel = "Console";
 			}
 			else if (command.indexOf("QUIT") == 0)
 			{

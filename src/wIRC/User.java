@@ -15,8 +15,6 @@ public class User
 	private ArrayList<String> realNames = new ArrayList<String>();
 	private ArrayList<String> chanNames = new ArrayList<String>();
 	
-	//private int status = 0;
-	
 	public User(String nick)
 	{
 		nickNames.add(nick.toLowerCase());

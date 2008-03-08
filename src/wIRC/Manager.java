@@ -1,7 +1,9 @@
 package wIRC;
+import java.io.File;
 import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.ArrayList;
+import java.util.Scanner;
 import SortedListModel.*;
 import wIRC.interfaces.*;
 
@@ -21,14 +23,19 @@ public class Manager
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	protected UserInput window;
 	
+//	private IRCSocket;
+	
 	public Manager()
 	{
+		// TODO: Pass in an IRCSocket class.
+		
 		window = new DefaultGUI(Main.hostName, this);
 	}
 	
 	protected void sendData(String msg)
 	{
-		Main.sendData(msg);
+		if (msg != null)
+			Main.sendData(msg);
 	}
 	
 	protected void sendMsg(String msg, String chanName)
@@ -65,6 +72,19 @@ public class Manager
 				else if (!chanName.equals("Console"))
 					Main.sendData("JOIN " + chanName);
 			}
+			else if (command.equals("REJOIN"))
+			{
+				if (spaceIndex > -1)
+				{
+					Main.sendData("PART" + msg.substring(7));
+					
+					Main.sendData(msg.substring(3));
+				}
+				else if (!chanName.equals("Console"))
+				{
+					Main.sendData("JOIN " + chanName);
+				}
+			}
 			else if (command.equals("PART"))
 			{
 				if (spaceIndex > -1)
@@ -81,13 +101,18 @@ public class Manager
 				Main.disconnect("reconnecting");
 				window.println("\n(SYSTEM) Reconnecting...", chanName.toLowerCase(), C.ORANGE);
 			}
+			else if (command.equals("DISCONNECT"))
+			{
+				Main.disconnect("user termination");
+				window.println("(SYSTEM) Disconnecting...", chanName.toLowerCase(), C.ORANGE);
+			}
 			else if (command.equals("LOAD"))
 			{
 				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
 				
-				String pluginPath = "bin/plugins/" + msg.substring(spaceIndex + 1).trim();
+				String pluginPath = "plugins/" + msg.substring(spaceIndex + 1).trim();
 				
-				if (pluginPath.indexOf(".class") != pluginPath.length() - 6)
+				if (!pluginPath.endsWith(".class"))
 					pluginPath += ".class";
 				
 				String pluginName = loadPlugin(pluginPath);
@@ -109,6 +134,17 @@ public class Manager
 					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
 				else
 					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
+			}
+			else if (command.equals("SCRIPT"))
+			{
+				window.println("(SYSTEM) Executing script...", chanName.toLowerCase(), C.BLUE);
+				
+				String scriptPath = "scripts/" + msg.substring(spaceIndex + 1).trim();
+				
+				if (!scriptPath.endsWith(".script"))
+					scriptPath += ".script";
+				
+				executeScript(scriptPath);
 			}
 			else
 				Main.sendData(msg.substring(1));
@@ -148,6 +184,21 @@ public class Manager
 	    }
 	    
 	    return null;
+	}
+	
+	protected void executeScript(String path)
+	{
+	    try
+	    {
+	    	Scanner in = new Scanner(new File(path));
+			
+			while (in.hasNextLine())
+				sendData(in.nextLine().trim());
+	    }
+	    catch (Exception e)
+	    {
+	    	System.err.println(e.toString());
+	    }
 	}
 	
 	protected void closeChat(String chan)
@@ -304,7 +355,7 @@ public class Manager
 			}
 			else if (code == C.NICK)
 			{
-				// FIXME: Doesn't add to user-list.
+				// TODO: Show this notification on the right channels.
 				if (x.getNick().equals(Main.nickName) == true)
 				{
 					Main.nickName = msg;
@@ -313,21 +364,24 @@ public class Manager
 				}
 				else
 				{
-					if (users.containsKey(x.getNick()))
-					{
-						String[] chans = users.get(x.getNick()).getChans();
-						
-						for (int a = 0; a < chans.length; ++a)
-						{
-							window.println("<" + x.getNick() + " is now known as " + msg + ">", chans[a], C.BLUEGREY);
-							updateUser(x.getNick(), msg);
-						}
-					}
-					else
-					{
-						System.err.println(x.getNick() + " not found in user-map. (NICK)");
-					}
+					window.replaceNick(x.getNick(), msg);
+					window.println("<" + x.getNick() + " is now known as " + msg + ">", n, C.BLUEGREY);
 				}
+				
+//				if (users.containsKey(x.getNick()))
+//                {
+//                        String[] chans = users.get(x.getNick()).getChans();
+//                        
+//                        for (int a = 0; a < chans.length; ++a)
+//                        {
+//                                window.println("<" + x.getNick() + " is now known as " + msg + ">", chans[a], C.BLUEGREY);
+//                                updateUser(x.getNick(), msg);
+//                        }
+//                }
+//                else
+//                {
+//                        System.err.println(x.getNick() + " not found in user-map. (NICK)");
+//                }
 			}
 			else if (code == C.CTCP_MSG)
 			{	

@@ -1,7 +1,4 @@
 package wIRC;
-import java.awt.Color;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 
 /**
  * Global constants
@@ -48,55 +45,30 @@ public final class C
 	public static final int ERROR = -100;
 	public static final int DISCONNECT = -101;
 	
-	// Color constants:
-	
-	protected static SimpleAttributeSet BASE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BOLD = new SimpleAttributeSet();
-	
-	protected static SimpleAttributeSet BLACK = new SimpleAttributeSet();
-	protected static SimpleAttributeSet GREY = new SimpleAttributeSet();
-	protected static SimpleAttributeSet RED = new SimpleAttributeSet();
-	protected static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet GREEN = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BLUE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BLUEGREY = new SimpleAttributeSet();
-	protected static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
-	
-	protected static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
-	
 	// Misc constants:
 	
 	public static final String NULL_CHAR = String.valueOf(0);
 	public static final String CTCP_CHAR = String.valueOf(1);
 	
-	public static void init()
-	{
-		StyleConstants.setFontFamily(BASE, "Monospace");
-		StyleConstants.setFontSize(BASE, 11);
-		StyleConstants.setBold(BOLD, true);
-		
-		BOLD.addAttributes(BASE);
-		
-		BLACK.addAttributes(BASE);
-		GREY.addAttributes(BASE);
-		RED.addAttributes(BASE);
-		ORANGE.addAttributes(BASE);
-		GREEN.addAttributes(BASE);
-		BLUE.addAttributes(BASE);
-		BLUEGREY.addAttributes(BASE);
-		VIOLET.addAttributes(BASE);
-		
-		BLUE_BOLD.addAttributes(BOLD);
-		
-		StyleConstants.setForeground(BLACK,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.000)));
-		StyleConstants.setForeground(GREY,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.666)));
-		StyleConstants.setForeground(RED,		Color.getHSBColor(new Float(0.000), new Float(0.666), new Float(0.666)));
-		StyleConstants.setForeground(ORANGE,	Color.getHSBColor(new Float(0.111), new Float(0.666), new Float(0.666)));
-		StyleConstants.setForeground(GREEN,		Color.getHSBColor(new Float(0.333), new Float(0.666), new Float(0.666)));
-		StyleConstants.setForeground(BLUE,		Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
-		StyleConstants.setForeground(BLUEGREY,	Color.getHSBColor(new Float(0.666), new Float(0.333), new Float(0.777)));
-		StyleConstants.setForeground(VIOLET,	Color.getHSBColor(new Float(0.888), new Float(0.666), new Float(0.666)));
-		
-		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
-	}
+	// Color constants:
+	
+	public final static int BASE = 1;
+	public final static int BOLD = 2;
+	
+	public final static int BLACK = 11;
+	public final static int GREY = 12;
+	
+	public final static int RED = 21;
+	
+	public final static int ORANGE = 31;
+	
+	public final static int YELLOW = 41;
+	
+	public final static int GREEN = 51;
+	
+	public final static int BLUE = 61;
+	public final static int BLUE_BOLD = 62;
+	public final static int BLUEGREY = 63;
+	
+	public final static int VIOLET = 70;
 }

@@ -1,5 +1,4 @@
 package wIRC;
-import javax.swing.text.SimpleAttributeSet;
 import SortedListModel.SortedListModel;
 import wIRC.interfaces.UserInput;
 import java.util.Scanner;
@@ -98,17 +97,17 @@ public class DefaultCLI implements UserInput
 		return focus;
 	}
 	
-	public void println(String input, SimpleAttributeSet style)
+	public void println(String input, int style)
 	{
 		this.println(input, "Console", style);
 	}
 	
-	public void println(String input, String channel, SimpleAttributeSet style)
+	public void println(String input, String channel, int style)
 	{
 		System.out.print("\n(" + channel + ") " + input);
 	}
 	
-	public void print(String input, String channel, SimpleAttributeSet style)
+	public void print(String input, String channel, int style)
 	{
 		System.out.print(input);
 	}

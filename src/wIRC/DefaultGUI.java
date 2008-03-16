@@ -2,6 +2,7 @@ package wIRC;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.text.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import SortedListModel.*;
@@ -38,12 +39,28 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
     private TreeMap<String, SortedListModel> usrList = new TreeMap<String, SortedListModel>();
     
     private boolean isReading = false;
+    private static boolean constInit = false;
 	
-	public DefaultGUI(String subtitle, Manager source)
+    public DefaultGUI(String subtitle, Manager source)
 	{	
-		n = source;
+    	if (!constInit)
+    		initResources();
+    	
+    	n = source;
 		
 		title = "wIRC - " + subtitle;
+		
+		SwingUtilities.invokeLater(new Runnable()
+		{
+		    public void run()
+		    {
+		        createAndShowGUI();
+		    }
+		});
+	}
+    
+	public void createAndShowGUI()
+	{	
 		icon = new ImageIcon(this.getClass().getClassLoader().getResource("wIRC/img/main_icon_16.png"));
 		
         frame = new JFrame(title);
@@ -110,7 +127,12 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         txtOut.requestFocus();
 	}
 	
-	public Object[] addChat(String title)
+	public synchronized String askQuestion(String query, String defaultAnswer)
+	{
+		return JOptionPane.showInputDialog(query, defaultAnswer);
+	}
+	
+	public synchronized Object[] addChat(String title)
 	{
 		if (tabs.getTabCount() < 11)
 		{
@@ -171,7 +193,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         else return null;
 	}
 	
-	public boolean removeChat(String title)
+	public synchronized boolean removeChat(String title)
 	{	
 		int x;
 		
@@ -221,26 +243,71 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         }
     }
 	
-	public void println(String input, SimpleAttributeSet style)
+	// Color constants:
+	
+	protected static SimpleAttributeSet BASE = new SimpleAttributeSet();
+	protected static SimpleAttributeSet BOLD = new SimpleAttributeSet();
+	
+	protected static SimpleAttributeSet BLACK = new SimpleAttributeSet();
+	protected static SimpleAttributeSet GREY = new SimpleAttributeSet();
+	protected static SimpleAttributeSet RED = new SimpleAttributeSet();
+	protected static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
+	protected static SimpleAttributeSet GREEN = new SimpleAttributeSet();
+	protected static SimpleAttributeSet BLUE = new SimpleAttributeSet();
+	protected static SimpleAttributeSet BLUEGREY = new SimpleAttributeSet();
+	protected static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
+	
+	protected static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
+	
+	public static void initResources()
+	{
+		StyleConstants.setFontFamily(BASE, "Monospace");
+		StyleConstants.setFontSize(BASE, 11);
+		StyleConstants.setBold(BOLD, true);
+		
+		BOLD.addAttributes(BASE);
+		
+		BLACK.addAttributes(BASE);
+		GREY.addAttributes(BASE);
+		RED.addAttributes(BASE);
+		ORANGE.addAttributes(BASE);
+		GREEN.addAttributes(BASE);
+		BLUE.addAttributes(BASE);
+		BLUEGREY.addAttributes(BASE);
+		VIOLET.addAttributes(BASE);
+		
+		BLUE_BOLD.addAttributes(BOLD);
+		
+		StyleConstants.setForeground(BLACK,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.000)));
+		StyleConstants.setForeground(GREY,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.666)));
+		StyleConstants.setForeground(RED,		Color.getHSBColor(new Float(0.000), new Float(0.666), new Float(0.666)));
+		StyleConstants.setForeground(ORANGE,	Color.getHSBColor(new Float(0.111), new Float(0.666), new Float(0.666)));
+		StyleConstants.setForeground(GREEN,		Color.getHSBColor(new Float(0.333), new Float(0.666), new Float(0.666)));
+		StyleConstants.setForeground(BLUE,		Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
+		StyleConstants.setForeground(BLUEGREY,	Color.getHSBColor(new Float(0.666), new Float(0.333), new Float(0.777)));
+		StyleConstants.setForeground(VIOLET,	Color.getHSBColor(new Float(0.888), new Float(0.666), new Float(0.666)));
+		
+		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
+	}
+	
+	public void println(String input, int style)
 	{
 		print("\n" + input, "Console", style);
 	}
 	
-	public void println(String input, String channel, SimpleAttributeSet style)
+	public void println(String input, String channel, int style)
 	{
 		print("\n" + input, channel, style);
 	}
 	
-	public void print(String input, String channel, SimpleAttributeSet style)
+	public void print(String input, String channel, int style)
 	{	
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{
 			Object[] temp = addChat(channel);
 			
 			if (temp == null)
-			{
 				return;
-			}
 			
 			JEditorPane p = (JEditorPane)temp[0];
 			tabList.put(channel.toLowerCase(), p);
@@ -257,9 +324,16 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 					
 		JEditorPane p = tabList.get(channel.toLowerCase());
 		
+		SimpleAttributeSet s;
+		
+		switch(style)
+		{
+			default: s = BLACK;
+		}
+		
 		try
 		{
-			p.getDocument().insertString(p.getDocument().getLength(), input, style);
+			p.getDocument().insertString(p.getDocument().getLength(), input, s);
 		}
 		catch (Exception e)
 		{
@@ -272,7 +346,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		}
 	}
 	
-	public void addNicks(String channel, String... nicks)
+	public synchronized void addNicks(String channel, String... nicks)
 	{
 		SortedListModel l = usrList.get(channel.toLowerCase());
 		
@@ -288,7 +362,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			System.err.println("List model not found to add nick: " + channel);
 	}
 	
-	public void removeNicks(String channel, String... nicks)
+	public synchronized void removeNicks(String channel, String... nicks)
 	{
 		SortedListModel l = usrList.get(channel.toLowerCase());
 		
@@ -310,12 +384,12 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			System.err.println("Chan not found to remove nick: " + channel);
 	}
 	
-	public void removeNick(String nick)
+	public synchronized void removeNick(String nick)
 	{
 		replaceNick(nick, null);
 	}
 	
-	public void replaceNick(String oldNick, String newNick)
+	public synchronized void replaceNick(String oldNick, String newNick)
 	{
 		Iterator<SortedListModel> iter = usrList.values().iterator();
 		

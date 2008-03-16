@@ -1,5 +1,4 @@
 package wIRC.interfaces;
-import javax.swing.text.SimpleAttributeSet;
 import SortedListModel.SortedListModel;
 
 public interface UserInput
@@ -10,11 +9,11 @@ public interface UserInput
 	
 	public abstract String getFocusedChat();
 	
-	public abstract void println(String input, SimpleAttributeSet color);
+	public abstract void println(String input, int style);
 	
-	public abstract void println(String input, String channel, SimpleAttributeSet style);
+	public abstract void println(String input, String channel, int style);
 	
-	public abstract void print(String input, String channel, SimpleAttributeSet style);
+	public abstract void print(String input, String channel, int style);
 	
 	public abstract void addNicks(String channel, String... nicks);
 	

@@ -69,8 +69,6 @@ public class Main
 			else realName = arg;
 		}
 		
-		C.init();
-		
 		Manager m = new Manager();
 		
 		connect(m, true);

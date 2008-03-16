@@ -23,19 +23,56 @@ public class Manager
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	protected UserInput window;
 	
-//	private IRCSocket;
+	protected String hostName = "st0rage.org";
+	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
+	protected String realName = "Anonymous";
+	protected String userInfo = "No info set.";
 	
-	public Manager()
+	private IRCSocket s;
+	
+	public Manager(IRCSocket s)
 	{
-		// TODO: Pass in an IRCSocket class.
+		this.s = s;
 		
-		window = new DefaultGUI(Main.hostName, this);
+		this.window = new DefaultGUI(hostName, this);
+	}
+	
+	public boolean initialize(boolean askAll)
+	{
+		if (askAll)
+		{
+			nickName = window.askQuestion("Enter your nick-name:", nickName);
+			if (nickName == null)
+				return false;
+	
+			realName = window.askQuestion("Enter your user-name:", realName);
+			if (realName == null)
+				return false;
+			
+			hostName = window.askQuestion("Enter the host-name:", hostName);
+			if (hostName == null)
+				return false;
+		}
+		else
+		{
+			hostName = window.askQuestion("Invalid Host. Re-enter the host-name:", hostName);
+			if (hostName == null)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	protected void notifyConnect()
+	{
+		sendData("NICK " + nickName);
+		sendData("USER " + nickName + " 0 * :" + realName);
 	}
 	
 	protected void sendData(String msg)
 	{
 		if (msg != null)
-			Main.sendData(msg);
+			s.sendData(msg);
 	}
 	
 	protected void sendMsg(String msg, String chanName)
@@ -62,27 +99,27 @@ public class Manager
 					int m2 = msg.indexOf(" ", m1 + 1);
 					
 					if (m2 > m1)
-						Main.sendData("PRIVMSG " + msg.substring(m1, m2) + " :" + msg.substring(m2 + 1));
+						s.sendData("PRIVMSG " + msg.substring(m1, m2) + " :" + msg.substring(m2 + 1));
 				}
 			}
 			else if (command.equals("JOIN"))
 			{
 				if (spaceIndex > -1)
-					Main.sendData(msg.substring(1));
+					s.sendData(msg.substring(1));
 				else if (!chanName.equals("Console"))
-					Main.sendData("JOIN " + chanName);
+					s.sendData("JOIN " + chanName);
 			}
 			else if (command.equals("REJOIN"))
 			{
 				if (spaceIndex > -1)
 				{
-					Main.sendData("PART" + msg.substring(7));
+					s.sendData("PART" + msg.substring(7));
 					
-					Main.sendData(msg.substring(3));
+					s.sendData(msg.substring(3));
 				}
 				else if (!chanName.equals("Console"))
 				{
-					Main.sendData("JOIN " + chanName);
+					s.sendData("JOIN " + chanName);
 				}
 			}
 			else if (command.equals("PART"))
@@ -94,16 +131,16 @@ public class Manager
 			}
 			else if (command.equals("AUTH"))
 			{
-				Main.sendData("PRIVMSG NICKSERV :IDENTIFY " + msg.substring(spaceIndex + 1));
+				s.sendData("PRIVMSG NICKSERV :IDENTIFY " + msg.substring(spaceIndex + 1));
 			}
 			else if (command.equals("RECONNECT"))
 			{
-				Main.disconnect("reconnecting");
+				s.disconnect("reconnecting");
 				window.println("\n(SYSTEM) Reconnecting...", chanName.toLowerCase(), C.ORANGE);
 			}
 			else if (command.equals("DISCONNECT"))
 			{
-				Main.disconnect("user termination");
+				s.disconnect("user termination");
 				window.println("(SYSTEM) Disconnecting...", chanName.toLowerCase(), C.ORANGE);
 			}
 			else if (command.equals("LOAD"))
@@ -147,14 +184,14 @@ public class Manager
 				executeScript(scriptPath);
 			}
 			else
-				Main.sendData(msg.substring(1));
+				s.sendData(msg.substring(1));
 		}
 		else
 		{
 			if (!chanName.equals("Console"))
 			{
-				Main.sendData("PRIVMSG " + chanName + " :" + msg);
-				window.println("<" + Main.nickName + "> ", chanName.toLowerCase(), C.BLUE_BOLD);
+				s.sendData("PRIVMSG " + chanName + " :" + msg);
+				window.println("<" + nickName + "> ", chanName.toLowerCase(), C.BLUE_BOLD);
 				window.print(msg, chanName.toLowerCase(), C.BASE);
 			}
 		}
@@ -187,7 +224,7 @@ public class Manager
 	    		return loadPlugin("bin" + File.separator + path);
 	    	}
 	    	
-	    	System.err.println(e.toString() + " LP: " + Main.localPath.getAbsolutePath());
+	    	System.err.println(e.toString() + " LP: " + IRCSocket.localPath.getAbsolutePath());
 	    }
 	    
 	    return null;
@@ -211,7 +248,7 @@ public class Manager
 	    		executeScript("bin" + File.separator + path);
 	    	}
 	    	else
-	    		System.err.println(e.toString() + " LP: " + Main.localPath.getAbsolutePath());
+	    		System.err.println(e.toString() + " LP: " + IRCSocket.localPath.getAbsolutePath());
 	    }
 	}
 	
@@ -220,7 +257,7 @@ public class Manager
 		if (window.removeChat(chan) == true)
 		{
 			if (chan.charAt(0) == '#')
-				Main.sendData("PART " + chan);
+				s.sendData("PART " + chan);
 		}
 		else
 		{
@@ -230,7 +267,7 @@ public class Manager
 	
 	protected void ProcessMessage(String rawIn)
 	{
-		Message x = new Message(rawIn);
+		Message x = new Message(rawIn, this);
 		
 		int code = x.getCode();
 		String msg = x.getMessage();
@@ -245,7 +282,7 @@ public class Manager
 				output = plugins.get(i).processMessage(rawIn, n);
 				
 				if (output != null)
-					Main.sendData(output);
+					s.sendData(output);
 			}
 		}
 
@@ -257,7 +294,7 @@ public class Manager
 				{
 					window.println("<" + x.getNick() + "> ", n, C.BLUE);
 					
-					int i = msg.indexOf(Main.nickName);
+					int i = msg.indexOf(nickName);
 					
 					if (i > -1)
 					{
@@ -267,11 +304,11 @@ public class Manager
 						{
 							window.print(msg.substring(j, i), n, C.BLACK);
 							
-							j = i + Main.nickName.length();
+							j = i + nickName.length();
 							
 							window.print(msg.substring(i, j), n, C.BOLD);
 							
-							i = msg.indexOf(Main.nickName, j);
+							i = msg.indexOf(nickName, j);
 						}
 						
 						window.print(msg.substring(j), n, C.BLACK);
@@ -293,14 +330,14 @@ public class Manager
 			}
 			else if (code == C.PING)
 			{
-				Main.sendData("PONG " + msg);
+				s.sendData("PONG " + msg);
 				window.println("(PING) " + msg, n, C.GREEN);
 			}
 			else if (code == C.JOIN)
 			{
 				window.println("<" + x.getNick() + " has joined>", n, C.BLUEGREY);
 				
-				if (!x.getNick().equals(Main.nickName))
+				if (!x.getNick().equals(nickName))
 				{
 					window.addNicks(x.getChannel(), x.getNick());
 					users.put(x.getNick(), new User(x.getNick(), null, x.getChannel()));
@@ -310,7 +347,7 @@ public class Manager
 			{	
 				if (!n.equals("Console"))
 				{
-					if (x.getNick().equals(Main.nickName))
+					if (x.getNick().equals(nickName))
 					{
 						window.println("<You have left " + n + ">", C.BLUEGREY);
 					}
@@ -359,7 +396,7 @@ public class Manager
 			}
 			else if (code == C.MODE)
 			{
-				if (x.getNick() != Main.hostName)
+				if (x.getNick() != hostName)
 				{
 					window.println("<" + x.getNick() + " is now " + msg + ">", n, C.BLUEGREY);
 					window.replaceNick(x.getNick(), msg);
@@ -370,9 +407,9 @@ public class Manager
 			else if (code == C.NICK)
 			{
 				// TODO: Show this notification on the right channels.
-				if (x.getNick().equals(Main.nickName) == true)
+				if (x.getNick().equals(nickName) == true)
 				{
-					Main.nickName = msg;
+					nickName = msg;
 					window.replaceNick(x.getNick(), msg);
 					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), C.BLUE);
 				}
@@ -409,13 +446,13 @@ public class Manager
 				{
 					window.println("<" + x.getNick() + " has requested your ping>", n, C.VIOLET);
 					reply = "PING " + msg.substring(msg.indexOf(" ") + 1);
-					Main.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
+					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else if (msg.indexOf("VERSION") == 0)
 				{
 					window.println("<" + x.getNick() + " has requested your version>", n, C.VIOLET);
 					reply = "VERSION wIRC v0.2 <wisteso@gmail.com>";
-					Main.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
+					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else if (msg.indexOf("TIME") == 0)
 				{
@@ -429,12 +466,12 @@ public class Manager
 					if (T.get(9) == 0) reply += " AM";
 					else reply += " PM";
 					
-					Main.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
+					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else if (msg.indexOf("USERINFO") == 0)
 				{
 					window.println("<" + x.getNick() + " has requested your user info>", n, C.VIOLET);
-					Main.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
+					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else
 					System.out.println("!!! " + msg);
@@ -446,7 +483,7 @@ public class Manager
 			else if (code == C.ERROR)
 			{
 				if (x.getMessage().indexOf("Closing Link") > -1)
-					Main.disconnect(msg);
+					s.disconnect(msg);
 				else
 					window.println("(ERROR) " + msg, n, C.RED);
 			}
@@ -524,14 +561,19 @@ public class Manager
 				String tempNick = "Nullname" + (int)(Math.random() * 10000);
 				window.println("(ERROR) Nickname already in use. Nickname set to: " + tempNick, n, C.RED);
 				
-				Main.sendData("NICK " + tempNick);
-				Main.nickName = tempNick;
+				s.sendData("NICK " + tempNick);
+				nickName = tempNick;
 			}
 			else
 			{
 				window.println("(" + code + ") " + msg, n, C.GREY);
 			}
 		}
+	}
+	
+	protected void disconnect(String reason)
+	{
+		s.disconnect(reason);
 	}
 	
 	public boolean addUser(String name)

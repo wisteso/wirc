@@ -3,6 +3,8 @@ import SortedListModel.SortedListModel;
 
 public interface UserInput
 {
+	public abstract String askQuestion(String query, String defaultAnswer);
+	
 	public abstract Object[] addChat(String title);
 	
 	public abstract boolean removeChat(String title);

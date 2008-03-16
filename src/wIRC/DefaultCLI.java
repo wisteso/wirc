@@ -68,13 +68,18 @@ public class DefaultCLI implements UserInput
 					}
 				}
 				
-				Main.sendData("QUIT :program terminated");
+				m.sendData("QUIT :program terminated");
 				
-				Main.disconnect("termination via interface");
+				m.disconnect("termination via interface");
 			}
 		};
 		
 		io.start();
+	}
+	
+	public synchronized String askQuestion(String query, String defaultAnswer)
+	{
+		return defaultAnswer;
 	}
 	
 	public Object[] addChat(String title)

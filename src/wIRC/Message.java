@@ -18,7 +18,7 @@ public class Message
 	private String channel = new String("Console");
 	private Integer code = C.NULL;
 	
-	public Message(String rawData)
+	public Message(String rawData, Manager m)
 	{
 		String rawMsg = new String();
 		
@@ -101,7 +101,7 @@ public class Message
 						message = rawMsg.substring(rawMsg.indexOf(":") + 2, rawMsg.length() - 1);
 						channel = rawMsg.substring(0, rawMsg.indexOf(":") - 1);
 						
-						if (channel.equalsIgnoreCase(Main.nickName))
+						if (channel.equalsIgnoreCase(m.nickName))
 							channel = sender.substring(0, sender.indexOf("!"));
 					}
 				}
@@ -111,7 +111,7 @@ public class Message
 					message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 					channel = rawMsg.substring(0, rawMsg.indexOf(":") - 1);
 					
-					if (channel.equalsIgnoreCase(Main.nickName))
+					if (channel.equalsIgnoreCase(m.nickName))
 						channel = sender.substring(0, sender.indexOf("!"));
 				}
 			}
@@ -169,7 +169,7 @@ public class Message
 				else if (rawMsg.indexOf("#") == 0)
 				{
 					message = rawMsg.substring(rawMsg.indexOf(" ") + 1).trim();
-					nickname = Main.hostName;
+					nickname = m.hostName;
 					channel = rawMsg.substring(0, rawMsg.indexOf(" ")).trim();
 				}
 				else

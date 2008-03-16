@@ -23,7 +23,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
     protected static final String OUTPUTBOX = "OUTPUTBOX";
     protected static final String SENDBUTTON = "SENDBUTTON";
     
-    private Manager n;
+    private Manager m;
     
     private ImageIcon icon;
     private String title;
@@ -46,7 +46,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
     	if (!constInit)
     		initResources();
     	
-    	n = source;
+    	m = source;
 		
 		title = "wIRC - " + subtitle;
 		
@@ -73,9 +73,9 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		    {
 		    	frame.dispose();
 				
-				Main.sendData("QUIT :program terminated");
+				m.sendData("QUIT :program terminated");
 				
-				Main.disconnect("user termination");
+				m.disconnect("user termination");
 		    }
 	    });
         
@@ -108,7 +108,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 					int tab = tabbedPane.indexAtLocation(e.getX(), e.getY());
 					
 					if (tab > 0)
-						n.closeChat(tabs.getTitleAt(tab));
+						m.closeChat(tabs.getTitleAt(tab));
 				}
 			}
 		});
@@ -227,7 +227,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         {
         	if (txtOut.getText().length() > 0)
         	{
-        		n.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
+        		m.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
             	
                 txtOut.setText("");
         	}
@@ -236,14 +236,14 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         {   
         	if (txtOut.getText().length() > 0)
         	{
-        		n.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
+        		m.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
             	
                 txtOut.setText("");
         	}
         }
     }
 	
-	// Color constants:
+//	OUTPUT CONSTANTS/METHODS
 	
 	protected static SimpleAttributeSet BASE = new SimpleAttributeSet();
 	protected static SimpleAttributeSet BOLD = new SimpleAttributeSet();
@@ -261,6 +261,8 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 	public static void initResources()
 	{
+		constInit = true;
+		
 		StyleConstants.setFontFamily(BASE, "Monospace");
 		StyleConstants.setFontSize(BASE, 11);
 		StyleConstants.setBold(BOLD, true);
@@ -346,6 +348,8 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		}
 	}
 	
+//	NICK LIST METHODS
+	
 	public synchronized void addNicks(String channel, String... nicks)
 	{
 		SortedListModel l = usrList.get(channel.toLowerCase());
@@ -417,6 +421,8 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	{
 		return usrList.get(channel);
 	}
+	
+//	MOUSELISTENER METHODS
 	
 	public void mouseClicked(MouseEvent e)
 	{

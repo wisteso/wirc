@@ -134,15 +134,15 @@ public class Message
 			{
 				code = C.PART;
 				
-				int cIndex = rawMsg.indexOf(" PART ") + 1;
-				int mIndex = rawMsg.indexOf(":", cIndex + 5);
+				int cIndex = rawData.indexOf(" PART ") + 1;
+				int mIndex = rawData.indexOf(":", cIndex + 5);
 				
 				if (mIndex > -1)
-					message = rawMsg.substring(mIndex + 1).trim();
+					message = rawData.substring(mIndex + 1).trim();
 				
-				if (rawMsg.charAt(cIndex + 5) == '#')
+				if (rawData.charAt(cIndex + 5) == '#')
 				{
-					channel = rawMsg.substring(cIndex + 5);
+					channel = rawData.substring(cIndex + 5);
 					
 					int sIndex = channel.indexOf(' ');
 					

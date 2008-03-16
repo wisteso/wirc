@@ -1,7 +1,7 @@
 package wIRC;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -68,6 +68,10 @@ public class PlugInLoader extends ClassLoader
 				data[i] = out.get(i);
 			
 			return data;
+		}
+		catch (java.io.FileNotFoundException e)
+		{
+			System.err.println(e.getMessage());
 		}
 		catch (Exception e)
 		{

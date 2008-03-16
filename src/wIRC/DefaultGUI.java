@@ -23,6 +23,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
     protected static final String OUTPUTBOX = "OUTPUTBOX";
     protected static final String SENDBUTTON = "SENDBUTTON";
     
+    private final DefaultGUI me = this;
     private Manager m;
     
     private ImageIcon icon;
@@ -132,76 +133,96 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		return JOptionPane.showInputDialog(query, defaultAnswer);
 	}
 	
-	public synchronized Object[] addChat(String title)
+	public synchronized Object[] addChat(final String title)
 	{
-		if (tabs.getTabCount() < 11)
+		//System.out.println("tabList.size(): " + tabList.size() + " tabs.getTabCount(): " + tabs.getTabCount());
+		
+		if (tabList.size() < 11)
 		{
-			JEditorPane t1 = new JEditorPane();
-			t1.setContentType("text/rtf");
-			t1.setFont(new Font("Arial", Font.PLAIN, 10));
-			t1.setEditable(false);
-			t1.addMouseListener(this);
-				
-	        JScrollPane t2 = new JScrollPane(t1);
-	        t2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	        t2.getVerticalScrollBar().addMouseListener(this);
+			final JEditorPane t1 = new JEditorPane();
+			final SortedListModel t3 = new SortedListModel();
+			
+			SwingUtilities.invokeLater(new Runnable()
+			{
+			    public void run()
+			    {
+					t1.setContentType("text/rtf");
+					t1.setFont(new Font("Arial", Font.PLAIN, 10));
+					t1.setEditable(false);
+					t1.addMouseListener(me);
+						
+			        JScrollPane t2 = new JScrollPane(t1);
+			        t2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			        t2.getVerticalScrollBar().addMouseListener(me);
+			        
+			        if (title.charAt(0) == '#')
+			        {
+			            JList t4 = new JList(t3);
+			            t4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			            t4.setSelectedIndex(0);
+			            
+			            JScrollPane t5 = new JScrollPane(t4);
+			            t5.setPreferredSize(new Dimension(100, -1));
+			            t5.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			            
+			            JPanel t6 = new JPanel();
+			            t6.setLayout(new BorderLayout());
+			            t6.add(t2, BorderLayout.CENTER);
+			        	t6.add(t5, BorderLayout.LINE_END);
+			        	t6.setBorder(BorderFactory.createCompoundBorder(
+			                	BorderFactory.createCompoundBorder(
+			                			BorderFactory.createTitledBorder("Data IN"),
+			                		BorderFactory.createEmptyBorder(0, 5, 5, 5)),
+			                		t6.getBorder()));
+			        	
+			        	tabs.addTab(title, t6);     	
+			        }
+			        else
+			        {
+			        	t2.setBorder(BorderFactory.createCompoundBorder(
+			                	BorderFactory.createCompoundBorder(
+			                			BorderFactory.createTitledBorder("Data IN"),
+			                		BorderFactory.createEmptyBorder(0, 5, 5, 5)),
+			                		t2.getBorder()));
+			        	
+			        	tabs.addTab(title, t2);
+			        }
+			    }
+			});
 	        
 	        if (title.charAt(0) == '#')
 	        {
-	        	SortedListModel t3 = new SortedListModel();
-	        	
-	            JList t4 = new JList(t3);
-	            t4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	            t4.setSelectedIndex(0);
-	            //t4.addListSelectionListener(this);
-	            
-	            JScrollPane t5 = new JScrollPane(t4);
-	            t5.setPreferredSize(new Dimension(100, -1));
-	            t5.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	            
-	            JPanel t6 = new JPanel();
-	            t6.setLayout(new BorderLayout());
-	            t6.add(t2, BorderLayout.CENTER);
-	        	t6.add(t5, BorderLayout.LINE_END);
-	        	t6.setBorder(BorderFactory.createCompoundBorder(
-	                	BorderFactory.createCompoundBorder(
-	                			BorderFactory.createTitledBorder("Data IN"),
-	                		BorderFactory.createEmptyBorder(0, 5, 5, 5)),
-	                		t6.getBorder()));
-	        	
-	        	tabs.addTab(title, t6);
-	        	
 	        	Object[] x = {t1, t3};
 	        	
 	        	return x;
 	        }
 	        else
 	        {
-	        	t2.setBorder(BorderFactory.createCompoundBorder(
-	                	BorderFactory.createCompoundBorder(
-	                			BorderFactory.createTitledBorder("Data IN"),
-	                		BorderFactory.createEmptyBorder(0, 5, 5, 5)),
-	                		t2.getBorder()));
-	        	
-	        	tabs.addTab(title, t2);
-	        	
 	        	Object[] x = {t1};
-	    		
-	    		return x;
+	        	
+	        	return x;
 	        }
 		}
-        else return null;
+        
+		return null;
 	}
 	
-	public synchronized boolean removeChat(String title)
+	public synchronized boolean removeChat(final String title)
 	{	
-		int x;
+		final int x = tabs.indexOfTab(title);
 		
-		if ((x = tabs.indexOfTab(title)) > 0)
+		if (x > 0)
 		{
-			tabList.remove(title.toLowerCase());
-			usrList.remove(title.toLowerCase());
-			tabs.remove(x);
+			SwingUtilities.invokeLater(new Runnable()
+			{
+			    public void run()
+			    {
+					tabList.remove(title.toLowerCase());
+					usrList.remove(title.toLowerCase());
+					tabs.remove(x);
+			    }
+			});
+			
 			return true;
 		}
 		else if (x == 0)
@@ -245,48 +266,47 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 //	OUTPUT CONSTANTS/METHODS
 	
-	protected static SimpleAttributeSet BASE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BOLD = new SimpleAttributeSet();
-	
 	protected static SimpleAttributeSet BLACK = new SimpleAttributeSet();
-	protected static SimpleAttributeSet GREY = new SimpleAttributeSet();
+	protected static SimpleAttributeSet GRAY = new SimpleAttributeSet();
 	protected static SimpleAttributeSet RED = new SimpleAttributeSet();
 	protected static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
+	protected static SimpleAttributeSet YELLOW = new SimpleAttributeSet();
 	protected static SimpleAttributeSet GREEN = new SimpleAttributeSet();
 	protected static SimpleAttributeSet BLUE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BLUEGREY = new SimpleAttributeSet();
+	protected static SimpleAttributeSet BLUEGRAY = new SimpleAttributeSet();
 	protected static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
 	
+	protected static SimpleAttributeSet BLACK_BOLD = new SimpleAttributeSet();
 	protected static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
 	
 	public static void initResources()
 	{
 		constInit = true;
 		
-		StyleConstants.setFontFamily(BASE, "Monospace");
-		StyleConstants.setFontSize(BASE, 11);
-		StyleConstants.setBold(BOLD, true);
+		StyleConstants.setFontFamily(BLACK, "Monospace");
+		StyleConstants.setFontSize(BLACK, 11);
+		StyleConstants.setBold(BLACK_BOLD, true);
 		
-		BOLD.addAttributes(BASE);
+		GRAY.addAttributes(BLACK);
+		RED.addAttributes(BLACK);
+		ORANGE.addAttributes(BLACK);
+		YELLOW.addAttributes(BLACK);
+		GREEN.addAttributes(BLACK);
+		BLUE.addAttributes(BLACK);
+		BLUEGRAY.addAttributes(BLACK);
+		VIOLET.addAttributes(BLACK);
 		
-		BLACK.addAttributes(BASE);
-		GREY.addAttributes(BASE);
-		RED.addAttributes(BASE);
-		ORANGE.addAttributes(BASE);
-		GREEN.addAttributes(BASE);
-		BLUE.addAttributes(BASE);
-		BLUEGREY.addAttributes(BASE);
-		VIOLET.addAttributes(BASE);
-		
-		BLUE_BOLD.addAttributes(BOLD);
+		BLACK_BOLD.addAttributes(BLACK);
+		BLUE_BOLD.addAttributes(BLACK_BOLD);
 		
 		StyleConstants.setForeground(BLACK,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.000)));
-		StyleConstants.setForeground(GREY,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.666)));
+		StyleConstants.setForeground(GRAY,		Color.getHSBColor(new Float(0.000), new Float(0.000), new Float(0.666)));
 		StyleConstants.setForeground(RED,		Color.getHSBColor(new Float(0.000), new Float(0.666), new Float(0.666)));
 		StyleConstants.setForeground(ORANGE,	Color.getHSBColor(new Float(0.111), new Float(0.666), new Float(0.666)));
+		StyleConstants.setForeground(YELLOW,	Color.getHSBColor(new Float(0.222), new Float(0.666), new Float(0.666)));
 		StyleConstants.setForeground(GREEN,		Color.getHSBColor(new Float(0.333), new Float(0.666), new Float(0.666)));
 		StyleConstants.setForeground(BLUE,		Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
-		StyleConstants.setForeground(BLUEGREY,	Color.getHSBColor(new Float(0.666), new Float(0.333), new Float(0.777)));
+		StyleConstants.setForeground(BLUEGRAY,	Color.getHSBColor(new Float(0.666), new Float(0.333), new Float(0.777)));
 		StyleConstants.setForeground(VIOLET,	Color.getHSBColor(new Float(0.888), new Float(0.666), new Float(0.666)));
 		
 		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
@@ -302,7 +322,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		print("\n" + input, channel, style);
 	}
 	
-	public void print(String input, String channel, int style)
+	public void print(final String input, String channel, int style)
 	{	
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{
@@ -311,36 +331,55 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			if (temp == null)
 				return;
 			
-			JEditorPane p = (JEditorPane)temp[0];
-			tabList.put(channel.toLowerCase(), p);
+			JEditorPane tp = (JEditorPane)temp[0];
+			
+			tabList.put(channel.toLowerCase(), tp);
 			
 			if (temp.length > 1)
 			{
-				SortedListModel l = (SortedListModel)temp[1];
+				SortedListModel tl = (SortedListModel)temp[1];
 				
-				l.update();
+				tl.update();
 				
-				usrList.put(channel.toLowerCase(), l);
+				usrList.put(channel.toLowerCase(), tl);
 			}
 		}
 					
-		JEditorPane p = tabList.get(channel.toLowerCase());
+		final JEditorPane p = tabList.get(channel.toLowerCase());
 		
-		SimpleAttributeSet s;
+		final SimpleAttributeSet styling;
 		
 		switch(style)
 		{
-			default: s = BLACK;
+			case C.BLACK: styling = BLACK; break;
+			case C.BLACK_BOLD: styling = BLACK_BOLD; break;
+			case C.GRAY: styling = GRAY; break;
+			case C.RED: styling = RED; break;
+			case C.ORANGE: styling = ORANGE; break;
+			case C.YELLOW: styling = YELLOW; break;
+			case C.GREEN: styling = GREEN; break;
+			case C.BLUE: styling = BLUE; break;
+			case C.BLUE_BOLD: styling = BLUE_BOLD; break;
+			case C.BLUEGRAY: styling = BLUEGRAY; break;
+			case C.VIOLET: styling = VIOLET; break;
+			
+ 			default: styling = GRAY;
 		}
 		
-		try
+		SwingUtilities.invokeLater(new Runnable()
 		{
-			p.getDocument().insertString(p.getDocument().getLength(), input, s);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		    public void run()
+		    {
+		    	try
+				{
+					p.getDocument().insertString(p.getDocument().getLength(), input, styling);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+		    }
+		});
 		
 		if (!isReading)
 		{

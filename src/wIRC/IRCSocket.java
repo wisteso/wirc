@@ -111,7 +111,7 @@ public class IRCSocket
 					m.ProcessMessage(dataIn);
 			}
 		}
-		catch (Exception e)
+		catch (IOException e)
 		{
 			disconnect(e.toString());
 			m.window.println("(NOTICE) You have been disconnected.", C.ORANGE);

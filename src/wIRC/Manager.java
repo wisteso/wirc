@@ -192,7 +192,7 @@ public class Manager
 			{
 				s.sendData("PRIVMSG " + chanName + " :" + msg);
 				window.println("<" + nickName + "> ", chanName.toLowerCase(), C.BLUE_BOLD);
-				window.print(msg, chanName.toLowerCase(), C.BASE);
+				window.print(msg, chanName.toLowerCase(), C.BLACK);
 			}
 		}
 	}
@@ -215,16 +215,24 @@ public class Manager
 	    	
 	    	return t.getVersion();
 	    }
+	    catch (InstantiationException e)
+	    {
+	    	e.printStackTrace();
+	    }
+	    catch (IllegalAccessException e)
+	    {
+	    	e.printStackTrace();
+	    }
 	    catch (Exception e)
 	    {
 	    	if (!path.startsWith("bin" + File.separator))
 	    	{
-	    		System.err.println("Attempting to correct...");
+	    		System.err.println("Attempting alternate path...");
 	    		
 	    		return loadPlugin("bin" + File.separator + path);
 	    	}
 	    	
-	    	System.err.println(e.toString() + " LP: " + IRCSocket.localPath.getAbsolutePath());
+	    	System.err.println(e.toString());
 	    }
 	    
 	    return null;
@@ -243,12 +251,14 @@ public class Manager
 	    {
 	    	if (!path.startsWith("bin" + File.separator))
 	    	{
-	    		System.err.println(e.toString() + "\nAttempting to correct...");
+	    		System.err.println(e.getMessage() + "\nAttempting alternate path...");
 	    		
 	    		executeScript("bin" + File.separator + path);
 	    	}
 	    	else
-	    		System.err.println(e.toString() + " LP: " + IRCSocket.localPath.getAbsolutePath());
+	    	{
+	    		System.err.println(e.toString());
+	    	}
 	    }
 	}
 	
@@ -306,7 +316,7 @@ public class Manager
 							
 							j = i + nickName.length();
 							
-							window.print(msg.substring(i, j), n, C.BOLD);
+							window.print(msg.substring(i, j), n, C.BLACK_BOLD);
 							
 							i = msg.indexOf(nickName, j);
 						}
@@ -335,7 +345,7 @@ public class Manager
 			}
 			else if (code == C.JOIN)
 			{
-				window.println("<" + x.getNick() + " has joined>", n, C.BLUEGREY);
+				window.println("<" + x.getNick() + " has joined>", n, C.BLUEGRAY);
 				
 				if (!x.getNick().equals(nickName))
 				{
@@ -349,14 +359,14 @@ public class Manager
 				{
 					if (x.getNick().equals(nickName))
 					{
-						window.println("<You have left " + n + ">", C.BLUEGREY);
+						window.println("<You have left " + n + ">", C.BLUEGRAY);
 					}
 					else
 					{
 						if (msg.length() < 2)
-							window.println("<" + x.getNick() + " has left>", n, C.BLUEGREY);
+							window.println("<" + x.getNick() + " has left>", n, C.BLUEGRAY);
 						else
-							window.println("<" + x.getNick() + " has left - " + msg + ">", n, C.BLUEGREY);
+							window.println("<" + x.getNick() + " has left - " + msg + ">", n, C.BLUEGRAY);
 						
 						window.removeNicks(n, x.getNick());
 						
@@ -381,9 +391,9 @@ public class Manager
 						window.removeNicks(chans[a], x.getNick());
 						
 						if (msg.length() < 2)
-							window.println("<" + x.getNick() + " has quit>", chans[a], C.BLUEGREY);
+							window.println("<" + x.getNick() + " has quit>", chans[a], C.BLUEGRAY);
 						else
-							window.println("<" + x.getNick() + " has quit - " + msg.toLowerCase() + ">", chans[a], C.BLUEGREY);
+							window.println("<" + x.getNick() + " has quit - " + msg.toLowerCase() + ">", chans[a], C.BLUEGRAY);
 						
 						if (!removeUser(x.getNick()))
 							System.err.println(x.getNick() + " not found in user-map. (QUIT)");
@@ -398,11 +408,11 @@ public class Manager
 			{
 				if (x.getNick() != hostName)
 				{
-					window.println("<" + x.getNick() + " is now " + msg + ">", n, C.BLUEGREY);
+					window.println("<" + x.getNick() + " is now " + msg + ">", n, C.BLUEGRAY);
 					window.replaceNick(x.getNick(), msg);
 				}
 				else
-					window.println("<" + x.getChannel() + " is now " + msg + ">", n, C.BLUEGREY);
+					window.println("<" + x.getChannel() + " is now " + msg + ">", n, C.BLUEGRAY);
 			}
 			else if (code == C.NICK)
 			{
@@ -416,7 +426,7 @@ public class Manager
 				else
 				{
 					window.replaceNick(x.getNick(), msg);
-					window.println("<" + x.getNick() + " is now known as " + msg + ">", n, C.BLUEGREY);
+					window.println("<" + x.getNick() + " is now known as " + msg + ">", n, C.BLUEGRAY);
 				}
 				
 //				if (users.containsKey(x.getNick()))
@@ -489,7 +499,7 @@ public class Manager
 			}
 			else
 			{
-				window.println("(" + code + ") " + msg, n, C.GREY);
+				window.println("(" + code + ") " + msg, n, C.GRAY);
 			}
 		}
 		else if (code >= 0)
@@ -503,7 +513,7 @@ public class Manager
 			}
 			else if (code > 249 && code < 270)  // Misc. information.
 			{
-				window.println("(INFO) " + msg, n, C.GREY);
+				window.println("(INFO) " + msg, n, C.GRAY);
 			}
 			else if (code == 332)  // Topic.
 			{
@@ -566,7 +576,7 @@ public class Manager
 			}
 			else
 			{
-				window.println("(" + code + ") " + msg, n, C.GREY);
+				window.println("(" + code + ") " + msg, n, C.GRAY);
 			}
 		}
 	}

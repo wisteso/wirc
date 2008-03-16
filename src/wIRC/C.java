@@ -52,11 +52,10 @@ public final class C
 	
 	// Color constants:
 	
-	public final static int BASE = 1;
-	public final static int BOLD = 2;
+	public final static int BLACK_BOLD = 2;
 	
 	public final static int BLACK = 11;
-	public final static int GREY = 12;
+	public final static int GRAY = 12;
 	
 	public final static int RED = 21;
 	
@@ -68,7 +67,7 @@ public final class C
 	
 	public final static int BLUE = 61;
 	public final static int BLUE_BOLD = 62;
-	public final static int BLUEGREY = 63;
+	public final static int BLUEGRAY = 63;
 	
 	public final static int VIOLET = 70;
 }

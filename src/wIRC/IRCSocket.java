@@ -42,9 +42,10 @@ public class IRCSocket
 		
 		m = new Manager(this);
 		
-		m.initialize(true);
-		
-		connect(true);
+		if (m.initialize(true))
+			connect(true);
+		else
+			m.printSystemMsg("Connection aborted.", C.ORANGE);
 	}
 	
 	protected void sendData(String output)
@@ -60,7 +61,9 @@ public class IRCSocket
 		do
 		{
 			try
-			{
+			{				
+				m.printSystemMsg("Connecting to " + m.hostName + "...", C.GREEN);
+				
 				sock = new Socket();
 				
 				sock.connect(new InetSocketAddress(m.hostName, 6667), 5000);
@@ -69,22 +72,18 @@ public class IRCSocket
 				
 	            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			} 
-			catch (UnknownHostException e)
+			catch (Exception e)
 			{
-				sock = null;
+				if (m.initialize(false))
+				{
+					sock = null;
+				}
+				else
+				{
+					m.printSystemMsg("Connection aborted.", C.ORANGE);
 					
-				m.initialize(false);
-			}
-			catch (SocketTimeoutException e)
-			{
-				sock = null;
-				
-				m.initialize(false);
-			}
-			catch (IOException e)
-			{
-				System.err.println(e.toString());
-	            System.exit(1);
+					return;
+				}
 			}
 		}
 		while (sock == null);
@@ -114,7 +113,7 @@ public class IRCSocket
 		catch (IOException e)
 		{
 			disconnect(e.toString());
-			m.window.println("(NOTICE) You have been disconnected.", C.ORANGE);
+			m.printSystemMsg("You have been disconnected.", C.ORANGE);
 		}
 	}
 	

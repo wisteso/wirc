@@ -43,26 +43,32 @@ public class Manager
 		{
 			nickName = window.askQuestion("Enter your nick-name:", nickName);
 			if (nickName == null)
+			{
 				return false;
+			}
 	
 			realName = window.askQuestion("Enter your user-name:", realName);
 			if (realName == null)
+			{
 				return false;
+			}
 			
 			hostName = window.askQuestion("Enter the host-name:", hostName);
 			if (hostName == null)
+			{
 				return false;
+			}
 		}
 		else
 		{
 			hostName = window.askQuestion("Invalid Host. Re-enter the host-name:", hostName);
 			if (hostName == null)
+			{
 				return false;
+			}
 		}
 		
 		window.setServerInfo(hostName);
-		
-		window.println("(SYSTEM) Connecting to " + hostName + "...", C.GREEN);
 		
 		return true;
 	}
@@ -77,6 +83,11 @@ public class Manager
 	{
 		if (msg != null)
 			s.sendData(msg);
+	}
+	
+	protected void printSystemMsg(String msg, int style)
+	{
+		window.println("(SYSTEM) " + msg, style);
 	}
 	
 	protected void sendMsg(String msg, String chanName)

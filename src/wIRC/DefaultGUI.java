@@ -42,14 +42,14 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
     private boolean isReading = false;
     private static boolean constInit = false;
 	
-    public DefaultGUI(String subtitle, Manager source)
+    public DefaultGUI(String server, Manager m)
 	{	
     	if (!constInit)
     		initResources();
     	
-    	m = source;
+    	this.m = m;
 		
-		title = "wIRC - " + subtitle;
+		this.title = "wIRC - " + server;
 		
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -133,10 +133,18 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		return JOptionPane.showInputDialog(query, defaultAnswer);
 	}
 	
+	public void setServerInfo(String newServer)
+	{
+		frame.setTitle("wIRC - " + newServer);
+	}
+	
+	public String getFocusedChat()
+	{
+		return tabs.getTitleAt(tabs.getSelectedIndex());
+	}
+	
 	public synchronized Object[] addChat(final String title)
 	{
-		//System.out.println("tabList.size(): " + tabList.size() + " tabs.getTabCount(): " + tabs.getTabCount());
-		
 		if (tabList.size() < 11)
 		{
 			final JEditorPane t1 = new JEditorPane();
@@ -225,21 +233,11 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			
 			return true;
 		}
-		else if (x == 0)
-		{
-			System.err.println("Can't remove console.");
-			return false;
-		}
-		else
-		{
+		
+		if (x != 0)
 			System.err.println("Tab does not exist.");
-			return false;
-		}	
-	}
-	
-	public String getFocusedChat()
-	{
-		return tabs.getTitleAt(tabs.getSelectedIndex());
+		
+		return false;
 	}
 	
 	public void actionPerformed(ActionEvent e) 
@@ -312,17 +310,17 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
 	}
 	
-	public void println(String input, int style)
+	public synchronized void println(String input, int style)
 	{
 		print("\n" + input, "Console", style);
 	}
 	
-	public void println(String input, String channel, int style)
+	public synchronized void println(String input, String channel, int style)
 	{
 		print("\n" + input, channel, style);
 	}
 	
-	public void print(final String input, String channel, int style)
+	public synchronized void print(final String input, String channel, int style)
 	{	
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{
@@ -376,15 +374,15 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					System.err.println(e.toString());
+				}
+				
+				if (!isReading)
+				{
+					p.setCaretPosition(p.getDocument().getLength());
 				}
 		    }
 		});
-		
-		if (!isReading)
-		{
-			p.setCaretPosition(p.getDocument().getLength());
-		}
 	}
 	
 //	NICK LIST METHODS
@@ -402,7 +400,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			}
 		}
 		else
-			System.err.println("List model not found to add nick: " + channel);
+			System.err.println("ListModel not found to add nick: " + channel);
 	}
 	
 	public synchronized void removeNicks(String channel, String... nicks)
@@ -420,7 +418,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				if (i > -1)
 					l.remove(i);
 				else
-					System.err.println(nicks[x] + " not found in user-list.");
+					System.err.println(nicks[x] + " not found in ListModel.");
 			}
 		}
 		else
@@ -451,7 +449,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 					if (newNick != null) l.add(newNick);
 				}
 				else
-					System.err.println(oldNick + " not found in user-list.");
+					System.err.println(oldNick + " not found in ListModel.");
 			}
 		}
 	}

@@ -5,11 +5,13 @@ public interface UserInput
 {
 	public abstract String askQuestion(String query, String defaultAnswer);
 	
+	public abstract String getFocusedChat();
+	
+	public abstract void setServerInfo(String newServer);
+	
 	public abstract Object[] addChat(String title);
 	
 	public abstract boolean removeChat(String title);
-	
-	public abstract String getFocusedChat();
 	
 	public abstract void println(String input, int style);
 	

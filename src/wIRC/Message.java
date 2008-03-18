@@ -147,7 +147,7 @@ public class Message
 					int sIndex = channel.indexOf(' ');
 					
 					if (sIndex > -1)
-						channel.substring(0, sIndex);
+						channel = channel.substring(0, sIndex);
 				}
 				else
 					channel = "Console";

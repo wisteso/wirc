@@ -82,6 +82,16 @@ public class DefaultCLI implements UserInput
 		return defaultAnswer;
 	}
 	
+	public String getFocusedChat()
+	{
+		return focus;
+	}
+	
+	public void setServerInfo(String newServer)
+	{
+		
+	}
+	
 	public Object[] addChat(String title)
 	{
 		focus = title;
@@ -95,11 +105,6 @@ public class DefaultCLI implements UserInput
 			focus = "Console";
 		
 		return true;
-	}
-	
-	public String getFocusedChat()
-	{
-		return focus;
 	}
 	
 	public void println(String input, int style)

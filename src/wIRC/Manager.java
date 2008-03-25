@@ -114,7 +114,15 @@ public class Manager
 					int m2 = msg.indexOf(" ", m1 + 1);
 					
 					if (m2 > m1)
-						s.sendData("PRIVMSG " + msg.substring(m1, m2) + " :" + msg.substring(m2 + 1));
+					{
+						String recipient = msg.substring(m1, m2);
+						String message = msg.substring(m2 + 1);
+						
+						s.sendData("PRIVMSG " + recipient + " :" + msg);
+						
+						window.println("<" + nickName + "> ", recipient, C.BLUE_BOLD);
+						window.print(message, recipient, C.BLACK);
+					}
 				}
 			}
 			else if (command.equals("JOIN"))

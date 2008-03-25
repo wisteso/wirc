@@ -2,7 +2,6 @@ package wIRC;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.text.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import SortedListModel.*;

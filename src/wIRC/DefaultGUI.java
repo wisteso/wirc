@@ -143,6 +143,17 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		return tabs.getTitleAt(tabs.getSelectedIndex());
 	}
 	
+	public synchronized void focusChat(final String title)
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+		    public void run()
+		    {
+		    	tabs.setSelectedIndex(tabs.indexOfTab(title));
+		    }
+		});
+	}
+	
 	public synchronized Object[] addChat(final String title)
 	{
 		if (tabList.size() < 11)
@@ -168,6 +179,44 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			            JList t4 = new JList(t3);
 			            t4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			            t4.setSelectedIndex(0);
+			            t4.addMouseListener(new MouseAdapter()
+			    		{
+			    			public void mouseClicked(MouseEvent e)
+			    			{
+			    	            if (e.getClickCount() == 2)
+			    	            {
+			    	            	JList list = (JList)e.getSource();
+			    	            	
+			    	            	String t = list.getSelectedValue().toString();
+			    	            	//t = list.getModel().getElementAt(list.locationToIndex(e.getPoint()));
+			    	            	
+			    	            	char firstChar = t.charAt(0);
+			    	            	
+			    	            	if (firstChar == '@' || firstChar == '+' || firstChar == '%')
+			    	            		t = t.substring(1);
+			    	            	
+			    	            	Object[] temp = addChat(t);
+			    	    			
+			    	    			if (temp == null)
+			    	    				return;
+			    	    			
+			    	    			JEditorPane tp = (JEditorPane)temp[0];
+			    	    			
+			    	    			tabList.put(t.toLowerCase(), tp);
+			    	    			
+			    	    			if (temp.length > 1)
+			    	    			{
+			    	    				SortedListModel tl = (SortedListModel)temp[1];
+			    	    				
+			    	    				tl.update();
+			    	    				
+			    	    				usrList.put(t.toLowerCase(), tl);
+			    	    			}
+			    	                
+			    	                focusChat(t);
+			    	            }
+			    			}
+			    		});
 			            
 			            JScrollPane t5 = new JScrollPane(t4);
 			            t5.setPreferredSize(new Dimension(100, -1));

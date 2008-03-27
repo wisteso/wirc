@@ -4,19 +4,17 @@ import java.net.*;
 import javax.swing.UIManager;
 
 /**
- * Root structural-object
+ * IRCSocket
  * <br><br>
- * This class serves as the root structure of the client but 
- * is gradually forming a specialized socket class which will 
- * eventually branch off and become an IRCSocket class.
+ * This class serves as the parent for all the classes.
+ * It manages the connection and grants the manager binded 
+ * to it a great deal of access to it's methods.
  * <br><br>
  * @author	wisteso@gmail.com
  */
 public class IRCSocket
 {
-	protected File localPath = new File("");
-	
-	//java.util.prefs.Preferences 
+	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
 	
 	private Socket sock = null;
 	private PrintWriter out = null;
@@ -33,13 +31,25 @@ public class IRCSocket
 	
 	public IRCSocket()
 	{	
+		if (!homePath.isDirectory())
+		{
+			if (homePath.mkdir() == false)
+				System.err.println("Unable to create user folder.");
+			else
+				System.out.println("User folder created.");
+		}
+		else
+		{
+			System.out.println("Using existing user folder.");
+		}
+		
 		try 
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         }
 		catch (Exception e)
 		{
-            System.out.println("Cannot find resources for default style interface.");
+            System.out.println("Unable to match window style to operating system.");
         }
 		
 		m = new Manager(this);
@@ -123,10 +133,14 @@ public class IRCSocket
 	{
 		if (mode > 0)
 		{
-			mode = -1;
-			
-			if (reason.equals("user termination"))
+			if (reason.startsWith("user termination"))
+			{
 				mode = -2;
+			}
+			else
+			{
+				mode = -1;
+			}
 			
 			System.out.println("Connection closed: " + reason);
 			

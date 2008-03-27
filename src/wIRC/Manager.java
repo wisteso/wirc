@@ -34,9 +34,9 @@ public class Manager
 	{
 		this.s = s;
 		
-		window.println("(SYSTEM) Requesting login info...", C.GREEN);
+		window.println("(SYSTEM) Home path: " + s.homePath, C.BLUEGRAY);
 		
-        window.println("(SYSTEM) Local path: " + s.localPath.getAbsolutePath(), C.BLUEGRAY);
+		window.println("(SYSTEM) Requesting login info...", C.GREEN);
 	}
 	
 	public boolean initialize(boolean askAll)
@@ -44,30 +44,26 @@ public class Manager
 		if (askAll)
 		{
 			nickName = window.askQuestion("Enter your nick-name:", nickName);
+			
 			if (nickName == null)
-			{
 				return false;
-			}
 	
 			realName = window.askQuestion("Enter your user-name:", realName);
+			
 			if (realName == null)
-			{
 				return false;
-			}
 			
 			hostName = window.askQuestion("Enter the host-name:", hostName);
+			
 			if (hostName == null)
-			{
 				return false;
-			}
 		}
 		else
 		{
 			hostName = window.askQuestion("Invalid Host. Re-enter the host-name:", hostName);
+			
 			if (hostName == null)
-			{
 				return false;
-			}
 		}
 		
 		window.setServerInfo(hostName);
@@ -192,7 +188,7 @@ public class Manager
 				if (input.startsWith("http://"))
 					pluginPath = input;
 				else
-					pluginPath = ".wIRC/plugins/" + input;
+					pluginPath = s.homePath + C.PSLASH + "plugins" + C.PSLASH + input;
 				
 				if (!pluginPath.endsWith(".class"))
 					pluginPath += ".class";
@@ -215,7 +211,7 @@ public class Manager
 				if (input.startsWith("http://"))
 					scriptPath = input;
 				else
-					scriptPath = ".wIRC/scripts/" + input;
+					scriptPath = s.homePath + C.PSLASH + "scripts" + C.PSLASH + input;
 				
 				if (!scriptPath.endsWith(".script"))
 					scriptPath += ".script";
@@ -273,14 +269,14 @@ public class Manager
 	    }
 	    catch (Exception e)
 	    {
-	    	/*<HACK>*/
+	    	/*<HACK>*
 	    	if (!path.startsWith("bin" + File.separator))
 	    	{
 	    		System.err.println("Attempting alternate path...");
 	    		
 	    		return loadPlugin("bin" + File.separator + path);
 	    	}
-	    	/*<END HACK>*/
+	    	*<END HACK>*/
 	    	
 	    	System.err.println(e.toString());
 	    }
@@ -306,14 +302,14 @@ public class Manager
 	    }
 	    catch (Exception e)
 	    {
-	    	/*<HACK>*/
+	    	/*<HACK>*
 	    	if (!path.startsWith("bin" + File.separator))
 	    	{
 	    		System.err.println(e.getMessage() + "\nAttempting alternate path...");
 	    		
 	    		return executeScript("bin" + File.separator + path);
 	    	}
-	    	/*<END HACK>*/
+	    	*<END HACK>*/
 	    	
 	    	System.err.println(e.toString());
 	    }

@@ -127,9 +127,34 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         txtOut.requestFocus();
 	}
 	
-	public synchronized String askQuestion(String query, String defaultAnswer)
+	public synchronized String askQuestion(final String query, final String defaultAnswer)
 	{
-		return JOptionPane.showInputDialog(query, defaultAnswer);
+		final StringBuilder answer = new StringBuilder();
+		
+		try
+		{
+			SwingUtilities.invokeAndWait(new Runnable()
+			{
+			    public void run()
+			    {
+			    	String ans = JOptionPane.showInputDialog(query, defaultAnswer);
+			    	
+			    	if (ans != null) 
+			    		answer.append(ans);
+			    }
+			});
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			
+			return askQuestion(query, defaultAnswer);
+		}
+		
+		if (answer.length() > 0)
+			return answer.toString();
+		else
+			return null;
 	}
 	
 	public void setServerInfo(String newServer)

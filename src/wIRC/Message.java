@@ -22,7 +22,7 @@ public class Message
 	{
 		String rawMsg = new String();
 		
-		if (rawData.charAt(0) == 0x3A)  // We have a sender.
+		if (rawData.charAt(0) == ':')
 		{	
 			if (rawData.indexOf(" ") > -1)
 			{
@@ -37,7 +37,7 @@ public class Message
 			else
 				System.err.println("Unhandled header: " + rawData);
 		}
-		else  // No sender data; assume server.
+		else
 		{
 			sender = "SERVER";
 			rawMsg = rawData;

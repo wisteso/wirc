@@ -1,5 +1,7 @@
 package wIRC;
 
+import java.io.File;
+
 /**
  * Global constants
  * <br><br>
@@ -49,6 +51,7 @@ public final class C
 	
 	public static final String NULL_CHAR = String.valueOf(0);
 	public static final String CTCP_CHAR = String.valueOf(1);
+	public static final String PSLASH = File.separator;
 	
 	// Color constants:
 	

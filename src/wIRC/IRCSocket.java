@@ -14,7 +14,9 @@ import javax.swing.UIManager;
  */
 public class IRCSocket
 {
-	protected static File localPath = new File("");
+	protected File localPath = new File("");
+	
+	//java.util.prefs.Preferences 
 	
 	private Socket sock = null;
 	private PrintWriter out = null;
@@ -30,7 +32,7 @@ public class IRCSocket
 	}
 	
 	public IRCSocket()
-	{
+	{	
 		try 
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

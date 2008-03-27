@@ -1,10 +1,12 @@
 package wIRC.interfaces;
 
 public interface Plugin
-{
-	public String processMessage(String input, String channel);
+{	
+	public String[] processInput(String input, String channel);
 	
-	public String onLoad();
+	public String[] processOutput(String output);
+	
+	public String[] onLoad();
 	
 	public String getVersion();
 }

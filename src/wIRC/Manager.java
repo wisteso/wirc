@@ -35,6 +35,8 @@ public class Manager
 		this.s = s;
 		
 		window.println("(SYSTEM) Requesting login info...", C.GREEN);
+		
+        window.println("(SYSTEM) Local path: " + s.localPath.getAbsolutePath(), C.BLUEGRAY);
 	}
 	
 	public boolean initialize(boolean askAll)
@@ -166,22 +168,6 @@ public class Manager
 				s.disconnect("user termination");
 				window.println("(SYSTEM) Disconnecting...", chanName.toLowerCase(), C.ORANGE);
 			}
-			else if (command.equals("LOAD"))
-			{
-				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
-				
-				String pluginPath = "plugins/" + msg.substring(spaceIndex + 1).trim();
-				
-				if (!pluginPath.endsWith(".class"))
-					pluginPath += ".class";
-				
-				String pluginName = loadPlugin(pluginPath);
-				
-				if (pluginName != null)
-					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
-				else
-					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
-			}
 			else if (command.equals("SLOAD"))
 			{
 				window.println("(SYSTEM) Loading plugin (strict)...", chanName.toLowerCase(), C.BLUE);
@@ -195,16 +181,51 @@ public class Manager
 				else
 					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
 			}
+			else if (command.equals("LOAD"))
+			{
+				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
+				
+				String input = msg.substring(spaceIndex + 1).trim();
+				
+				String pluginPath;
+				
+				if (input.startsWith("http://"))
+					pluginPath = input;
+				else
+					pluginPath = ".wIRC/plugins/" + input;
+				
+				if (!pluginPath.endsWith(".class"))
+					pluginPath += ".class";
+				
+				String pluginName = loadPlugin(pluginPath);
+				
+				if (pluginName != null)
+					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
+				else
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
+			}
 			else if (command.equals("SCRIPT"))
 			{
 				window.println("(SYSTEM) Executing script...", chanName.toLowerCase(), C.BLUE);
 				
-				String scriptPath = "scripts/" + msg.substring(spaceIndex + 1).trim();
+				String input = msg.substring(spaceIndex + 1).trim();
+				
+				String scriptPath;
+				
+				if (input.startsWith("http://"))
+					scriptPath = input;
+				else
+					scriptPath = ".wIRC/scripts/" + input;
 				
 				if (!scriptPath.endsWith(".script"))
 					scriptPath += ".script";
 				
-				executeScript(scriptPath);
+				String scriptName = executeScript(scriptPath);
+				
+				if (scriptName != null)
+					window.println("(SYSTEM) " + scriptName + " finished.", chanName.toLowerCase(), C.BLUE);
+				else
+					window.println("(SYSTEM) Script loading failed - path: " + scriptPath, chanName.toLowerCase(), C.BLUE);
 			}
 			else
 				s.sendData(msg.substring(1));
@@ -234,7 +255,11 @@ public class Manager
     		
 	    	plugins.add(t);
 	    	
-	    	sendData(t.onLoad());
+	    	String[] msg = t.onLoad();
+	    	
+	    	if (msg != null)
+	    		for (int i = 0; i < msg.length; ++i)
+	    			sendData(msg[i]);
 	    	
 	    	return t.getVersion();
 	    }
@@ -248,12 +273,14 @@ public class Manager
 	    }
 	    catch (Exception e)
 	    {
+	    	/*<HACK>*/
 	    	if (!path.startsWith("bin" + File.separator))
 	    	{
 	    		System.err.println("Attempting alternate path...");
 	    		
 	    		return loadPlugin("bin" + File.separator + path);
 	    	}
+	    	/*<END HACK>*/
 	    	
 	    	System.err.println(e.toString());
 	    }
@@ -261,28 +288,37 @@ public class Manager
 	    return null;
 	}
 	
-	protected void executeScript(String path)
+	protected String executeScript(String path)
 	{
 	    try
 	    {
 	    	Scanner in = new Scanner(new File(path));
 			
+	    	if (!in.hasNextLine())
+	    		return null;
+	    		
+	    	String header = in.nextLine();
+	    	
 			while (in.hasNextLine())
 				sendMsg(in.nextLine().trim(), "Console");
+			
+			return header;
 	    }
 	    catch (Exception e)
 	    {
+	    	/*<HACK>*/
 	    	if (!path.startsWith("bin" + File.separator))
 	    	{
 	    		System.err.println(e.getMessage() + "\nAttempting alternate path...");
 	    		
-	    		executeScript("bin" + File.separator + path);
+	    		return executeScript("bin" + File.separator + path);
 	    	}
-	    	else
-	    	{
-	    		System.err.println(e.toString());
-	    	}
+	    	/*<END HACK>*/
+	    	
+	    	System.err.println(e.toString());
 	    }
+	    
+	    return null;
 	}
 	
 	protected void closeChat(String chan)
@@ -308,14 +344,15 @@ public class Manager
 		
 		if (!plugins.isEmpty())
 		{
-			String output;
+			String[] output;
 			
 			for (int i = 0; i < plugins.size(); ++i)
 			{
-				output = plugins.get(i).processMessage(rawIn, chan);
+				output = plugins.get(i).processInput(rawIn, chan);
 				
 				if (output != null)
-					s.sendData(output);
+					for (int j = 0; j < output.length; ++j)
+						s.sendData(output[j]);
 			}
 		}
 

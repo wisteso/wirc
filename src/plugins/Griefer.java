@@ -15,7 +15,7 @@ public class Griefer implements Plugin
 	public static final String ID = "griefing tools plug-in";
 	public static final double VERSION = 0.1;
 	
-	public String processMessage(String input, String channel)
+	public String[] processInput(String input, String channel)
 	{
 		if (input.toUpperCase().indexOf("GRIEF ") > -1)
 		{
@@ -26,15 +26,22 @@ public class Griefer implements Plugin
 			if (input.indexOf(" ", nickIndex) > -1)
 			{
 				String chan = " #GTFO_" + nick + "_";
-			
-				return("SAJOIN " + nick + chan);
+				
+				String[] t = {"SAJOIN " + nick + chan};
+				
+				return(t);
 			}
 		}
 		
 		return null;
 	}
 	
-	public String onLoad()
+	public String[] processOutput(String output)
+	{
+		return null;
+	}
+	
+	public String[] onLoad()
 	{
 		return null;
 	}

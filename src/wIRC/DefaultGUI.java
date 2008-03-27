@@ -18,84 +18,84 @@ import wIRC.interfaces.UserInput;
  */
 public class DefaultGUI implements UserInput, ActionListener, MouseListener
 {
-    protected static final String INPUTBOX = "INPUTBOX";
-    protected static final String OUTPUTBOX = "OUTPUTBOX";
-    protected static final String SENDBUTTON = "SENDBUTTON";
-    
-    private final DefaultGUI me = this;
-    private Manager m;
-    
-    private ImageIcon icon;
-    private String title;
-    
-    private JFrame frame;
-    private Container mainPane;
-    private JTabbedPane tabs;
-    private JButton sendButton;
-    private JTextField txtOut;
-    private JPanel inputPane;
-    
-    private TreeMap<String, JEditorPane> tabList = new TreeMap<String, JEditorPane>();
-    private TreeMap<String, SortedListModel> usrList = new TreeMap<String, SortedListModel>();
-    
-    private boolean isReading = false;
-    private static boolean constInit = false;
+	protected static final String INPUTBOX = "INPUTBOX";
+	protected static final String OUTPUTBOX = "OUTPUTBOX";
+	protected static final String SENDBUTTON = "SENDBUTTON";
 	
-    public DefaultGUI(String server, Manager m)
+	private final DefaultGUI me = this;
+	private Manager m;
+	
+	private ImageIcon icon;
+	private String title;
+	
+	private JFrame frame;
+	private Container mainPane;
+	private JTabbedPane tabs;
+	private JButton sendButton;
+	private JTextField txtOut;
+	private JPanel inputPane;
+	
+	private TreeMap<String, JEditorPane> tabList = new TreeMap<String, JEditorPane>();
+	private TreeMap<String, SortedListModel> usrList = new TreeMap<String, SortedListModel>();
+	
+	private boolean isReading = false;
+	private static boolean constInit = false;
+	
+	public DefaultGUI(String server, Manager m)
 	{	
-    	if (!constInit)
-    		initResources();
-    	
-    	this.m = m;
+		if (!constInit)
+			initResources();
+		
+		this.m = m;
 		
 		this.title = "wIRC - " + server;
 		
 		SwingUtilities.invokeLater(new Runnable()
 		{
-		    public void run()
-		    {
-		        createAndShowGUI();
-		    }
+			public void run()
+			{
+				createAndShowGUI();
+			}
 		});
 	}
-    
+	
 	public void createAndShowGUI()
 	{	
 		icon = new ImageIcon(this.getClass().getClassLoader().getResource("wIRC/img/main_icon_16.png"));
 		
-        frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(325, 280));
-        frame.setIconImage(icon.getImage());
-        frame.addWindowListener(new WindowAdapter()
+		frame = new JFrame(title);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);	
+		frame.setMinimumSize(new Dimension(325, 280));
+		frame.setIconImage(icon.getImage());
+		frame.addWindowListener(new WindowAdapter()
 		{
-		    public void windowClosing(WindowEvent e)
-		    {
-		    	frame.dispose();
+			public void windowClosing(WindowEvent e)
+			{
+				frame.dispose();
 				
 				m.sendData("QUIT :program terminated");
 				
 				m.disconnect("user termination");
-		    }
-	    });
-        
-        txtOut = new JTextField();
-        txtOut.setActionCommand(OUTPUTBOX);
-        txtOut.addActionListener(this);
-        
-        sendButton = new JButton();
+			}
+		});
+		
+		txtOut = new JTextField();
+		txtOut.setActionCommand(OUTPUTBOX);
+		txtOut.addActionListener(this);
+		
+		sendButton = new JButton();
 		sendButton.setMaximumSize(new Dimension(75, 25));
 		sendButton.setMinimumSize(new Dimension(75, 25));
 		sendButton.setText("SEND");
 		sendButton.setActionCommand(SENDBUTTON);
 		sendButton.addActionListener(this);
-        
-        inputPane = new JPanel();
-        inputPane.setLayout(new BorderLayout());
-        inputPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        inputPane.add(txtOut, BorderLayout.CENTER);
+		
+		inputPane = new JPanel();
+		inputPane.setLayout(new BorderLayout());
+		inputPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+		inputPane.add(txtOut, BorderLayout.CENTER);
 		inputPane.add(sendButton, BorderLayout.LINE_END);
-        
+		
 		tabs = new JTabbedPane();
 		tabs.setPreferredSize(new Dimension(600, 400));
 		tabs.addMouseListener(new MouseAdapter()
@@ -119,12 +119,12 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		
 		Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		
-        frame.pack();
-        frame.setLocation((screen.width / 2 - frame.getWidth() / 2), (screen.height / 2 - frame.getHeight() / 2));
-        frame.setVisible(true);
-        frame.toFront();
-        
-        txtOut.requestFocus();
+		frame.pack();
+		frame.setLocation((screen.width / 2 - frame.getWidth() / 2), (screen.height / 2 - frame.getHeight() / 2));
+		frame.setVisible(true);
+		frame.toFront();
+		
+		txtOut.requestFocus();
 	}
 	
 	public String askQuestion(final String query, final String defaultAnswer)
@@ -135,13 +135,13 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		{
 			SwingUtilities.invokeAndWait(new Runnable()
 			{
-			    public void run()
-			    {
-			    	String ans = JOptionPane.showInputDialog(query, defaultAnswer);
-			    	
-			    	if (ans != null) 
-			    		answer.append(ans);
-			    }
+				public void run()
+				{
+					String ans = JOptionPane.showInputDialog(query, defaultAnswer);
+					
+					if (ans != null) 
+						answer.append(ans);
+				}
 			});
 		}
 		catch (Exception e)
@@ -171,10 +171,10 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	{
 		SwingUtilities.invokeLater(new Runnable()
 		{
-		    public void run()
-		    {
-		    	tabs.setSelectedIndex(tabs.indexOfTab(title));
-		    }
+			public void run()
+			{
+				tabs.setSelectedIndex(tabs.indexOfTab(title));
+			}
 		});
 	}
 	
@@ -187,104 +187,103 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			
 			SwingUtilities.invokeLater(new Runnable()
 			{
-			    public void run()
-			    {
+				public void run()
+				{
 					t1.setContentType("text/rtf");
 					t1.setFont(new Font("Arial", Font.PLAIN, 10));
 					t1.setEditable(false);
 					t1.addMouseListener(me);
 						
-			        JScrollPane t2 = new JScrollPane(t1);
-			        t2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			        t2.getVerticalScrollBar().addMouseListener(me);
-			        
-			        if (title.charAt(0) == '#')
-			        {
-			            JList t4 = new JList(t3);
-			            t4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			            t4.setSelectedIndex(0);
-			            t4.addMouseListener(new MouseAdapter()
-			    		{
-			    			public void mouseClicked(MouseEvent e)
-			    			{
-			    	            if (e.getClickCount() == 2)
-			    	            {
-			    	            	JList list = (JList)e.getSource();
-			    	            	
-			    	            	String t = list.getSelectedValue().toString();
-			    	            	//t = list.getModel().getElementAt(list.locationToIndex(e.getPoint()));
-			    	            	
-			    	            	char firstChar = t.charAt(0);
-			    	            	
-			    	            	if (firstChar == '@' || firstChar == '+' || firstChar == '%')
-			    	            		t = t.substring(1);
-			    	            	
-			    	            	Object[] temp = addChat(t);
-			    	    			
-			    	    			if (temp == null)
-			    	    				return;
-			    	    			
-			    	    			JEditorPane tp = (JEditorPane)temp[0];
-			    	    			
-			    	    			tabList.put(t.toLowerCase(), tp);
-			    	    			
-			    	    			if (temp.length > 1)
-			    	    			{
-			    	    				SortedListModel tl = (SortedListModel)temp[1];
-			    	    				
-			    	    				tl.update();
-			    	    				
-			    	    				usrList.put(t.toLowerCase(), tl);
-			    	    			}
-			    	                
-			    	                focusChat(t);
-			    	            }
-			    			}
-			    		});
-			            
-			            JScrollPane t5 = new JScrollPane(t4);
-			            t5.setPreferredSize(new Dimension(100, -1));
-			            t5.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			            
-			            JPanel t6 = new JPanel();
-			            t6.setLayout(new BorderLayout());
-			            t6.add(t2, BorderLayout.CENTER);
-			        	t6.add(t5, BorderLayout.LINE_END);
-			        	t6.setBorder(BorderFactory.createCompoundBorder(
-			                	BorderFactory.createCompoundBorder(
-			                			BorderFactory.createTitledBorder("Data IN"),
-			                		BorderFactory.createEmptyBorder(0, 5, 5, 5)),
-			                		t6.getBorder()));
-			        	
-			        	tabs.addTab(title, t6);     	
-			        }
-			        else
-			        {
-			        	t2.setBorder(BorderFactory.createCompoundBorder(
-			                	BorderFactory.createCompoundBorder(
-			                			BorderFactory.createTitledBorder("Data IN"),
-			                		BorderFactory.createEmptyBorder(0, 5, 5, 5)),
-			                		t2.getBorder()));
-			        	
-			        	tabs.addTab(title, t2);
-			        }
-			    }
+					JScrollPane t2 = new JScrollPane(t1);
+					t2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+					t2.getVerticalScrollBar().addMouseListener(me);
+					
+					if (title.charAt(0) == '#')
+					{
+						JList t4 = new JList(t3);
+						t4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+						t4.setSelectedIndex(0);
+						t4.addMouseListener(new MouseAdapter()
+						{
+							public void mouseClicked(MouseEvent e)
+							{
+								if (e.getClickCount() == 2)
+								{
+									JList list = (JList)e.getSource();
+									
+									String t = list.getSelectedValue().toString();
+									
+									char firstChar = t.charAt(0);
+									
+									if (firstChar == '@' || firstChar == '+' || firstChar == '%')
+										t = t.substring(1);
+									
+									Object[] temp = addChat(t);
+									
+									if (temp == null)
+										return;
+									
+									JEditorPane tp = (JEditorPane)temp[0];
+									
+									tabList.put(t.toLowerCase(), tp);
+									
+									if (temp.length > 1)
+									{
+										SortedListModel tl = (SortedListModel)temp[1];
+										
+										tl.update();
+										
+										usrList.put(t.toLowerCase(), tl);
+									}
+									
+									focusChat(t);
+								}
+							}
+						});
+						
+						JScrollPane t5 = new JScrollPane(t4);
+						t5.setPreferredSize(new Dimension(100, -1));
+						t5.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+						
+						JPanel t6 = new JPanel();
+						t6.setLayout(new BorderLayout());
+						t6.add(t2, BorderLayout.CENTER);
+						t6.add(t5, BorderLayout.LINE_END);
+						t6.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createCompoundBorder(
+								BorderFactory.createTitledBorder("Data IN"),
+								BorderFactory.createEmptyBorder(0, 5, 5, 5)),
+								t6.getBorder()));
+						
+						tabs.addTab(title, t6);
+					}
+					else
+					{
+						t2.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createCompoundBorder(
+								BorderFactory.createTitledBorder("Data IN"),
+								BorderFactory.createEmptyBorder(0, 5, 5, 5)),
+								t2.getBorder()));
+						
+						tabs.addTab(title, t2);
+					}
+				}
 			});
-	        
-	        if (title.charAt(0) == '#')
-	        {
-	        	Object[] x = {t1, t3};
-	        	
-	        	return x;
-	        }
-	        else
-	        {
-	        	Object[] x = {t1};
-	        	
-	        	return x;
-	        }
+			
+			if (title.charAt(0) == '#')
+			{
+				Object[] x = {t1, t3};
+				
+				return x;
+			}
+			else
+			{
+				Object[] x = {t1};
+				
+				return x;
+			}
 		}
-        
+		
 		return null;
 	}
 	
@@ -296,12 +295,12 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
-			    public void run()
-			    {
+				public void run()
+				{
 					tabList.remove(title.toLowerCase());
 					usrList.remove(title.toLowerCase());
 					tabs.remove(x);
-			    }
+				}
 			});
 			
 			return true;
@@ -315,25 +314,25 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 	public void actionPerformed(ActionEvent e) 
 	{
-        if (OUTPUTBOX.equals(e.getActionCommand())) 
-        {
-        	if (txtOut.getText().length() > 0)
-        	{
-        		m.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
-            	
-                txtOut.setText("");
-        	}
-        }
-        else if (SENDBUTTON.equals(e.getActionCommand())) 
-        {   
-        	if (txtOut.getText().length() > 0)
-        	{
-        		m.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
-            	
-                txtOut.setText("");
-        	}
-        }
-    }
+		if (OUTPUTBOX.equals(e.getActionCommand())) 
+		{
+			if (txtOut.getText().length() > 0)
+			{
+				m.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
+				
+				txtOut.setText("");
+			}
+		}
+		else if (SENDBUTTON.equals(e.getActionCommand())) 
+		{   
+			if (txtOut.getText().length() > 0)
+			{
+				m.sendMsg(txtOut.getText(), tabs.getTitleAt(tabs.getSelectedIndex()));
+				
+				txtOut.setText("");
+			}
+		}
+	}
 	
 //	OUTPUT CONSTANTS/METHODS
 	
@@ -394,7 +393,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	}
 	
 	public synchronized void print(final String input, String channel, int style)
-	{	
+	{
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{
 			Object[] temp = addChat(channel);
@@ -415,7 +414,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				usrList.put(channel.toLowerCase(), tl);
 			}
 		}
-					
+		
 		final JEditorPane p = tabList.get(channel.toLowerCase());
 		
 		final SimpleAttributeSet styling;
@@ -439,9 +438,9 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		
 		SwingUtilities.invokeLater(new Runnable()
 		{
-		    public void run()
-		    {
-		    	try
+			public void run()
+			{
+				try
 				{
 					p.getDocument().insertString(p.getDocument().getLength(), input, styling);
 				}
@@ -454,7 +453,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				{
 					p.setCaretPosition(p.getDocument().getLength());
 				}
-		    }
+			}
 		});
 	}
 	

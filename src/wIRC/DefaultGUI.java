@@ -127,7 +127,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
         txtOut.requestFocus();
 	}
 	
-	public synchronized String askQuestion(final String query, final String defaultAnswer)
+	public String askQuestion(final String query, final String defaultAnswer)
 	{
 		final StringBuilder answer = new StringBuilder();
 		

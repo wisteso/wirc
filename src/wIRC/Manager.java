@@ -1,5 +1,6 @@
 package wIRC;
 import java.io.File;
+import java.io.*;
 import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.ArrayList;
@@ -39,12 +40,26 @@ public class Manager
 		window.println("(SYSTEM) Requesting login info...", C.GREEN);
 	}
 	
-	public boolean initialize(boolean askAll)
+	public boolean initialize(boolean askAll) throws Exception
 	{
 		if (askAll)
 		{
-			nickName = window.askQuestion("Enter your nick-name:", nickName);
+			try{
+				Scanner in = new Scanner(new File("un"));
+				nickName = in.next();
+			}
+			catch(Exception e){
+				nickName = window.askQuestion("Enter your nick-name:", nickName);
+				try{
+					BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File ("un")));
+					bufferedOut.write(nickName.getBytes());
+					bufferedOut.close();
+				}
+				catch(Exception f){
+					System.out.println("couldn't write nickname file");
+				}
 			
+			}
 			if (nickName == null)
 				return false;
 	
@@ -478,6 +493,14 @@ public class Manager
 					nickName = msg;
 					window.replaceNick(x.getNick(), msg);
 					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), C.BLUE);
+					try{
+						BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File ("un")));
+						bufferedOut.write(nickName.getBytes());
+						bufferedOut.close();
+					}
+					catch(Exception f){
+						System.out.println("couldn't write nickname file");
+					}
 				}
 				else
 				{

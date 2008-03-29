@@ -45,13 +45,13 @@ public class Manager
 		if (askAll)
 		{
 			try{
-				Scanner in = new Scanner(new File("un"));
+				Scanner in = new Scanner(new File(s.homePath + "/.un"));
 				nickName = in.next();
 			}
 			catch(Exception e){
 				nickName = window.askQuestion("Enter your nick-name:", nickName);
 				try{
-					BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File ("un")));
+					BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File (s.homePath + "/.un")));
 					bufferedOut.write(nickName.getBytes());
 					bufferedOut.close();
 				}
@@ -494,7 +494,7 @@ public class Manager
 					window.replaceNick(x.getNick(), msg);
 					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), C.BLUE);
 					try{
-						BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File ("un")));
+						BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File (s.homePath + "/.un")));
 						bufferedOut.write(nickName.getBytes());
 						bufferedOut.close();
 					}

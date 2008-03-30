@@ -14,8 +14,6 @@ import javax.swing.UIManager;
  */
 public class IRCSocket
 {
-	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
-	
 	private Socket sock = null;
 	private PrintWriter out = null;
 	private BufferedReader in = null;
@@ -31,18 +29,6 @@ public class IRCSocket
 	
 	public IRCSocket()
 	{	
-		if (!homePath.isDirectory())
-		{
-			if (homePath.mkdir() == false)
-				System.err.println("Unable to create user folder.");
-			else
-				System.out.println("User folder created.");
-		}
-		else
-		{
-			System.out.println("Using existing user folder.");
-		}
-		
 		try 
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

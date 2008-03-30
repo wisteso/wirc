@@ -1,5 +1,4 @@
 package wIRC;
-import java.io.File;
 import java.io.*;
 import java.util.Calendar;
 import java.util.TreeMap;
@@ -20,10 +19,14 @@ import wIRC.interfaces.*;
  */
 public class Manager 
 {
+	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
+	
 	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected String realName = "Anonymous";
 	protected String userInfo = "No info set.";
 	protected String hostName = "st0rage.org";
+	
+	protected File profile = new File(homePath + C.PSLASH + "profiles" + C.PSLASH + "last");
 	
 	protected TreeMap<String, User> users = new TreeMap<String, User>();
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
@@ -35,7 +38,19 @@ public class Manager
 	{
 		this.s = s;
 		
-		window.println("(SYSTEM) Home path: " + s.homePath, C.BLUEGRAY);
+		if (!homePath.isDirectory())
+		{
+			if (homePath.mkdir() == false)
+				System.err.println("Unable to create user folder.");
+			else
+				System.out.println("User folder created.");
+		}
+		else
+		{
+			System.out.println("Using existing user folder.");
+		}
+		
+		window.println("(SYSTEM) Home path: " + homePath, C.BLUEGRAY);
 		
 		window.println("(SYSTEM) Requesting login info...", C.GREEN);
 	}
@@ -44,15 +59,12 @@ public class Manager
 	{
 		if (askAll)
 		{	
-			String[] folders = {"profiles", "scripts", "plugins"};
-			boolean writeable = checkFolders(folders);
-			
 			// TODO: Add a profile selection query.
-			File file = new File(s.homePath + C.PSLASH + "profiles" + C.PSLASH + "last");
+			//File profile = new File(homePath + C.PSLASH + "profiles" + C.PSLASH + queryResult);
 			
 			try
 			{
-				Scanner in = new Scanner(file);
+				Scanner in = new Scanner(profile);
 				
 				nickName = in.nextLine().trim();
 				realName = in.nextLine().trim();
@@ -75,27 +87,7 @@ public class Manager
 				if (hostName == null)
 					return false;
 				
-				if (writeable)
-				{
-					try
-					{
-						if (!file.isFile() && !file.createNewFile())
-							System.err.println("couldn't create profile");
-						
-						BufferedOutputStream out = 
-							new BufferedOutputStream(new FileOutputStream(file));
-						
-						out.write((nickName + "\n").getBytes());
-						out.write((realName + "\n").getBytes());
-						out.write((hostName + "\n").getBytes());
-						
-						out.close();
-					}
-					catch(Exception f)
-					{
-						System.err.println("couldn't write profile " + f.getMessage());
-					}
-				}
+				writeProfile(profile);
 			}
 		}
 		else
@@ -104,11 +96,45 @@ public class Manager
 			
 			if (hostName == null)
 				return false;
+			
+			writeProfile(profile);
 		}
 		
 		window.setServerInfo(hostName);
 		
 		return true;
+	}
+	
+	protected boolean writeProfile(File outputProfile)
+	{
+		String[] folders = {"profiles", "scripts", "plugins"};
+		boolean writeable = checkFolders(folders);
+		
+		if (writeable)
+		{
+			try
+			{
+				if (!outputProfile.isFile() && !outputProfile.createNewFile())
+					System.err.println("couldn't create profile");
+				
+				BufferedOutputStream out = 
+					new BufferedOutputStream(new FileOutputStream(outputProfile));
+				
+				out.write((nickName + "\n").getBytes());
+				out.write((realName + "\n").getBytes());
+				out.write((hostName + "\n").getBytes());
+				
+				out.close();
+				
+				return true;
+			}
+			catch(Exception f)
+			{
+				System.err.println("couldn't write profile: " + f.getMessage());
+			}
+		}
+		
+		return false;
 	}
 	
 	private boolean checkFolders(String[] folders)
@@ -117,7 +143,7 @@ public class Manager
 		
 		for (int i = 0; i < folders.length; ++i)
 		{
-			temp = new File(s.homePath + C.PSLASH + folders[i]);
+			temp = new File(homePath + C.PSLASH + folders[i]);
 			
 			if (!temp.isDirectory() && !temp.mkdir())
 				return false;
@@ -243,7 +269,7 @@ public class Manager
 				if (input.startsWith("http://"))
 					pluginPath = input;
 				else
-					pluginPath = s.homePath + C.PSLASH + "plugins" + C.PSLASH + input;
+					pluginPath = homePath + C.PSLASH + "plugins" + C.PSLASH + input;
 				
 				if (!pluginPath.endsWith(".class"))
 					pluginPath += ".class";
@@ -266,7 +292,7 @@ public class Manager
 				if (input.startsWith("http://"))
 					scriptPath = input;
 				else
-					scriptPath = s.homePath + C.PSLASH + "scripts" + C.PSLASH + input;
+					scriptPath = homePath + C.PSLASH + "scripts" + C.PSLASH + input;
 				
 				if (!scriptPath.endsWith(".script"))
 					scriptPath += ".script";
@@ -533,14 +559,8 @@ public class Manager
 					nickName = msg;
 					window.replaceNick(x.getNick(), msg);
 					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), C.BLUE);
-					try{
-						BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File (s.homePath + "/.un")));
-						bufferedOut.write(nickName.getBytes());
-						bufferedOut.close();
-					}
-					catch(Exception f){
-						System.out.println("couldn't write nickname file");
-					}
+					
+					writeProfile(profile);
 				}
 				else
 				{

@@ -26,12 +26,14 @@ public class Manager
 	
 	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
 	
+	protected File profile;
+	
 	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected String realName = "Anonymous";
 	protected String userInfo = "No info set.";
 	protected String hostName = "st0rage.org";
-	
-	protected File profile = new File(homePath + C.PSLASH + "profiles" + C.PSLASH + "last");
+
+	protected String[] struct = {"profiles", "scripts", "plugins"};
 	
 	protected TreeMap<String, User> users = new TreeMap<String, User>();
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
@@ -64,8 +66,12 @@ public class Manager
 	{
 		if (askAll)
 		{	
-			// TODO: Add a profile selection query.
-			//File profile = new File(homePath + C.PSLASH + "profiles" + C.PSLASH + queryResult);
+			String prfl = window.askQuestion("Enter the new or existing profile to use:", "default");
+			
+			if (prfl == null)
+				profile = null;
+			else
+				profile = new File(homePath + C.PSLASH + "profiles" + C.PSLASH + prfl);
 			
 			try
 			{
@@ -112,8 +118,7 @@ public class Manager
 	
 	protected boolean writeProfile(File outputProfile)
 	{
-		String[] folders = {"profiles", "scripts", "plugins"};
-		boolean writeable = checkFolders(folders);
+		boolean writeable = checkFolders(struct) && profile != null;
 		
 		if (writeable)
 		{
@@ -690,6 +695,8 @@ public class Manager
 				{
 					SortedListModel l = window.getNickList(x.getChannel());
 					
+					ArrayList<String> tList = new ArrayList<String>();
+					
 					if (l == null) return;
 					
 					String t = new String();
@@ -702,7 +709,7 @@ public class Manager
 						}
 						else if (t.length() > 1)
 						{
-							l.add(t);
+							tList.add(t);
 							
 							if (!users.containsKey(t))
 								users.put(t, new User(t, null, x.getChannel()));
@@ -717,7 +724,11 @@ public class Manager
 							t = new String();
 						}
 					}
-					l.add(t);
+					
+					tList.add(t);
+					
+					l.add(tList.toArray(new String[tList.size()]));
+					
 					if (!users.containsKey(t))
 						users.put(t, new User(t, null, x.getChannel()));
 					else

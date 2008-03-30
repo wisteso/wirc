@@ -30,6 +30,30 @@ public class SortedListModel extends AbstractListModel
     	fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, list.size() - 1);
     }
     
+    public void add(Object[] o)
+    {
+    	for (int i = 0; i < o.length; ++i)
+    	{
+    		if (o[i].toString().length() > 0)
+    			list.add(new StringIRC(o[i].toString()));
+    		
+    		if (i % 50 == 0)
+    		{
+    			Collections.sort(list);
+    	    	
+    	    	fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, list.size() - 1);
+    	    	
+    	    	fireIntervalAdded(this, 0, list.size() - 1);
+    		}
+    	}
+    	
+    	Collections.sort(list);
+    	
+    	fireContentsChanged(ListDataEvent.CONTENTS_CHANGED, 0, list.size() - 1);
+    	
+    	fireIntervalAdded(this, 0, list.size() - 1);
+    }
+    
     public void add(Object o)
     {
     	if (o.toString().length() < 1)

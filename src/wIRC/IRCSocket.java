@@ -128,7 +128,7 @@ public class IRCSocket
 				mode = -1;
 			}
 			
-			System.out.println("Connection closed: " + reason);
+			m.printDebugMsg("Connection closed: " + reason);
 			
 			try
 			{
@@ -138,7 +138,7 @@ public class IRCSocket
 			} 
 			catch (IOException e)
 			{
-				System.err.println("SHUTDOWN ERROR: " + e.toString());
+				m.printDebugMsg("SHUTDOWN ERROR: " + e.toString());
 			}
 		}
 	}

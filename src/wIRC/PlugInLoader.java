@@ -16,6 +16,13 @@ import java.util.ArrayList;
  */
 public class PlugInLoader extends ClassLoader
 {
+	private Manager m;
+	
+	public PlugInLoader(Manager m)
+	{
+		this.m = m;
+	}
+	
 	public Class<?> findClass(String name)
 	{
 	    byte[] b = loadClassData(name);
@@ -31,7 +38,7 @@ public class PlugInLoader extends ClassLoader
 	    	}
 	    	catch (Exception e)
 	    	{
-	    		System.err.println(e.toString());
+	    		m.printDebugMsg(e.toString());
 	    	}
 	    }
 	    
@@ -71,11 +78,11 @@ public class PlugInLoader extends ClassLoader
 		}
 		catch (java.io.FileNotFoundException e)
 		{
-			System.err.println(e.getMessage());
+			m.printDebugMsg(e.getMessage());
 		}
 		catch (Exception e)
 		{
-			System.err.println(e.toString());
+			m.printDebugMsg(e.toString());
 		}
 		
 		return null;

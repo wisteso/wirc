@@ -307,7 +307,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		}
 		
 		if (x != 0)
-			System.err.println("Tab does not exist.");
+			m.printDebugMsg("Tab does not exist.");
 		
 		return false;
 	}
@@ -446,7 +446,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				}
 				catch (Exception e)
 				{
-					System.err.println(e.toString());
+					m.printDebugMsg(e.toString());
 				}
 				
 				if (!isReading)
@@ -472,7 +472,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			}
 		}
 		else
-			System.err.println("ListModel not found to add nick: " + channel);
+			m.printDebugMsg("ListModel not found to add nick: " + channel);
 	}
 	
 	public synchronized void removeNicks(String channel, String... nicks)
@@ -490,11 +490,11 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				if (i > -1)
 					l.remove(i);
 				else
-					System.err.println(nicks[x] + " not found in ListModel.");
+					m.printDebugMsg(nicks[x] + " not found in ListModel.");
 			}
 		}
 		else
-			System.err.println("Chan not found to remove nick: " + channel);
+			m.printDebugMsg("Chan not found to remove nick: " + channel);
 	}
 	
 	public synchronized void removeNick(String nick)
@@ -521,7 +521,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 					if (newNick != null) l.add(newNick);
 				}
 				else
-					System.err.println(oldNick + " not found in ListModel.");
+					m.printDebugMsg(oldNick + " not found in ListModel.");
 			}
 		}
 	}

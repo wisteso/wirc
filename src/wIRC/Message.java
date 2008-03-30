@@ -35,7 +35,7 @@ public class Message
 				}
 			}
 			else
-				System.err.println("Unhandled header: " + rawData);
+				m.printDebugMsg("Unhandled header: " + rawData);
 		}
 		else
 		{
@@ -176,7 +176,7 @@ public class Message
 				{
 					message = rawMsg.trim();
 					nickname = "UNKNOWN";
-					System.out.println("Bad mode: " + rawData);
+					m.printDebugMsg("Bad mode: " + rawData);
 				}
 			}
 			else if (command.indexOf("NICK") == 0)
@@ -200,7 +200,7 @@ public class Message
 			}
 			else
 			{
-				System.err.println("Unhandled textual header: " + command);
+				m.printDebugMsg("Unhandled textual header: " + command);
 				message = rawMsg;
 			}
 		}

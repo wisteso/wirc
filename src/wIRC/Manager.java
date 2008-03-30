@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.text.DateFormat;
 import SortedListModel.*;
 import wIRC.interfaces.*;
 
@@ -19,6 +20,10 @@ import wIRC.interfaces.*;
  */
 public class Manager 
 {
+	private boolean debug = false;
+	
+	protected DateFormat time = new java.text.SimpleDateFormat("HH:mm:ss");
+	
 	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
 	
 	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
@@ -41,13 +46,13 @@ public class Manager
 		if (!homePath.isDirectory())
 		{
 			if (homePath.mkdir() == false)
-				System.err.println("Unable to create user folder.");
+				printDebugMsg("Unable to create user folder.");
 			else
-				System.out.println("User folder created.");
+				printDebugMsg("User folder created.");
 		}
 		else
 		{
-			System.out.println("Using existing user folder.");
+			printDebugMsg("Using existing user folder.");
 		}
 		
 		window.println("(SYSTEM) Home path: " + homePath, C.BLUEGRAY);
@@ -55,7 +60,7 @@ public class Manager
 		window.println("(SYSTEM) Requesting login info...", C.GREEN);
 	}
 	
-	public boolean initialize(boolean askAll)
+	protected boolean initialize(boolean askAll)
 	{
 		if (askAll)
 		{	
@@ -115,7 +120,7 @@ public class Manager
 			try
 			{
 				if (!outputProfile.isFile() && !outputProfile.createNewFile())
-					System.err.println("couldn't create profile");
+					printDebugMsg("couldn't create profile");
 				
 				BufferedOutputStream out = 
 					new BufferedOutputStream(new FileOutputStream(outputProfile));
@@ -130,14 +135,14 @@ public class Manager
 			}
 			catch(Exception f)
 			{
-				System.err.println("couldn't write profile: " + f.getMessage());
+				printDebugMsg("couldn't write profile: " + f.getMessage());
 			}
 		}
 		
 		return false;
 	}
 	
-	private boolean checkFolders(String[] folders)
+	protected boolean checkFolders(String[] folders)
 	{
 		File temp;
 		
@@ -169,8 +174,29 @@ public class Manager
 		window.println("(SYSTEM) " + msg, style);
 	}
 	
+	protected void printDebugMsg(String msg)
+	{
+		if (debug)
+		{
+			String timeStamp = time.format(new java.util.Date());
+	        
+			window.println("(ERROR) [" + timeStamp + "] " + msg, "\002ERROR\003", C.RED);
+			//System.err.println(msg);
+		}
+	}
+	
 	protected void sendMsg(String msg, String chanName)
 	{
+		String chan = chanName.toLowerCase();
+		
+		if (chanName.equals("\002ERROR\003"))
+		{
+			if (msg.toUpperCase().startsWith("/PART %ERR"))
+				debug = false;
+			
+			return;
+		}
+		
 		if (msg.charAt(0) == '/')
 		{
 			String command = new String();
@@ -205,7 +231,7 @@ public class Manager
 				}
 			}
 			else if (command.equals("JOIN"))
-			{
+			{				
 				if (spaceIndex > -1)
 					s.sendData(msg.substring(1));
 				else if (!chanName.equals("Console"))
@@ -225,7 +251,7 @@ public class Manager
 				}
 			}
 			else if (command.equals("PART"))
-			{
+			{	
 				if (spaceIndex > -1)
 					closeChat(msg.substring(spaceIndex + 1));
 				else if (!chanName.equals("Console"))
@@ -238,29 +264,29 @@ public class Manager
 			else if (command.equals("RECONNECT"))
 			{
 				s.disconnect("reconnecting");
-				window.println("\n(SYSTEM) Reconnecting...", chanName.toLowerCase(), C.ORANGE);
+				window.println("\n(SYSTEM) Reconnecting...", chan, C.ORANGE);
 			}
 			else if (command.equals("DISCONNECT"))
 			{
 				s.disconnect("user termination");
-				window.println("(SYSTEM) Disconnecting...", chanName.toLowerCase(), C.ORANGE);
+				window.println("(SYSTEM) Disconnecting...", chan, C.ORANGE);
 			}
 			else if (command.equals("SLOAD"))
 			{
-				window.println("(SYSTEM) Loading plugin (strict)...", chanName.toLowerCase(), C.BLUE);
+				window.println("(SYSTEM) Loading plugin (strict)...", chan, C.BLUE);
 				
 				String pluginPath = msg.substring(spaceIndex + 1).trim();
 				
 				String pluginName = loadPlugin(pluginPath);
 				
 				if (pluginName != null)
-					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) " + pluginName + " loaded.", chan, C.BLUE);
 				else
-					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, C.BLUE);
 			}
 			else if (command.equals("LOAD"))
 			{
-				window.println("(SYSTEM) Loading plugin...", chanName.toLowerCase(), C.BLUE);
+				window.println("(SYSTEM) Loading plugin...", chan, C.BLUE);
 				
 				String input = msg.substring(spaceIndex + 1).trim();
 				
@@ -277,13 +303,13 @@ public class Manager
 				String pluginName = loadPlugin(pluginPath);
 				
 				if (pluginName != null)
-					window.println("(SYSTEM) " + pluginName + " loaded.", chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) " + pluginName + " loaded.", chan, C.BLUE);
 				else
-					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, C.BLUE);
 			}
 			else if (command.equals("SCRIPT"))
 			{
-				window.println("(SYSTEM) Executing script...", chanName.toLowerCase(), C.BLUE);
+				window.println("(SYSTEM) Executing script...", chan, C.BLUE);
 				
 				String input = msg.substring(spaceIndex + 1).trim();
 				
@@ -300,9 +326,24 @@ public class Manager
 				String scriptName = executeScript(scriptPath);
 				
 				if (scriptName != null)
-					window.println("(SYSTEM) " + scriptName + " finished.", chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) " + scriptName + " finished.", chan, C.BLUE);
 				else
-					window.println("(SYSTEM) Script loading failed - path: " + scriptPath, chanName.toLowerCase(), C.BLUE);
+					window.println("(SYSTEM) Script loading failed - path: " + scriptPath, chan, C.BLUE);
+			}
+			else if (command.equals("DEBUG"))
+			{
+				if (debug)
+				{
+					debug = false;
+					window.println("(SYSTEM) Debug output OFF.", chan, C.ORANGE);
+				}
+				else
+				{
+					debug = true;
+					window.println("(SYSTEM) Debug output ON.", chan, C.ORANGE);
+				}
+				
+				return;
 			}
 			else
 				s.sendData(msg.substring(1));
@@ -312,15 +353,15 @@ public class Manager
 			if (!chanName.equals("Console"))
 			{
 				s.sendData("PRIVMSG " + chanName + " :" + msg);
-				window.println("<" + nickName + "> ", chanName.toLowerCase(), C.BLUE_BOLD);
-				window.print(msg, chanName.toLowerCase(), C.BLACK);
+				window.println("<" + nickName + "> ", chan, C.BLUE_BOLD);
+				window.print(msg, chan, C.BLACK);
 			}
 		}
 	}
 	
 	protected String loadPlugin(String path)
 	{
-	    PlugInLoader l = new PlugInLoader();
+	    PlugInLoader l = new PlugInLoader(this);
 	    
 	    try
 	    {
@@ -349,17 +390,8 @@ public class Manager
 	    	e.printStackTrace();
 	    }
 	    catch (Exception e)
-	    {
-	    	/*<HACK>*
-	    	if (!path.startsWith("bin" + File.separator))
-	    	{
-	    		System.err.println("Attempting alternate path...");
-	    		
-	    		return loadPlugin("bin" + File.separator + path);
-	    	}
-	    	*<END HACK>*/
-	    	
-	    	System.err.println(e.toString());
+	    {	
+	    	printDebugMsg(e.toString());
 	    }
 	    
 	    return null;
@@ -383,16 +415,7 @@ public class Manager
 	    }
 	    catch (Exception e)
 	    {
-	    	/*<HACK>*
-	    	if (!path.startsWith("bin" + File.separator))
-	    	{
-	    		System.err.println(e.getMessage() + "\nAttempting alternate path...");
-	    		
-	    		return executeScript("bin" + File.separator + path);
-	    	}
-	    	*<END HACK>*/
-	    	
-	    	System.err.println(e.toString());
+	    	printDebugMsg(e.toString());
 	    }
 	    
 	    return null;
@@ -508,13 +531,13 @@ public class Manager
 						window.removeNicks(chan, x.getNick());
 						
 						if (!removeUser(x.getNick()))
-							System.err.println(x.getNick() + " not found in user-treemap. (PART)");
+							printDebugMsg(x.getNick() + " not found in user-treemap. (PART)");
 					}
 				}
 				else
 				{
-					System.err.println(x.getNick() + " cannot be removed from the Console. (PART)");
-					System.err.println(x.getMessage() + " | " + rawIn);
+					printDebugMsg(x.getNick() + " cannot be removed from the Console. (PART)");
+					printDebugMsg(x.getMessage() + " | " + rawIn);
 				}
 			}
 			else if (code == C.QUIT)
@@ -533,12 +556,12 @@ public class Manager
 							window.println("<" + x.getNick() + " has quit - " + msg.toLowerCase() + ">", chans[a], C.BLUEGRAY);
 						
 						if (!removeUser(x.getNick()))
-							System.err.println(x.getNick() + " not found in user-treemap. (QUIT)");
+							printDebugMsg(x.getNick() + " not found in user-treemap. (QUIT)");
 					}
 				}
 				else
 				{
-					System.err.println(x.getNick() + " not found in user-treemap. (QUIT)");
+					printDebugMsg(x.getNick() + " not found in user-treemap. (QUIT)");
 				}
 			}
 			else if (code == C.MODE)
@@ -582,7 +605,7 @@ public class Manager
                 }
                 else
                 {
-                        System.err.println(x.getNick() + " not found in user-treemap. (NICK)");
+                        printDebugMsg(x.getNick() + " not found in user-treemap. (NICK)");
                 }
 */
 			}
@@ -626,7 +649,7 @@ public class Manager
 					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else
-					System.out.println("!!! " + msg);
+					printDebugMsg("!!! " + msg);
 			}
 			else if (code == C.TOPIC)
 			{
@@ -690,7 +713,7 @@ public class Manager
 						}
 						else
 						{
-							System.err.println("Invalid name: " + t);
+							printDebugMsg("Invalid name: " + t);
 							t = new String();
 						}
 					}
@@ -728,7 +751,7 @@ public class Manager
 		s.disconnect(reason);
 	}
 	
-	public boolean addUser(String name)
+	protected boolean addUser(String name)
 	{
 		if (users.containsKey(name))
 		{
@@ -741,7 +764,7 @@ public class Manager
 		}
 	}
 	
-	public boolean removeUser(String name)
+	protected boolean removeUser(String name)
 	{
 		if (users.containsKey(name))
 		{
@@ -754,7 +777,7 @@ public class Manager
 		}
 	}
 	
-	public boolean updateUser(String oldName, String newName)
+	protected boolean updateUser(String oldName, String newName)
 	{
 		if (users.containsKey(oldName))
 		{

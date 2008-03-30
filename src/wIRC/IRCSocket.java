@@ -24,12 +24,12 @@ public class IRCSocket
 	
 	protected int mode = 0;
 	
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
 		new IRCSocket();
 	}
 	
-	public IRCSocket() throws Exception
+	public IRCSocket()
 	{	
 		if (!homePath.isDirectory())
 		{
@@ -66,7 +66,7 @@ public class IRCSocket
 			out.println(output);
 	}
 	
-	protected void connect(boolean retry) throws Exception
+	protected void connect(boolean retry)
 	{
 		mode = 1;
 		

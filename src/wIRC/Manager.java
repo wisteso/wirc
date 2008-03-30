@@ -40,38 +40,63 @@ public class Manager
 		window.println("(SYSTEM) Requesting login info...", C.GREEN);
 	}
 	
-	public boolean initialize(boolean askAll) throws Exception
+	public boolean initialize(boolean askAll)
 	{
 		if (askAll)
-		{
-			try{
-				Scanner in = new Scanner(new File(s.homePath + "/.un"));
-				nickName = in.next();
+		{	
+			String[] folders = {"profiles", "scripts", "plugins"};
+			boolean writeable = checkFolders(folders);
+			
+			// TODO: Add a profile selection query.
+			File file = new File(s.homePath + C.PSLASH + "profiles" + C.PSLASH + "last");
+			
+			try
+			{
+				Scanner in = new Scanner(file);
+				
+				nickName = in.nextLine().trim();
+				realName = in.nextLine().trim();
+				hostName = in.nextLine().trim();
 			}
-			catch(Exception e){
+			catch(Exception e)
+			{
 				nickName = window.askQuestion("Enter your nick-name:", nickName);
-				try{
-					BufferedOutputStream bufferedOut = new BufferedOutputStream(new FileOutputStream (new File (s.homePath + "/.un")));
-					bufferedOut.write(nickName.getBytes());
-					bufferedOut.close();
+				
+				if (nickName == null)
+					return false;
+		
+				realName = window.askQuestion("Enter your user-name:", realName);
+				
+				if (realName == null)
+					return false;
+				
+				hostName = window.askQuestion("Enter the host-name:", hostName);
+				
+				if (hostName == null)
+					return false;
+				
+				if (writeable)
+				{
+					try
+					{
+						if (!file.isFile() && !file.createNewFile())
+							System.err.println("couldn't create profile");
+						
+						BufferedOutputStream out = 
+							new BufferedOutputStream(new FileOutputStream(file));
+						
+						out.write((nickName + "\n").getBytes());
+						out.write((realName + "\n").getBytes());
+						out.write((hostName + "\n").getBytes());
+						
+						out.close();
+					}
+					catch(Exception f)
+					{
+						System.err.println("couldn't write profile " + f.getMessage());
+					}
 				}
-				catch(Exception f){
-					System.out.println("couldn't write nickname file");
-				}
-			
 			}
-			if (nickName == null)
-				return false;
-	
-			realName = window.askQuestion("Enter your user-name:", realName);
-			
-			if (realName == null)
-				return false;
-			
-			hostName = window.askQuestion("Enter the host-name:", hostName);
-			
-			if (hostName == null)
-				return false;
 		}
 		else
 		{
@@ -82,6 +107,21 @@ public class Manager
 		}
 		
 		window.setServerInfo(hostName);
+		
+		return true;
+	}
+	
+	private boolean checkFolders(String[] folders)
+	{
+		File temp;
+		
+		for (int i = 0; i < folders.length; ++i)
+		{
+			temp = new File(s.homePath + C.PSLASH + folders[i]);
+			
+			if (!temp.isDirectory() && !temp.mkdir())
+				return false;
+		}
 		
 		return true;
 	}

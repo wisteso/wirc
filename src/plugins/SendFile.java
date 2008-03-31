@@ -15,11 +15,16 @@ public class SendFile implements Plugin
 	
 	public String[] processInput(String input, String channel)
 	{
-		if (input.startsWith("/send "))
+		return null;
+	}
+	
+	public String[] processOutput(String output, String channel)
+	{
+		if (output.startsWith("/send "))
 		{
 			ArrayList<String> temp = new ArrayList<String>();
 			
-			String path = input.substring(6).trim();
+			String path = output.substring(6).trim();
 			
 			BufferedInputStream in;
 			
@@ -51,10 +56,13 @@ public class SendFile implements Plugin
 							b = new byte[a - i];
 					}
 					
+					// FIXME: IRC doesn't like some characters < 32 and possibly in the upper range.
 					b[i % cSize] = (byte)in.read();
 				}
 				
 				temp.add("\001\000" + packs + "|" + packs + "\002" + new String(b) + "\000\001");
+				
+				temp.add("\002HALT\003");
 			}
 			catch (Exception e)
 			{
@@ -65,11 +73,6 @@ public class SendFile implements Plugin
 			return temp.toArray(new String[temp.size()]);
 		}
 		
-		return null;
-	}
-	
-	public String[] processOutput(String output)
-	{
 		return null;
 	}
 	

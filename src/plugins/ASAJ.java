@@ -36,7 +36,7 @@ public class ASAJ implements Plugin
 		return null;
 	}
 	
-	public String[] processOutput(String output)
+	public String[] processOutput(String output, String channel)
 	{
 		return null;
 	}

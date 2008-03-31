@@ -186,6 +186,7 @@ public class Manager
 			String timeStamp = time.format(new java.util.Date());
 	        
 			window.println("(ERROR) [" + timeStamp + "] " + msg, "\002ERROR\003", C.RED);
+			
 			//System.err.println(msg);
 		}
 	}
@@ -193,6 +194,32 @@ public class Manager
 	protected void sendMsg(String msg, String chanName)
 	{
 		String chan = chanName.toLowerCase();
+		
+		if (!plugins.isEmpty())
+		{
+			String[] output;
+			
+			boolean halt = false;
+			
+			for (int i = 0; i < plugins.size(); ++i)
+			{
+				output = plugins.get(i).processOutput(msg, chanName);
+				
+				if (output != null)
+				{
+					for (int j = 0; j < output.length; ++j)
+					{
+						if (output[j].equals("\002HALT\003"))
+							halt = true;
+						else
+							sendMsg(output[j], chanName);
+					}
+				}
+			}
+			
+			if (halt)
+				return;
+		}
 		
 		if (chanName.equals("\002ERROR\003"))
 		{

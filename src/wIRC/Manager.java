@@ -364,16 +364,7 @@ public class Manager
 			}
 			else if (command.equals("DEBUG"))
 			{
-				if (debug)
-				{
-					debug = false;
-					window.println("(SYSTEM) Debug output OFF.", chan, C.ORANGE);
-				}
-				else
-				{
-					debug = true;
-					window.println("(SYSTEM) Debug output ON.", chan, C.ORANGE);
-				}
+				debug = !debug;
 				
 				return;
 			}

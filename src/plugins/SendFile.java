@@ -12,10 +12,31 @@ public class SendFile implements Plugin
 	public static final String ID = "file transfer plug-in";
 	public static final double VERSION = 0.1;
 	
-	private static final int cSize = 400;
+	private static final int cSize = 200;
+	//private static final ArrayList<Object> buffer = new ArrayList<Object>();
 	
 	public String[] processInput(String input, String channel)
 	{
+		if (input.startsWith("\002") && input.endsWith("\003"))
+		{
+			try
+			{
+				int m1 =  input.indexOf("]"), m2 = input.indexOf("|", m1), m3 = input.indexOf("[", m2);
+				
+				int id = Integer.valueOf(input.substring(1, m1));
+				int cPack = Integer.valueOf(input.substring(m1 + 1, m2));
+				int cPacks = Integer.valueOf(input.substring(m2 + 1, m3));
+				
+				byte b[] = input.substring(m3 + 1, input.length() - 2).getBytes();
+				
+				System.out.println("id: " + id + " pack: " + cPack + " packs: " + cPacks + " data: " + new String(b));
+			}
+			catch (Exception e)
+			{
+				System.err.println("Decoding error");
+			}
+		}
+		
 		return null;
 	}
 	
@@ -36,40 +57,41 @@ public class SendFile implements Plugin
 				else
 					in = new BufferedInputStream(new FileInputStream(new File(path)));
 				
-				int count = in.available();
-				
-				int packs = (int)Math.ceil(count / cSize);
+				int id = (int)(Math.random() * 5000);
+				int bCount = in.available();
+				int cCursor, cPack, cPacks = (int)Math.ceil(bCount * 2.0 / cSize);
 				
 				byte b[] = new byte[0];
 				
-				for (int index = 0; index < count; index += 2)
+				for (int cursor = 0; cursor < bCount; ++cursor)
 				{
-					if (index % cSize == 0)
+					cCursor = cursor % cSize;
+					
+					if (cCursor == 0)
 					{
-						int pack = (int)Math.ceil(1.0 * index / cSize);
+						cPack = (int)Math.ceil(2.0 * cursor / cSize);
 						
 						if (b.length > 0)
-							temp.add("\001\000" + pack + "|" + packs + "\002" + new String(b) + "\000\001");
+							temp.add("\002" + id + "]" + cPack + "|" + cPacks + "[" + new String(b) + "\003");
 						
-						if (count - index > cSize - 1)
-							b = new byte[cSize];
+						if (bCount - cursor > cSize - 1)
+							b = new byte[cSize * 2];
 						else
-							b = new byte[count - index];
+							b = new byte[(bCount - cursor) * 2];
 					}
 					
 					byte[] byt = encode(in.read());
 					
-					b[index % cSize] = byt[0];
-					b[index % cSize + 1] = byt[1];
+					b[cCursor * 2] = byt[0];
+					b[cCursor * 2 + 1] = byt[1];
 				}
 				
-				temp.add("\001\000" + packs + "|" + packs + "\002" + new String(b) + "\000\001");
+				temp.add("\002" + id + "]" + cPacks + "|" + cPacks + "[" + new String(b) + "\003");
 				
 				temp.add("\002HALT\003");
 			}
 			catch (Exception e)
 			{
-				System.err.println("Error reading file " + path);
 				return null;
 			}
 			

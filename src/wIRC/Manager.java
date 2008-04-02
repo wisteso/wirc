@@ -197,9 +197,9 @@ public class Manager
 		
 		if (!plugins.isEmpty())
 		{
-			String[] output;
-			
 			boolean halt = false;
+			
+			String[] output;
 			
 			for (int i = 0; i < plugins.size(); ++i)
 			{

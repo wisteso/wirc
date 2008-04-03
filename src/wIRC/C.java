@@ -1,5 +1,4 @@
 package wIRC;
-
 import java.io.File;
 
 /**

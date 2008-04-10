@@ -14,13 +14,40 @@ import javax.swing.UIManager;
  */
 public class IRCSocket
 {
+	public static final int MODE_CONNECTING = 1;
+	public static final int MODE_CONNECTED = 2;
+	public static final int MODE_INITIATING = 0;
+	public static final int MODE_PEER_DISCONNECT = -1;
+	public static final int MODE_USER_DISCONNECT = -2;
+	
+	
+	/**
+	 * Internal Socket
+	 */
 	private Socket sock = null;
+	/**
+	 * Print writer to the socket.
+	 */
 	private PrintWriter out = null;
+	/**
+	 * Reader from the socket
+	 */
 	private BufferedReader in = null;
 	
+	/**
+	 * Does all the work; connects things together
+	 */
 	private Manager m;
 	
-	protected int mode = 0;
+	/**
+	 * The mode of this socket?
+	 *  1 = connecting
+	 *  2 = connected
+	 *  0 = ?
+	 *  -1 = Been Disconected
+	 *  -2 = user_disconnect
+	 */
+	protected int mode = MODE_INITIATING;
 	
 	public static void main(String[] args)
 	{
@@ -54,12 +81,12 @@ public class IRCSocket
 	
 	protected void connect(boolean retry)
 	{
-		mode = 1;
+		mode = MODE_CONNECTING;
 		
 		do
 		{
 			try
-			{				
+			{
 				m.printSystemMsg("Connecting to " + m.hostName + "...", C.GREEN);
 				
 				sock = new Socket();
@@ -90,13 +117,13 @@ public class IRCSocket
 
 		cycle();
 		
-		if (mode > -2)
+		if (mode != MODE_USER_DISCONNECT)
 			connect(retry);
 	}
 	
 	protected void cycle()
 	{
-		mode = 2;
+		mode = MODE_CONNECTED;
 		
 		try
 		{
@@ -117,15 +144,15 @@ public class IRCSocket
 	
 	protected void disconnect(String reason)
 	{
-		if (mode > 0)
+		if (mode > MODE_INITIATING)
 		{
 			if (reason.startsWith("user termination"))
 			{
-				mode = -2;
+				mode = MODE_USER_DISCONNECT;
 			}
 			else
 			{
-				mode = -1;
+				mode = MODE_PEER_DISCONNECT;
 			}
 			
 			m.printDebugMsg("Connection closed: " + reason);

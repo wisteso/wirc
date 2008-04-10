@@ -10,60 +10,67 @@ import javax.swing.UIManager;
  * It manages the connection and grants the manager binded 
  * to it a great deal of access to it's methods.
  * <br><br>
- * @author	wisteso@gmail.com
- * @author Victor (virtualbitt@gmail.com)
+ * @author	Will (wisteso@gmail.com)
+ * @author 	Victor (virtualbitt@gmail.com)
  */
 public class IRCSocket
 {
 	/**
-	 * The port on the IRC sever
-	 * (Will not change).
+	 * The port on the IRC sever (constant).
 	 */
 	private static final int IRC_PORT = 6667;
+	
 	/**
-	 * The mode if the socket is connecting.
+	 * Mode if the socket is connecting.
 	 */
 	protected static final int MODE_CONNECTING = 1;
+	
 	/**
 	 * Mode if successfully connected.
 	 */
 	protected static final int MODE_CONNECTED = 2;
+	
 	/**
 	 * Initial mode.
 	 */
 	protected static final int MODE_INITIATING = 0;
+	
 	/**
-	 * Mode if disconnected for some reason, besides user
-	 * disconnects.
+	 * Mode if disconnected for some reason, besides user disconnects.
 	 */
 	protected static final int MODE_PEER_DISCONNECT = -1;
+	
 	/**
 	 * Mode if user disconnected from the socket.
 	 */
 	protected static final int MODE_USER_DISCONNECT = -2;
 	
-	
 	/**
 	 * Internal Socket
 	 */
 	private Socket sock = null;
+	
 	/**
 	 * Print writer to the socket.
 	 */
 	private PrintWriter out = null;
+
 	/**
 	 * Reader from the socket.
 	 */
 	private BufferedReader in = null;
+
 	/**
 	 * Does all the work; connects things together
 	 */
 	private Manager m;
+	
 	private MessageHandlerThread msgThread;
 	
 	/**
-	 * The mode of this socket.
-	 * @see MODE_CONNECTED, MODE_CONNECTING, MODE_INITIATING,
+	 * The current mode of this socket.
+	 * 
+	 * @see	MODE_CONNECTED, MODE_CONNECTING, MODE_INITIATING,
 	 * MODE_PEER_DISCONNECT, MODE_USER_DISCONNECT
 	 */
 	protected int mode = MODE_INITIATING;
@@ -78,10 +85,9 @@ public class IRCSocket
 	
 	/**
 	 * Constructs a new IRC socket.
-	 * Configures the UIManager, creates managers,
-	 * etc.
-	 * This constructor will not return; initalizes an infinite
-	 * loop. 
+	 * Configures the UIManager, creates managers, etc.
+	 * This constructor will not return; initalizes an 
+	 * infinite loop. 
 	 */
 	public IRCSocket()
 	{	
@@ -105,26 +111,29 @@ public class IRCSocket
 	/**
 	 * Writes a string to this socket. The string is written
 	 * as is; no parsing is done.
-	 * @param output The String to write.
+	 * 
+	 * @param	output The String to write.
 	 */
 	protected void sendData(String output)
 	{
-		
 		if (sock != null && sock.isConnected())
 			out.println(output);
 	}
 	
 	/**
-	 * Connects this socket. Retires if retry. <p>
-	 * <b>This method will not return</b><p>
+	 * Connects this socket. Retires if retry. 
+	 * <b>This method will not return</b>
 	 * Attempts to connect to the sever and then cycle(),
 	 * if it fails & retry is true, then it attempts to connect again, recrusively.
-	 * @param retry Weitehr or not to retry after a failed connection.
+	 * 
+	 * @param	whether or not to retry after a connection failure.
 	 */
 	protected void connect(boolean retry)
 	{
 		mode = MODE_CONNECTING;
-		Thread msgthr = null;
+		
+		Thread messageThread = null;
+		
 		do
 		{
 			try
@@ -140,8 +149,8 @@ public class IRCSocket
 	            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 				
 				msgThread = new MessageHandlerThread();
-				msgthr = new Thread(msgThread);
 				
+				messageThread = new Thread(msgThread);
 			}
 			catch (Exception e)
 			{
@@ -160,13 +169,12 @@ public class IRCSocket
 		// block until the socket is not null.
 		while (sock == null);
 		
-
-		
 		m.notifyConnect();
 
-		msgthr.start();
+		messageThread.start();
+
 //		cycle();
-		
+//		
 //		if (mode != MODE_USER_DISCONNECT)
 //			connect(retry);
 	}
@@ -226,18 +234,23 @@ public class IRCSocket
 	
 	/**
 	 * A thread to read in from this socket.
-	 * @author Victor
-	 *
+	 * 
+	 * @author 	Victor
+	 * @author	Will
 	 */
-	private class MessageHandlerThread implements Runnable {
-		
-		/* (non-Javadoc)
+	private class MessageHandlerThread implements Runnable
+	{	
+		/* 
+		 * (non-Javadoc)
 		 * @see java.lang.Runnable#run()
 		 */
 		@Override
-		public void run() {
+		public void run() 
+		{
 			cycle();
-			connect(true);
+			
+			if (mode != MODE_USER_DISCONNECT)
+				connect(true);
 		}
 	}
 }

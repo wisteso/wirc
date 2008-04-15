@@ -1,12 +1,17 @@
 package wIRC;
-import java.io.*;
-import java.util.Calendar;
-import java.util.TreeMap;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DateFormat;
-import SortedListModel.*;
-import wIRC.interfaces.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Scanner;
+import java.util.TreeMap;
+
+import wIRC.interfaces.MessageParser;
+import wIRC.interfaces.Plugin;
+import wIRC.interfaces.UserInput;
+import SortedListModel.SortedListModel;
 
 /**
  * Chat structural-object
@@ -20,6 +25,8 @@ import wIRC.interfaces.*;
  */
 public class Manager 
 {
+	
+	private MessageHandler mesgHandler;
 	private boolean debug = false;
 	
 	protected DateFormat time = new java.text.SimpleDateFormat("HH:mm:ss");
@@ -40,6 +47,36 @@ public class Manager
 	protected UserInput window = new DefaultGUI(hostName, this);
 	
 	private IRCSocket s;
+	
+	// hack!
+	{
+		MessageParser unkwn = new MessageParser() {
+			@Override
+			public void parseMessage(Message mesg) {
+				window.println("(" + mesg.getCode() + ") " + mesg.getMessage(), mesg.getChannel(), C.GRAY);
+			}
+		};
+		mesgHandler = new MessageHandler(unkwn);
+		
+		// * * * * * * * * * * * *
+		// *   Message Parsers   *
+		// * * * * * * * * * * * *
+		// notice, ping, join
+		MessageParser notice = new MessageParser() {
+			@Override
+			public void parseMessage(Message mesg) {
+				window.println("(NOTICE) " + mesg.getMessage(), mesg.getChannel(), C.ORANGE);
+			}
+		};
+		
+		// more declartions here
+		
+		// ....
+		
+		// add parsers
+		this.mesgHandler.addParser(C.NOTICE, notice);
+		
+	}
 	
 	public Manager(IRCSocket s)
 	{

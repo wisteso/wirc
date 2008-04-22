@@ -10,7 +10,7 @@ import java.util.Scanner;
  * via the command line interface and is not critical 
  * to the core operation.
  * <br><br>
- * @author 	wisteso@gmail.com
+ * @author 	see AUTHORS.TXT
  */
 public class DefaultCLI implements UserInput
 {

@@ -21,19 +21,17 @@ import SortedListModel.SortedListModel;
  * both are allowed to communicate through, ideally. Though there 
  * are currently some hacks in place.
  * <br><br>
- * @author 	wisteso@gmail.com
+ * @author 	see AUTHORS.TXT
  */
 public class Manager 
 {
+	private IRCSocket s;
 	
-	private MessageHandler mesgHandler;
-	private boolean debug = false;
+	protected File profile;
 	
 	protected DateFormat time = new java.text.SimpleDateFormat("HH:mm:ss");
 	
 	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
-	
-	protected File profile;
 	
 	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected String realName = "Anonymous";
@@ -46,25 +44,32 @@ public class Manager
 	protected ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	protected UserInput window = new DefaultGUI(hostName, this);
 	
-	private IRCSocket s;
+	private boolean debug;
+	
+	private MessageHandler mesgHandler;
 	
 	// hack!
 	{
-		MessageParser unkwn = new MessageParser() {
+		MessageParser unkwn = new MessageParser()
+		{
 			@Override
-			public void parseMessage(Message mesg) {
+			public void parseMessage(Message mesg)
+			{
 				window.println("(" + mesg.getCode() + ") " + mesg.getMessage(), mesg.getChannel(), C.GRAY);
 			}
 		};
+		
 		mesgHandler = new MessageHandler(unkwn);
 		
-		// * * * * * * * * * * * *
-		// *   Message Parsers   *
-		// * * * * * * * * * * * *
+		/* * * * * * * * * * * *
+		 *   Message Parsers   *
+		 * * * * * * * * * * * */
 		// notice, ping, join
-		MessageParser notice = new MessageParser() {
+		MessageParser notice = new MessageParser()
+		{
 			@Override
-			public void parseMessage(Message mesg) {
+			public void parseMessage(Message mesg)
+			{
 				window.println("(NOTICE) " + mesg.getMessage(), mesg.getChannel(), C.ORANGE);
 			}
 		};
@@ -75,7 +80,6 @@ public class Manager
 		
 		// add parsers
 		this.mesgHandler.addParser(C.NOTICE, notice);
-		
 	}
 	
 	public Manager(IRCSocket s)
@@ -103,7 +107,7 @@ public class Manager
 	{
 		if (askAll)
 		{	
-			String prfl = window.askQuestion("Enter the new or existing profile to use:", "default");
+			String prfl = window.askQuestion("Enter the new or existing profile to use:", "default").toLowerCase();
 			
 			if (prfl == null)
 				profile = null;

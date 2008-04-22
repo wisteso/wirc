@@ -14,19 +14,14 @@ import wIRC.interfaces.UserInput;
  * via the java swing class set and is not critical to 
  * the core operation.
  * <br><br>
- * @author 	wisteso@gmail.com
+ * @author 	see AUTHORS.TXT
  */
 public class DefaultGUI implements UserInput, ActionListener, MouseListener
 {
-	protected static final String INPUTBOX = "INPUTBOX";
-	protected static final String OUTPUTBOX = "OUTPUTBOX";
-	protected static final String SENDBUTTON = "SENDBUTTON";
-	
-	private final DefaultGUI me = this;
 	private Manager m;
 	
-	private ImageIcon icon;
 	private String title;
+	private ImageIcon icon;
 	
 	private JFrame frame;
 	private Container mainPane;
@@ -34,21 +29,26 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	private JButton sendButton;
 	private JTextField txtOut;
 	private JPanel inputPane;
+
+	private final DefaultGUI me = this;
 	
-	private TreeMap<String, JEditorPane> tabList = new TreeMap<String, JEditorPane>();
-	private TreeMap<String, SortedListModel> usrList = new TreeMap<String, SortedListModel>();
+	private static final String OUTPUT = "OUTPUT_TXT";
+	private static final String SEND = "SEND_BUTTON";
 	
-	private boolean isReading = false;
-	private static boolean constInit = false;
+	private final TreeMap<String, JEditorPane> tabList;
+	private final TreeMap<String, SortedListModel> usrList;
+	
+	private boolean isReading;
 	
 	public DefaultGUI(String server, Manager m)
-	{	
-		if (!constInit)
-			initResources();
-		
+	{
 		this.m = m;
 		
 		this.title = "wIRC - " + server;
+		
+		this.tabList = new TreeMap<String, JEditorPane>();
+		
+		this.usrList = new TreeMap<String, SortedListModel>();
 		
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -80,14 +80,14 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		});
 		
 		txtOut = new JTextField();
-		txtOut.setActionCommand(OUTPUTBOX);
+		txtOut.setActionCommand(OUTPUT);
 		txtOut.addActionListener(this);
 		
 		sendButton = new JButton();
 		sendButton.setMaximumSize(new Dimension(75, 25));
 		sendButton.setMinimumSize(new Dimension(75, 25));
 		sendButton.setText("SEND");
-		sendButton.setActionCommand(SENDBUTTON);
+		sendButton.setActionCommand(SEND);
 		sendButton.addActionListener(this);
 		
 		inputPane = new JPanel();
@@ -314,7 +314,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 	public void actionPerformed(ActionEvent e) 
 	{
-		if (OUTPUTBOX.equals(e.getActionCommand())) 
+		if (e.getActionCommand().equals(OUTPUT)) 
 		{
 			if (txtOut.getText().length() > 0)
 			{
@@ -323,7 +323,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				txtOut.setText("");
 			}
 		}
-		else if (SENDBUTTON.equals(e.getActionCommand())) 
+		else if (e.getActionCommand().equals(SEND)) 
 		{   
 			if (txtOut.getText().length() > 0)
 			{
@@ -334,25 +334,25 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		}
 	}
 	
-//	OUTPUT CONSTANTS/METHODS
+	/* * * * * * * * * * * * * * * *
+	 * OUTPUT METHODS & CONSTANTS  *
+	 * * * * * * * * * * * * * * * */
 	
-	protected static SimpleAttributeSet BLACK = new SimpleAttributeSet();
-	protected static SimpleAttributeSet GRAY = new SimpleAttributeSet();
-	protected static SimpleAttributeSet RED = new SimpleAttributeSet();
-	protected static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet YELLOW = new SimpleAttributeSet();
-	protected static SimpleAttributeSet GREEN = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BLUE = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BLUEGRAY = new SimpleAttributeSet();
-	protected static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
+	private static SimpleAttributeSet BLACK = new SimpleAttributeSet();
+	private static SimpleAttributeSet GRAY = new SimpleAttributeSet();
+	private static SimpleAttributeSet RED = new SimpleAttributeSet();
+	private static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
+	private static SimpleAttributeSet YELLOW = new SimpleAttributeSet();
+	private static SimpleAttributeSet GREEN = new SimpleAttributeSet();
+	private static SimpleAttributeSet BLUE = new SimpleAttributeSet();
+	private static SimpleAttributeSet BLUEGRAY = new SimpleAttributeSet();
+	private static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
 	
-	protected static SimpleAttributeSet BLACK_BOLD = new SimpleAttributeSet();
-	protected static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
+	private static SimpleAttributeSet BLACK_BOLD = new SimpleAttributeSet();
+	private static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
 	
-	public static void initResources()
+	static
 	{
-		constInit = true;
-		
 		StyleConstants.setFontFamily(BLACK, "Monospace");
 		StyleConstants.setFontSize(BLACK, 11);
 		StyleConstants.setBold(BLACK_BOLD, true);
@@ -457,7 +457,9 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		});
 	}
 	
-//	NICK LIST METHODS
+	/* * * * * * * * * * * * *
+	 * NICKNAME LIST METHODS *
+	 * * * * * * * * * * * * */
 	
 	public synchronized void addNicks(String channel, String... nicks)
 	{
@@ -531,7 +533,9 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		return usrList.get(channel);
 	}
 	
-//	MOUSELISTENER METHODS
+	/* * * * * * * * * * * * * *
+	 * MOUSE LISTENING METHODS *
+	 * * * * * * * * * * * * * */
 	
 	public void mouseClicked(MouseEvent e)
 	{

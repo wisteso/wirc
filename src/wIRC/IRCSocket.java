@@ -10,13 +10,12 @@ import javax.swing.UIManager;
  * It manages the connection and grants the manager binded 
  * to it a great deal of access to it's methods.
  * <br><br>
- * @author	Will (wisteso@gmail.com)
- * @author 	Victor (virtualbitt@gmail.com)
+ * @author	see AUTHORS.TXT
  */
 public class IRCSocket
 {
 	/**
-	 * The port on the IRC sever (constant).
+	 * The default port for the IRC sever.
 	 */
 	private static final int IRC_PORT = 6667;
 	
@@ -51,12 +50,12 @@ public class IRCSocket
 	private Socket sock = null;
 	
 	/**
-	 * Print writer to the socket.
+	 * Output stream to the socket.
 	 */
 	private PrintWriter out = null;
 
 	/**
-	 * Reader from the socket.
+	 * Input stream from the socket.
 	 */
 	private BufferedReader in = null;
 
@@ -65,7 +64,15 @@ public class IRCSocket
 	 */
 	private Manager m;
 	
-	private MessageHandlerThread msgThread;
+	/**
+	 * Runnable class to handle the <code>Socket</code> to <code>Manager</code> IO.
+	 */
+	private CycleThread cThread;
+	
+	/**
+	 * Thread to handle the runnable class, <code>cThread</code>.
+	 */
+	private Thread messageThread;
 	
 	/**
 	 * The current mode of this socket.
@@ -74,6 +81,11 @@ public class IRCSocket
 	 * MODE_PEER_DISCONNECT, MODE_USER_DISCONNECT
 	 */
 	protected int mode = MODE_INITIATING;
+	
+	/**
+	 * Option to reconnect on disconnect.
+	 */
+	public boolean reconnect = true;
 	
 	/**
 	 * Main method to run this IRC client.
@@ -100,10 +112,10 @@ public class IRCSocket
             System.out.println("Unable to match window style to operating system.");
         }
 		
-		m = new Manager(this);
+		this.m = new Manager(this);
 		
 		if (m.initialize(true))
-			connect(true);
+			connect();
 		else
 			m.printSystemMsg("Connection aborted.", C.ORANGE);
 	}
@@ -121,18 +133,17 @@ public class IRCSocket
 	}
 	
 	/**
-	 * Connects this socket. Retires if retry. 
+	 * Connects this socket. Retries if <code>retry</code> is true. 
+	 * Attempts to connect to the sever and then <code>cycle()</code>.
+	 * If it fails and <code>retry</code> is true, 
+	 * then it attempts to connect again, recursively.
 	 * <b>This method will not return</b>
-	 * Attempts to connect to the sever and then cycle(),
-	 * if it fails & retry is true, then it attempts to connect again, recrusively.
 	 * 
 	 * @param	whether or not to retry after a connection failure.
 	 */
-	protected void connect(boolean retry)
+	protected void connect()
 	{
-		mode = MODE_CONNECTING;
-		
-		Thread messageThread = null;
+		this.mode = MODE_CONNECTING;
 		
 		do
 		{
@@ -147,10 +158,6 @@ public class IRCSocket
 				out = new PrintWriter(sock.getOutputStream(), true);
 				
 	            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-				
-				msgThread = new MessageHandlerThread();
-				
-				messageThread = new Thread(msgThread);
 			}
 			catch (Exception e)
 			{
@@ -166,41 +173,47 @@ public class IRCSocket
 				}
 			}
 		}
-		// block until the socket is not null.
 		while (sock == null);
 		
-		m.notifyConnect();
+		cThread = new CycleThread();
+		
+		messageThread = new Thread(cThread);
 
 		messageThread.start();
-
-//		cycle();
-//		
-//		if (mode != MODE_USER_DISCONNECT)
-//			connect(retry);
+		
+		m.notifyConnect();
 	}
 	
 	/**
-	 * Infinitely reads data that is coming to this socket,
-	 * only stops if an IO exception is caught.
+	 * A thread to read in from this socket.
 	 */
-	protected void cycle()
-	{
-		mode = MODE_CONNECTED;
-		
-		try
+	private class CycleThread implements Runnable
+	{	
+		public void run() 
 		{
-			String dataIn;
+			mode = MODE_CONNECTED;
 			
-			while (true)
+			try
 			{
-				if ((dataIn = in.readLine()) != null)
-					m.ProcessMessage(dataIn);
+				String dataIn;
+				
+				while (true)
+				{
+					if ((dataIn = in.readLine()) != null)
+						m.ProcessMessage(dataIn);
+				}
 			}
-		}
-		catch (IOException e)
-		{
-			disconnect(e.toString());
-			m.printSystemMsg("You have been disconnected.", C.ORANGE);
+			catch (IOException e)
+			{
+				disconnect(e.toString());
+				m.printSystemMsg("You have been disconnected.", C.ORANGE);
+			}
+			
+			if (reconnect && mode != MODE_USER_DISCONNECT)
+			{
+				m.printSystemMsg("Reconnecting...", C.GREEN);
+				connect();
+			}
 		}
 	}
 	
@@ -229,28 +242,6 @@ public class IRCSocket
 			{
 				m.printDebugMsg("SHUTDOWN ERROR: " + e.toString());
 			}
-		}
-	}
-	
-	/**
-	 * A thread to read in from this socket.
-	 * 
-	 * @author 	Victor
-	 * @author	Will
-	 */
-	private class MessageHandlerThread implements Runnable
-	{	
-		/* 
-		 * (non-Javadoc)
-		 * @see java.lang.Runnable#run()
-		 */
-		@Override
-		public void run() 
-		{
-			cycle();
-			
-			if (mode != MODE_USER_DISCONNECT)
-				connect(true);
 		}
 	}
 }

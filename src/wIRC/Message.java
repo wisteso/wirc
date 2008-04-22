@@ -6,7 +6,7 @@ package wIRC;
  * This class takes in raw data for it's constructor 
  * value and creates an organized data-structure object.
  * <br><br>
- * @author 	wisteso@gmail.com
+ * @author 	see AUTHORS.TXT
  */
 public class Message 
 {

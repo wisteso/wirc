@@ -74,7 +74,7 @@ public class Manager
 			}
 		};
 		
-		// more declartions here
+		// more declarations here
 		
 		// ....
 		

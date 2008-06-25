@@ -159,7 +159,9 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 	public void setServerInfo(String newServer)
 	{
-		frame.setTitle("wIRC - " + newServer);
+		this.title = "wIRC - " + newServer;
+		
+		this.frame.setTitle("wIRC - " + newServer);
 	}
 	
 	public String getFocusedChat()

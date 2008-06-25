@@ -10,7 +10,7 @@ import javax.swing.UIManager;
  * It manages the connection and grants the manager binded 
  * to it a great deal of access to it's methods.
  * <br><br>
- * @author	see AUTHORS.TXT
+ * @author	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class IRCSocket
 {

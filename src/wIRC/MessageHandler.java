@@ -7,7 +7,7 @@ import java.util.Map;
 import wIRC.interfaces.MessageParser;
 
 /**
- * @author see AUTHORS.TXT
+ * @author see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class MessageHandler
 {

@@ -7,7 +7,7 @@ import wIRC.interfaces.Plugin;
  * This is used for the testing and development of 
  * the plugin system.
  * <br><br>
- * @author 	wisteso@gmail.com
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class TestPlugin implements Plugin
 {

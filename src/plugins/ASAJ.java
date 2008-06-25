@@ -8,7 +8,7 @@ import wIRC.interfaces.Plugin;
  * a series of random characters of random length when 
  * you have been forced to join a channel via SAJOIN.
  * <br><br>
- * @author 	wisteso@gmail.com
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class ASAJ implements Plugin
 {

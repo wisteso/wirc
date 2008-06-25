@@ -13,7 +13,7 @@ import java.io.File;
  * usage of them. However, both cases relate to real commands used by 
  * the IRC specification.
  * <br><br>
- * @author 	see AUTHORS.TXT
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public final class C 
 {

@@ -14,7 +14,7 @@ import wIRC.interfaces.UserInput;
  * via the java swing class set and is not critical to 
  * the core operation.
  * <br><br>
- * @author 	see AUTHORS.TXT
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class DefaultGUI implements UserInput, ActionListener, MouseListener
 {

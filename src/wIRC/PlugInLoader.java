@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * of a file path (remote or local) to a useable 
  * Class of unknown type which may cast later on.
  * <br><br>
- * @author 	see AUTHORS.TXT
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class PlugInLoader extends ClassLoader
 {

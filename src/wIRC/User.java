@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * <br><br>
  * This class holds server-wide data about a user.
  * <br><br>
- * @author 	see AUTHORS.TXT
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class User 
 {

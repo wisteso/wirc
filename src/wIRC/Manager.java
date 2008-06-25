@@ -21,7 +21,7 @@ import SortedListModel.SortedListModel;
  * both are allowed to communicate through, ideally. Though there 
  * are currently some hacks in place.
  * <br><br>
- * @author 	see AUTHORS.TXT
+ * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public class Manager 
 {
@@ -36,7 +36,7 @@ public class Manager
 	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected String realName = "Anonymous";
 	protected String userInfo = "No info set.";
-	protected String hostName = "st0rage.org";
+	protected String hostName = "chat.freenode.net";
 
 	protected String[] struct = {"profiles", "scripts", "plugins"};
 	

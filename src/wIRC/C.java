@@ -16,9 +16,9 @@ import java.io.File;
  * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public final class C 
-{
-	// Protocol IRC message codes:
-	
+{	
+	//	Protocol IRC message codes:
+
 	public static final int MOTD_FOOTER = 376;
 	public static final int MOTD_CONTENT = 372;
 	public static final int MOTD_HEADER = 375;
@@ -27,8 +27,8 @@ public final class C
 	public static final int NAMELIST_CONTENT = 353;
 	
 	public static final int CHAN_TOPIC = 332;
-	
-	// wIRC message codes:
+
+	//	wIRC message codes:
 	
 	public static final int NULL = 0;
 	
@@ -46,30 +46,26 @@ public final class C
 	public static final int ERROR = -100;
 	public static final int DISCONNECT = -101;
 	
+	// Color constants:
+	
+	public static enum COLOR
+	{
+		BLACK_BOLD,
+		BLACK,
+		GRAY,
+		RED,
+		ORANGE,
+		YELLOW,
+		GREEN,
+		BLUE,
+		BLUE_BOLD,
+		BLUEGRAY,
+		VIOLET;
+	};
+	
 	// Misc constants:
 	
 	public static final String NULL_CHAR = String.valueOf(0);
 	public static final String CTCP_CHAR = String.valueOf(1);
 	public static final String PSLASH = File.separator;
-	
-	// Color constants:
-	
-	public final static int BLACK_BOLD = 2;
-	
-	public final static int BLACK = 11;
-	public final static int GRAY = 12;
-	
-	public final static int RED = 21;
-	
-	public final static int ORANGE = 31;
-	
-	public final static int YELLOW = 41;
-	
-	public final static int GREEN = 51;
-	
-	public final static int BLUE = 61;
-	public final static int BLUE_BOLD = 62;
-	public final static int BLUEGRAY = 63;
-	
-	public final static int VIOLET = 70;
 }

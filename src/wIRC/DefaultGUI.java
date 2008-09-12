@@ -384,17 +384,17 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
 	}
 	
-	public synchronized void println(String input, int style)
+	public synchronized void println(String input, C.COLOR style)
 	{
 		print("\n" + input, "Console", style);
 	}
 	
-	public synchronized void println(String input, String channel, int style)
+	public synchronized void println(String input, String channel, C.COLOR style)
 	{
 		print("\n" + input, channel, style);
 	}
 	
-	public synchronized void print(final String input, String channel, int style)
+	public synchronized void print(final String input, String channel, C.COLOR style)
 	{
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{
@@ -423,17 +423,17 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		
 		switch(style)
 		{
-			case C.BLACK: styling = BLACK; break;
-			case C.BLACK_BOLD: styling = BLACK_BOLD; break;
-			case C.GRAY: styling = GRAY; break;
-			case C.RED: styling = RED; break;
-			case C.ORANGE: styling = ORANGE; break;
-			case C.YELLOW: styling = YELLOW; break;
-			case C.GREEN: styling = GREEN; break;
-			case C.BLUE: styling = BLUE; break;
-			case C.BLUE_BOLD: styling = BLUE_BOLD; break;
-			case C.BLUEGRAY: styling = BLUEGRAY; break;
-			case C.VIOLET: styling = VIOLET; break;
+			case BLACK: styling = BLACK; break;
+			case BLACK_BOLD: styling = BLACK_BOLD; break;
+			case GRAY: styling = GRAY; break;
+			case RED: styling = RED; break;
+			case ORANGE: styling = ORANGE; break;
+			case YELLOW: styling = YELLOW; break;
+			case GREEN: styling = GREEN; break;
+			case BLUE: styling = BLUE; break;
+			case BLUE_BOLD: styling = BLUE_BOLD; break;
+			case BLUEGRAY: styling = BLUEGRAY; break;
+			case VIOLET: styling = VIOLET; break;
 			
  			default: styling = GRAY;
 		}

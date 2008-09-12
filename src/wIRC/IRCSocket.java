@@ -19,30 +19,22 @@ public class IRCSocket
 	 */
 	private static final int IRC_PORT = 6667;
 	
-	/**
-	 * Mode if the socket is connecting.
-	 */
-	protected static final int MODE_CONNECTING = 1;
-	
-	/**
-	 * Mode if successfully connected.
-	 */
-	protected static final int MODE_CONNECTED = 2;
-	
-	/**
-	 * Initial mode.
-	 */
-	protected static final int MODE_INITIATING = 0;
-	
-	/**
-	 * Mode if disconnected for some reason, besides user disconnects.
-	 */
-	protected static final int MODE_PEER_DISCONNECT = -1;
-	
-	/**
-	 * Mode if user disconnected from the socket.
-	 */
-	protected static final int MODE_USER_DISCONNECT = -2;
+	public enum MODE
+	{
+		CONNECTING,			// The socket is connecting.
+		CONNECTED,			// Successfully connected.
+		INITIATING,			// Default start-up state.
+		PEER_DISCONNECT,	// Disconnected for some reason, besides user disconnects.
+		USER_DISCONNECT;	// User disconnected from the socket.
+		
+		public boolean isActive()
+		{
+			if (this == CONNECTING || this == CONNECTED)
+				return true;
+			
+			return false;
+		}
+	}
 	
 	/**
 	 * Internal Socket
@@ -80,7 +72,7 @@ public class IRCSocket
 	 * @see	MODE_CONNECTED, MODE_CONNECTING, MODE_INITIATING,
 	 * MODE_PEER_DISCONNECT, MODE_USER_DISCONNECT
 	 */
-	protected int mode = MODE_INITIATING;
+	protected MODE mode = MODE.INITIATING;
 	
 	/**
 	 * Option to reconnect on disconnect.
@@ -117,7 +109,7 @@ public class IRCSocket
 		if (m.initialize(true))
 			connect();
 		else
-			m.printSystemMsg("Connection aborted.", C.ORANGE);
+			m.printSystemMsg("Connection aborted.", C.COLOR.ORANGE);
 	}
 	
 	/**
@@ -143,13 +135,13 @@ public class IRCSocket
 	 */
 	protected void connect()
 	{
-		this.mode = MODE_CONNECTING;
+		this.mode = MODE.CONNECTING;
 		
 		do
 		{
 			try
 			{
-				m.printSystemMsg("Connecting to " + m.hostName + "...", C.GREEN);
+				m.printSystemMsg("Connecting to " + m.hostName + "...", C.COLOR.GREEN);
 				
 				sock = new Socket();
 				
@@ -167,7 +159,7 @@ public class IRCSocket
 				}
 				else
 				{
-					m.printSystemMsg("Connection aborted.", C.ORANGE);
+					m.printSystemMsg("Connection aborted.", C.COLOR.ORANGE);
 					
 					return;
 				}
@@ -191,7 +183,7 @@ public class IRCSocket
 	{	
 		public void run() 
 		{
-			mode = MODE_CONNECTED;
+			mode = MODE.CONNECTED;
 			
 			try
 			{
@@ -205,29 +197,35 @@ public class IRCSocket
 			}
 			catch (IOException e)
 			{
-				disconnect(e.toString());
-				m.printSystemMsg("You have been disconnected.", C.ORANGE);
-			}
-			
-			if (reconnect && mode != MODE_USER_DISCONNECT)
-			{
-				m.printSystemMsg("Reconnecting...", C.GREEN);
-				connect();
+				m.printSystemMsg("You have been disconnected.", C.COLOR.ORANGE);
+				
+				if (reconnect && mode != MODE.USER_DISCONNECT)
+				{
+					disconnect(e.toString());
+					m.printSystemMsg("Reconnecting...", C.COLOR.GREEN);
+					connect();
+				}
+				else
+				{
+					disconnect("user termination");
+				}
 			}
 		}
 	}
 	
 	protected void disconnect(String reason)
 	{
-		if (mode > MODE_INITIATING)
+		if (mode.isActive())
 		{
+			sendData("QUIT :client quit");
+			
 			if (reason.startsWith("user termination"))
 			{
-				mode = MODE_USER_DISCONNECT;
+				mode = MODE.USER_DISCONNECT;
 			}
 			else
 			{
-				mode = MODE_PEER_DISCONNECT;
+				mode = MODE.PEER_DISCONNECT;
 			}
 			
 			m.printDebugMsg("Connection closed: " + reason);

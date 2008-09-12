@@ -107,17 +107,17 @@ public class DefaultCLI implements UserInput
 		return true;
 	}
 	
-	public void println(String input, int style)
+	public void println(String input, C.COLOR style)
 	{
 		this.println(input, "Console", style);
 	}
 	
-	public void println(String input, String channel, int style)
+	public void println(String input, String channel, C.COLOR style)
 	{
 		System.out.print("\n(" + channel + ") " + input);
 	}
 	
-	public void print(String input, String channel, int style)
+	public void print(String input, String channel, C.COLOR style)
 	{
 		System.out.print(input);
 	}

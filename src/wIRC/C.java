@@ -16,9 +16,9 @@ import java.io.File;
  * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
 public final class C 
-{	
+{
 	//	Protocol IRC message codes:
-
+	
 	public static final int MOTD_FOOTER = 376;
 	public static final int MOTD_CONTENT = 372;
 	public static final int MOTD_HEADER = 375;
@@ -27,7 +27,7 @@ public final class C
 	public static final int NAMELIST_CONTENT = 353;
 	
 	public static final int CHAN_TOPIC = 332;
-
+	
 	//	wIRC message codes:
 	
 	public static final int NULL = 0;
@@ -61,7 +61,7 @@ public final class C
 		BLUE_BOLD,
 		BLUEGRAY,
 		VIOLET;
-	};
+	}
 	
 	// Misc constants:
 	

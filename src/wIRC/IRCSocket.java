@@ -2,6 +2,7 @@ package wIRC;
 import java.io.*;
 import java.net.*;
 import javax.swing.UIManager;
+import wIRC.Message.TextColor;
 
 /**
  * IRCSocket
@@ -109,7 +110,7 @@ public class IRCSocket
 		if (m.initialize(true))
 			connect();
 		else
-			m.printSystemMsg("Connection aborted.", C.COLOR.ORANGE);
+			m.printSystemMsg("Connection aborted.", TextColor.ORANGE);
 	}
 	
 	/**
@@ -141,7 +142,7 @@ public class IRCSocket
 		{
 			try
 			{
-				m.printSystemMsg("Connecting to " + m.hostName + "...", C.COLOR.GREEN);
+				m.printSystemMsg("Connecting to " + m.hostName + "...", TextColor.GREEN);
 				
 				sock = new Socket();
 				
@@ -159,7 +160,7 @@ public class IRCSocket
 				}
 				else
 				{
-					m.printSystemMsg("Connection aborted.", C.COLOR.ORANGE);
+					m.printSystemMsg("Connection aborted.", TextColor.ORANGE);
 					
 					return;
 				}
@@ -197,12 +198,12 @@ public class IRCSocket
 			}
 			catch (IOException e)
 			{
-				m.printSystemMsg("You have been disconnected.", C.COLOR.ORANGE);
+				m.printSystemMsg("You have been disconnected.", TextColor.ORANGE);
 				
 				if (reconnect && mode != MODE.USER_DISCONNECT)
 				{
 					disconnect(e.toString());
-					m.printSystemMsg("Reconnecting...", C.COLOR.GREEN);
+					m.printSystemMsg("Reconnecting...", TextColor.GREEN);
 					connect();
 				}
 				else

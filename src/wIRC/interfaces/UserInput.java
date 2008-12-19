@@ -1,6 +1,6 @@
 package wIRC.interfaces;
 import SortedListModel.SortedListModel;
-import wIRC.C;
+import wIRC.Message.TextColor;
 
 public interface UserInput
 {
@@ -14,11 +14,11 @@ public interface UserInput
 	
 	public abstract boolean removeChat(String title);
 	
-	public abstract void println(String input, C.COLOR style);
+	public abstract void println(String input, TextColor style);
 	
-	public abstract void println(String input, String channel, C.COLOR style);
+	public abstract void println(String input, String channel, TextColor style);
 	
-	public abstract void print(String input, String channel, C.COLOR style);
+	public abstract void print(String input, String channel, TextColor style);
 	
 	public abstract void addNicks(String channel, String... nicks);
 	

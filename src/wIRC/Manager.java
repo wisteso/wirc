@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TreeMap;
-
+import wIRC.Message.Code;
+import wIRC.Message.TextColor;
 import wIRC.interfaces.MessageParser;
 import wIRC.interfaces.Plugin;
 import wIRC.interfaces.UserInput;
@@ -25,6 +26,10 @@ import SortedListModel.SortedListModel;
  */
 public class Manager 
 {
+	public static final String NULL_CHAR = String.valueOf(0);
+	public static final String CTCP_CHAR = String.valueOf(1);
+	public static final String PSLASH = File.separator;
+	
 	private IRCSocket s;
 	
 	protected File profile;
@@ -32,6 +37,7 @@ public class Manager
 	protected DateFormat time = new java.text.SimpleDateFormat("HH:mm:ss");
 	
 	protected File homePath = new File(System.getProperty("user.home") + File.separator + ".wIRC");
+	protected File appPath = new File(System.getProperty("user.dir"));
 	
 	protected String nickName = "Nullname" + (int)(Math.random() * 9000 + 999);
 	protected String realName = "Anonymous";
@@ -55,7 +61,7 @@ public class Manager
 			@Override
 			public void parseMessage(Message mesg)
 			{
-				window.println("(" + mesg.getCode() + ") " + mesg.getMessage(), mesg.getChannel(), C.COLOR.GRAY);
+				window.println("(" + mesg.getCode() + ") " + mesg.getMessage(), mesg.getChannel(), TextColor.GRAY);
 			}
 		};
 		
@@ -70,7 +76,7 @@ public class Manager
 			@Override
 			public void parseMessage(Message mesg)
 			{
-				window.println("(NOTICE) " + mesg.getMessage(), mesg.getChannel(), C.COLOR.ORANGE);
+				window.println("(NOTICE) " + mesg.getMessage(), mesg.getChannel(), TextColor.ORANGE);
 			}
 		};
 		
@@ -79,7 +85,7 @@ public class Manager
 		// ....
 		
 		// add parsers
-		this.mesgHandler.addParser(C.NOTICE, notice);
+		this.mesgHandler.addParser(Code.NOTICE, notice);
 	}
 	
 	public Manager(IRCSocket s)
@@ -98,9 +104,11 @@ public class Manager
 			printDebugMsg("Using existing user folder.");
 		}
 		
-		window.println("(SYSTEM) Home path: " + homePath, C.COLOR.BLUEGRAY);
+		window.println("(SYSTEM) Home path: " + homePath, TextColor.BLUEGRAY);
 		
-		window.println("(SYSTEM) Requesting login info...", C.COLOR.GREEN);
+		window.println("(SYSTEM) Run path: " + appPath, TextColor.BLUEGRAY);
+		
+		window.println("(SYSTEM) Requesting login info...", TextColor.GREEN);
 	}
 	
 	protected boolean initialize(boolean askAll)
@@ -112,7 +120,7 @@ public class Manager
 			if (prfl == null)
 				profile = null;
 			else
-				profile = new File(homePath + C.PSLASH + "profiles" + C.PSLASH + prfl.toLowerCase());
+				profile = new File(homePath + PSLASH + "profiles" + PSLASH + prfl.toLowerCase());
 			
 			try
 			{
@@ -194,7 +202,7 @@ public class Manager
 		
 		for (int i = 0; i < folders.length; ++i)
 		{
-			temp = new File(homePath + C.PSLASH + folders[i]);
+			temp = new File(homePath + PSLASH + folders[i]);
 			
 			if (!temp.isDirectory() && !temp.mkdir())
 				return false;
@@ -215,7 +223,7 @@ public class Manager
 			s.sendData(msg);
 	}
 	
-	protected void printSystemMsg(String msg, C.COLOR style)
+	protected void printSystemMsg(String msg, TextColor style)
 	{
 		window.println("(SYSTEM) " + msg, style);
 	}
@@ -226,7 +234,7 @@ public class Manager
 		{
 			String timeStamp = time.format(new java.util.Date());
 	        
-			window.println("(ERROR) [" + timeStamp + "] " + msg, "\002ERROR\003", C.COLOR.RED);
+			window.println("(ERROR) [" + timeStamp + "] " + msg, "\002ERROR\003", TextColor.RED);
 			
 			//System.err.println(msg);
 		}
@@ -298,8 +306,8 @@ public class Manager
 						
 						s.sendData("PRIVMSG " + recipient + " :" + msg);
 						
-						window.println("<" + nickName + "> ", recipient, C.COLOR.BLUE_BOLD);
-						window.print(message, recipient, C.COLOR.BLACK);
+						window.println("<" + nickName + "> ", recipient, TextColor.BLUE_BOLD);
+						window.print(message, recipient, TextColor.BLACK);
 					}
 				}
 			}
@@ -336,7 +344,7 @@ public class Manager
 			}
 			else if (command.equals("RECONNECT"))
 			{
-				window.println("\n(SYSTEM) Reconnecting...", chan, C.COLOR.ORANGE);
+				window.println("\n(SYSTEM) Reconnecting...", chan, TextColor.ORANGE);
 				s.disconnect("reconnecting");
 			}
 			else if (command.equals("QUIT") || command.equals("DISCONNECT"))
@@ -345,20 +353,20 @@ public class Manager
 			}
 			else if (command.equals("SLOAD"))
 			{
-				window.println("(SYSTEM) Loading plugin (strict)...", chan, C.COLOR.BLUE);
+				window.println("(SYSTEM) Loading plugin (strict)...", chan, TextColor.BLUE);
 				
 				String pluginPath = msg.substring(spaceIndex + 1).trim();
 				
 				String pluginName = loadPlugin(pluginPath);
 				
 				if (pluginName != null)
-					window.println("(SYSTEM) " + pluginName + " loaded.", chan, C.COLOR.BLUE);
+					window.println("(SYSTEM) " + pluginName + " loaded.", chan, TextColor.BLUE);
 				else
-					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, C.COLOR.BLUE);
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, TextColor.BLUE);
 			}
 			else if (command.equals("LOAD"))
 			{
-				window.println("(SYSTEM) Loading plugin...", chan, C.COLOR.BLUE);
+				window.println("(SYSTEM) Loading plugin...", chan, TextColor.BLUE);
 				
 				String input = msg.substring(spaceIndex + 1).trim();
 				
@@ -367,7 +375,7 @@ public class Manager
 				if (input.startsWith("http://"))
 					pluginPath = input;
 				else
-					pluginPath = homePath + C.PSLASH + "plugins" + C.PSLASH + input;
+					pluginPath = homePath + PSLASH + "plugins" + PSLASH + input;
 				
 				if (!pluginPath.endsWith(".class"))
 					pluginPath += ".class";
@@ -375,13 +383,13 @@ public class Manager
 				String pluginName = loadPlugin(pluginPath);
 				
 				if (pluginName != null)
-					window.println("(SYSTEM) " + pluginName + " loaded.", chan, C.COLOR.BLUE);
+					window.println("(SYSTEM) " + pluginName + " loaded.", chan, TextColor.BLUE);
 				else
-					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, C.COLOR.BLUE);
+					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, TextColor.BLUE);
 			}
 			else if (command.equals("SCRIPT"))
 			{
-				window.println("(SYSTEM) Executing script...", chan, C.COLOR.BLUE);
+				window.println("(SYSTEM) Executing script...", chan, TextColor.BLUE);
 				
 				String input = msg.substring(spaceIndex + 1).trim();
 				
@@ -390,7 +398,7 @@ public class Manager
 				if (input.startsWith("http://"))
 					scriptPath = input;
 				else
-					scriptPath = homePath + C.PSLASH + "scripts" + C.PSLASH + input;
+					scriptPath = homePath + PSLASH + "scripts" + PSLASH + input;
 				
 				if (!scriptPath.endsWith(".script"))
 					scriptPath += ".script";
@@ -398,9 +406,9 @@ public class Manager
 				String scriptName = executeScript(scriptPath);
 				
 				if (scriptName != null)
-					window.println("(SYSTEM) " + scriptName + " finished.", chan, C.COLOR.BLUE);
+					window.println("(SYSTEM) " + scriptName + " finished.", chan, TextColor.BLUE);
 				else
-					window.println("(SYSTEM) Script loading failed - path: " + scriptPath, chan, C.COLOR.BLUE);
+					window.println("(SYSTEM) Script loading failed - path: " + scriptPath, chan, TextColor.BLUE);
 			}
 			else if (command.equals("DEBUG"))
 			{
@@ -416,8 +424,8 @@ public class Manager
 			if (!chanName.equals("Console"))
 			{
 				s.sendData("PRIVMSG " + chanName + " :" + msg);
-				window.println("<" + nickName + "> ", chan, C.COLOR.BLUE_BOLD);
-				window.print(msg, chan, C.COLOR.BLACK);
+				window.println("<" + nickName + "> ", chan, TextColor.BLUE_BOLD);
+				window.print(msg, chan, TextColor.BLACK);
 			}
 		}
 	}
@@ -493,7 +501,7 @@ public class Manager
 		}
 		else
 		{
-			window.println("(ERROR) That chat does not exist.", "Console", C.COLOR.RED);
+			window.println("(ERROR) That chat does not exist.", "Console", TextColor.RED);
 		}
 	}
 	
@@ -501,9 +509,11 @@ public class Manager
 	{
 		Message x = new Message(rawIn, this);
 		
-		int code = x.getCode();
+		Code code = x.getCode();
 		String msg = x.getMessage();
 		String chan = x.getChannel();
+		
+		if (code == Code.UNKNOWN) System.out.println("ADD (" + x.getCode().ircCode + ") : " + msg);
 		
 		if (!plugins.isEmpty())
 		{
@@ -519,13 +529,13 @@ public class Manager
 			}
 		}
 
-		if (code < 0)
+		if (code.ircCode < 0)
 		{
-			if (code == C.MESSAGE)
+			if (code == Code.MESSAGE)
 			{
 				if (x.getChannel().charAt(0) == 0x23)
 				{
-					window.println("<" + x.getNick() + "> ", chan, C.COLOR.BLUE);
+					window.println("<" + x.getNick() + "> ", chan, TextColor.BLUE);
 					
 					int i = msg.indexOf(nickName);
 					
@@ -535,40 +545,40 @@ public class Manager
 						
 						while (i > -1)
 						{
-							window.print(msg.substring(j, i), chan, C.COLOR.BLACK);
+							window.print(msg.substring(j, i), chan, TextColor.BLACK);
 							
 							j = i + nickName.length();
 							
-							window.print(msg.substring(i, j), chan, C.COLOR.BLACK_BOLD);
+							window.print(msg.substring(i, j), chan, TextColor.BLACK_BOLD);
 							
 							i = msg.indexOf(nickName, j);
 						}
 						
-						window.print(msg.substring(j), chan, C.COLOR.BLACK);
+						window.print(msg.substring(j), chan, TextColor.BLACK);
 					}
 					else
 					{
-						window.print(msg, chan, C.COLOR.BLACK);
+						window.print(msg, chan, TextColor.BLACK);
 					}
 				}
 				else
 				{
-					window.println("<" + x.getNick() + "> ", chan, C.COLOR.VIOLET);
-					window.print(msg, chan, C.COLOR.BLACK);
+					window.println("<" + x.getNick() + "> ", chan, TextColor.VIOLET);
+					window.print(msg, chan, TextColor.BLACK);
 				}
 			}
-			else if (code == C.NOTICE)
+			else if (code == Code.NOTICE)
 			{
-				window.println("(NOTICE) " + msg, chan, C.COLOR.ORANGE);
+				window.println("(NOTICE) " + msg, chan, TextColor.ORANGE);
 			}
-			else if (code == C.PING)
+			else if (code == Code.PING)
 			{
 				s.sendData("PONG " + msg);
-				window.println("(PING) " + msg, chan, C.COLOR.GREEN);
+				window.println("(PING) " + msg, chan, TextColor.GREEN);
 			}
-			else if (code == C.JOIN)
+			else if (code == Code.JOIN)
 			{
-				window.println("<" + x.getNick() + " has joined>", chan, C.COLOR.BLUEGRAY);
+				window.println("<" + x.getNick() + " has joined>", chan, TextColor.BLUEGRAY);
 				
 				if (!x.getNick().equals(nickName))
 				{
@@ -576,20 +586,20 @@ public class Manager
 					users.put(x.getNick(), new User(x.getNick(), null, x.getChannel()));
 				}
 			}
-			else if (code == C.PART)
+			else if (code == Code.PART)
 			{	
 				if (!chan.equals("Console"))
 				{
 					if (x.getNick().equals(nickName))
 					{
-						window.println("<You have left " + chan + ">", C.COLOR.BLUEGRAY);
+						window.println("<You have left " + chan + ">", TextColor.BLUEGRAY);
 					}
 					else
 					{
 						if (msg.length() < 2)
-							window.println("<" + x.getNick() + " has left>", chan, C.COLOR.BLUEGRAY);
+							window.println("<" + x.getNick() + " has left>", chan, TextColor.BLUEGRAY);
 						else
-							window.println("<" + x.getNick() + " has left - " + msg + ">", chan, C.COLOR.BLUEGRAY);
+							window.println("<" + x.getNick() + " has left - " + msg + ">", chan, TextColor.BLUEGRAY);
 						
 						window.removeNicks(chan, x.getNick());
 						
@@ -603,7 +613,7 @@ public class Manager
 					printDebugMsg(x.getMessage() + " | " + rawIn);
 				}
 			}
-			else if (code == C.QUIT)
+			else if (code == Code.QUIT)
 			{
 				if (users.containsKey(x.getNick()))
 				{
@@ -614,9 +624,9 @@ public class Manager
 						window.removeNicks(chans[a], x.getNick());
 						
 						if (msg.length() < 2)
-							window.println("<" + x.getNick() + " has quit>", chans[a], C.COLOR.BLUEGRAY);
+							window.println("<" + x.getNick() + " has quit>", chans[a], TextColor.BLUEGRAY);
 						else
-							window.println("<" + x.getNick() + " has quit - " + msg.toLowerCase() + ">", chans[a], C.COLOR.BLUEGRAY);
+							window.println("<" + x.getNick() + " has quit - " + msg.toLowerCase() + ">", chans[a], TextColor.BLUEGRAY);
 						
 						if (!removeUser(x.getNick()))
 							printDebugMsg(x.getNick() + " not found in user-treemap. (QUIT)");
@@ -627,31 +637,31 @@ public class Manager
 					printDebugMsg(x.getNick() + " not found in user-treemap. (QUIT)");
 				}
 			}
-			else if (code == C.MODE)
+			else if (code == Code.MODE)
 			{
 				if (x.getNick() != hostName)
 				{
-					window.println("<" + x.getNick() + " is now " + msg + ">", chan, C.COLOR.BLUEGRAY);
+					window.println("<" + x.getNick() + " is now " + msg + ">", chan, TextColor.BLUEGRAY);
 					window.replaceNick(x.getNick(), msg);
 				}
 				else
-					window.println("<" + x.getChannel() + " is now " + msg + ">", chan, C.COLOR.BLUEGRAY);
+					window.println("<" + x.getChannel() + " is now " + msg + ">", chan, TextColor.BLUEGRAY);
 			}
-			else if (code == C.NICK)
+			else if (code == Code.NICK)
 			{
 				// TODO: Show this notification on the right channels.
 				if (x.getNick().equals(nickName) == true)
 				{
 					nickName = msg;
 					window.replaceNick(x.getNick(), msg);
-					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), C.COLOR.BLUE);
+					window.println("<You are now known as " + msg + ">", window.getFocusedChat(), TextColor.BLUE);
 					
 					writeProfile(profile);
 				}
 				else
 				{
 					window.replaceNick(x.getNick(), msg);
-					window.println("<" + x.getNick() + " is now known as " + msg + ">", chan, C.COLOR.BLUEGRAY);
+					window.println("<" + x.getNick() + " is now known as " + msg + ">", chan, TextColor.BLUEGRAY);
 				}
 				
 /*		FIXME : keys are not being correctly changed.
@@ -672,29 +682,29 @@ public class Manager
                 }
 */
 			}
-			else if (code == C.CTCP_MSG)
+			else if (code == Code.CTCP_MSG)
 			{	
 				String reply = new String();
 				
 				if (msg.indexOf("ACTION") == 0)
 				{
-					window.println("<" + x.getNick() + msg.substring(msg.indexOf(" ")) + ">", chan, C.COLOR.VIOLET);
+					window.println("<" + x.getNick() + msg.substring(msg.indexOf(" ")) + ">", chan, TextColor.VIOLET);
 				}
 				else if (msg.indexOf("PING") == 0)
 				{
-					window.println("<" + x.getNick() + " has requested your ping>", chan, C.COLOR.VIOLET);
+					window.println("<" + x.getNick() + " has requested your ping>", chan, TextColor.VIOLET);
 					reply = "PING " + msg.substring(msg.indexOf(" ") + 1);
 					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else if (msg.indexOf("VERSION") == 0)
 				{
-					window.println("<" + x.getNick() + " has requested your version>", chan, C.COLOR.VIOLET);
+					window.println("<" + x.getNick() + " has requested your version>", chan, TextColor.VIOLET);
 					reply = "VERSION wIRC v0.2 <wisteso@gmail.com>";
 					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else if (msg.indexOf("TIME") == 0)
 				{
-					window.println("<" + x.getNick() + " has requested your local time>", chan, C.COLOR.VIOLET);
+					window.println("<" + x.getNick() + " has requested your local time>", chan, TextColor.VIOLET);
 					
 					Calendar T = Calendar.getInstance();
 					
@@ -708,48 +718,48 @@ public class Manager
 				}
 				else if (msg.indexOf("USERINFO") == 0)
 				{
-					window.println("<" + x.getNick() + " has requested your user info>", chan, C.COLOR.VIOLET);
+					window.println("<" + x.getNick() + " has requested your user info>", chan, TextColor.VIOLET);
 					s.sendData("NOTICE " + x.getNick() + " :\1" + reply + "\1");
 				}
 				else
 					printDebugMsg("!!! " + msg);
 			}
-			else if (code == C.TOPIC)
+			else if (code == Code.TOPIC)
 			{
-				window.println("(TOPIC) " + msg, chan, C.COLOR.BLUE);
+				window.println("(TOPIC) " + msg, chan, TextColor.BLUE);
 			}
-			else if (code == C.ERROR)
+			else if (code == Code.ERROR)
 			{
 				if (x.getMessage().indexOf("Closing Link") > -1)
 					s.disconnect(msg);
 				else
-					window.println("(ERROR) " + msg, chan, C.COLOR.RED);
+					window.println("(ERROR) " + msg, chan, TextColor.RED);
 			}
 			else
 			{
-				window.println("(" + code + ") " + msg, chan, C.COLOR.GRAY);
+				window.println("(" + code + ") " + msg, chan, TextColor.GRAY);
 			}
 		}
-		else if (code >= 0)
+		else if (code.ircCode > -1)
 		{
-			if (code > 0 && code < 7)  // Post-registration greeting.
+			if (code.ircCode > 0 && code.ircCode < 7)  // Post-registration greeting.
 			{
-				if (code < 4)
-					window.println("(GREET) " + msg, chan, C.COLOR.GREEN);
+				if (code.ircCode < 4)
+					window.println("(GREET) " + msg, chan, TextColor.GREEN);
 				
 				// TODO - Add the rest of the code for the statistic crap here.
 			}
-			else if (code > 249 && code < 270)  // Misc. information.
+			else if (code.ircCode > 249 && code.ircCode < 270)  // Misc. information.
 			{
-				window.println("(INFO) " + msg, chan, C.COLOR.GRAY);
+				window.println("(INFO) " + msg, chan, TextColor.GRAY);
 			}
-			else if (code == 332)  // Topic.
+			else if (code == Code.CHAN_TOPIC)  // Topic.
 			{
-				window.println("(TOPIC) " + msg, chan, C.COLOR.BLUE);
+				window.println("(TOPIC) " + msg, chan, TextColor.BLUE);
 			}
-			else if (code == 333 || code == 353 || code == 366)  // Name list.
+			else if (code.ircCode == 333 || code == Code.NAMELIST_CONTENT || code == Code.NAMELIST_FOOTER)  // Name list.
 			{
-				if (code == 353)
+				if (code == Code.NAMELIST_CONTENT)
 				{
 					SortedListModel l = window.getNickList(x.getChannel());
 					
@@ -793,24 +803,24 @@ public class Manager
 						users.get(t).addChans(x.getChannel());
 				}
 			}
-			else if (code > 371 && code < 377)  // Message of the day.
+			else if (code.ircCode > 371 && code.ircCode < 377)  // Message of the day.
 			{
-				window.println("(MOTD) " + msg, chan, C.COLOR.GREEN);
+				window.println("(MOTD) " + msg, chan, TextColor.GREEN);
 				
-				if (code == 376)
+				if (code == Code.MOTD_FOOTER)
 					sendMsg("/SCRIPT default.script", "Console");
 			}
-			else if (code == 433)
+			else if (code.ircCode == 433)
 			{
 				String tempNick = "Nullname" + (int)(Math.random() * 10000);
-				window.println("(ERROR) Nickname already in use. Nickname set to: " + tempNick, chan, C.COLOR.RED);
+				window.println("(ERROR) Nickname already in use. Nickname set to: " + tempNick, chan, TextColor.RED);
 				
 				s.sendData("NICK " + tempNick);
 				nickName = tempNick;
 			}
 			else
 			{
-				window.println("(" + code + ") " + msg, chan, C.COLOR.GRAY);
+				window.println("(" + code + ") " + msg, chan, TextColor.GRAY);
 			}
 		}
 	}

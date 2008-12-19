@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import wIRC.Message.Code;
 import wIRC.interfaces.MessageParser;
 
 /**
@@ -11,16 +12,16 @@ import wIRC.interfaces.MessageParser;
  */
 public class MessageHandler
 {
-	private Map<Integer, List<MessageParser>> parserMap;
+	private Map<Code, List<MessageParser>> parserMap;
 	private MessageParser unkownHandler;
 
 	public MessageHandler(MessageParser unkownHandler)
 	{
-		parserMap = new HashMap<Integer, List<MessageParser>>();
+		parserMap = new HashMap<Code, List<MessageParser>>();
 		this.unkownHandler = unkownHandler;
 	}
 
-	public void addParser(Integer code, MessageParser par)
+	public void addParser(Code code, MessageParser par)
 	{
 		if (parserMap.containsKey(code))
 		{
@@ -38,7 +39,7 @@ public class MessageHandler
 	{
 		List<MessageParser> list = null;
 		
-		for (Integer code : parserMap.keySet())
+		for (Code code : parserMap.keySet())
 		{
 			for (MessageParser temppar : parserMap.get(code))
 			{
@@ -60,7 +61,7 @@ public class MessageHandler
 
 	public void ParseMessage(Message mesg)
 	{
-		int code = mesg.getCode();
+		Code code = mesg.getCode();
 		
 		if (parserMap.containsKey(code))
 		{

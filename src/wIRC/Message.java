@@ -10,13 +10,116 @@ package wIRC;
  */
 public class Message 
 {
+	public static enum Code
+	{
+		UNKNOWN,
+		
+		MESSAGE,
+		NOTICE,
+		PING,
+		JOIN,
+		PART,
+		QUIT,
+		MODE,
+		NICK,
+		CTCP_MSG,
+		TOPIC,
+		ERROR,
+		DISCONNECT,
+		
+		RPL_WELCOME(001),
+		RPL_YOURHOST(002),
+		RPL_CREATED(003),
+		RPL_MYINFO(004),
+		RPL_ISUPPORT(005),
+		RPL_LUSERCLIENT(251),
+		RPL_LUSEROP(252),
+		RPL_LUSERUNKNOWN(253),
+		RPL_LUSERCHANNELS(254),
+		RPL_LUSERME(255),
+		RPL_LOCALUSERS(265),
+		RPL_GLOBALUSERS(266),
+		CHAN_TOPIC(332),
+		NAMELIST_CONTENT(353),
+		NAMELIST_FOOTER(366),
+		MOTD_CONTENT(372),
+		MOTD_HEADER(375),
+		MOTD_FOOTER(376);
+		
+		public int ircCode;
+		
+		private Code()
+		{
+			ircCode = -1;
+		}
+		
+		private Code(int signature)
+		{
+			ircCode = signature;
+		}
+		
+		public static Code parseCode(int signature)
+		{
+			switch (signature)
+			{
+				case 001: return RPL_WELCOME;
+				case 002: return RPL_YOURHOST;
+				case 003: return RPL_CREATED;
+				case 004: return RPL_MYINFO;
+				case 005: return RPL_ISUPPORT;
+				case 251: return RPL_LUSERCLIENT;
+				case 252: return RPL_LUSEROP;
+				case 254: return RPL_LUSERCHANNELS;
+				case 255: return RPL_LUSERME;
+				case 265: return RPL_LOCALUSERS;
+				case 266: return RPL_GLOBALUSERS;
+				case 376: return MOTD_FOOTER; 
+				case 372: return MOTD_CONTENT;
+				case 375: return MOTD_HEADER;
+				case 366: return NAMELIST_FOOTER;
+				case 353: return NAMELIST_CONTENT;
+				case 332: return CHAN_TOPIC;
+			}
+			
+			Code unknown = UNKNOWN;
+			
+			unknown.ircCode = signature;
+			
+			return unknown;
+		}
+		
+		/*
+		public static Code parseCode(String signature)
+		{
+			return NULL;
+		}
+		*/
+	}
+	
+	// Color constants:
+	
+	public static enum TextColor
+	{
+		BLACK_BOLD,
+		BLACK,
+		GRAY,
+		RED,
+		ORANGE,
+		YELLOW,
+		GREEN,
+		BLUE,
+		BLUE_BOLD,
+		BLUEGRAY,
+		VIOLET;
+	}
+	
 	private String sender = new String();
 	private String nickname = new String();
 	private String command = new String();
 	private String target = new String();
 	private String message = new String();
 	private String channel = new String("Console");
-	private Integer code = C.NULL;
+	private Code code = Code.UNKNOWN;
 	
 	public Message(String rawData, Manager m)
 	{
@@ -52,15 +155,15 @@ public class Message
 			
 			try
 			{
-				code = Integer.parseInt(command);
+				code = Code.parseCode(Integer.parseInt(command));
 			}
 			catch (NumberFormatException e)
 			{
-				code = C.NULL;
+				code = Code.UNKNOWN;
 			}
 		}
 		
-		if (code > 0)  // Numeric command.
+		if (code.ircCode > 0)  // Numeric command.
 		{
 			int i;
 			
@@ -80,7 +183,8 @@ public class Message
 				message = rawMsg;
 			}
 			
-			if (code == 332 || code == 333 || code == 353 || code == 366)
+			if (code == Code.CHAN_TOPIC || code.ircCode == 333 || 
+					code == Code.NAMELIST_CONTENT || code == Code.NAMELIST_FOOTER)
 			{
 				int x = rawMsg.indexOf("#");
 				int y = rawMsg.indexOf(" ", x);
@@ -97,7 +201,7 @@ public class Message
 				{
 					if (rawMsg.charAt(rawMsg.length() - 1) == 0x1)
 					{
-						code = C.CTCP_MSG;
+						code = Code.CTCP_MSG;
 						message = rawMsg.substring(rawMsg.indexOf(":") + 2, rawMsg.length() - 1);
 						channel = rawMsg.substring(0, rawMsg.indexOf(":") - 1);
 						
@@ -107,7 +211,7 @@ public class Message
 				}
 				else  // Normal message.
 				{
-					code = C.MESSAGE;
+					code = Code.MESSAGE;
 					message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 					channel = rawMsg.substring(0, rawMsg.indexOf(":") - 1);
 					
@@ -117,22 +221,22 @@ public class Message
 			}
 			else if (command.indexOf("NOTICE") == 0)
 			{
-				code = C.NOTICE;
+				code = Code.NOTICE;
 				message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 			}
 			else if (command.indexOf("PING") == 0)
 			{
-				code = C.PING;
+				code = Code.PING;
 				message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 			}
 			else if (command.indexOf("JOIN") == 0)
 			{
-				code = C.JOIN;
+				code = Code.JOIN;
 				channel = rawMsg.substring(rawMsg.indexOf("#"));
 			}
 			else if (command.indexOf("PART") == 0)
 			{
-				code = C.PART;
+				code = Code.PART;
 				
 				int cIndex = rawData.indexOf(" PART ") + 1;
 				int mIndex = rawData.indexOf(":", cIndex + 5);
@@ -154,12 +258,12 @@ public class Message
 			}
 			else if (command.indexOf("QUIT") == 0)
 			{
-				code = C.QUIT;
+				code = Code.QUIT;
 				message = rawMsg.substring(rawMsg.indexOf(":") + 1).trim();
 			}
 			else if (command.indexOf("MODE") == 0)
 			{
-				code = C.MODE;
+				code = Code.MODE;
 				
 				if (rawMsg.indexOf(":") > -1)
 				{
@@ -181,7 +285,7 @@ public class Message
 			}
 			else if (command.indexOf("NICK") == 0)
 			{
-				code = C.NICK;
+				code = Code.NICK;
 				
 				if (rawMsg.indexOf(":") > -1)
 					message = rawMsg.substring(rawMsg.indexOf(":") + 1);
@@ -190,12 +294,12 @@ public class Message
 			}
 			else if (command.indexOf("TOPIC") == 0)
 			{
-				code = C.TOPIC;
+				code = Code.TOPIC;
 				message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 			}
 			else if (command.indexOf("ERROR") == 0)
 			{
-				code = C.ERROR;
+				code = Code.ERROR;
 				message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 			}
 			else
@@ -216,7 +320,7 @@ public class Message
 		return nickname;
 	}
 	
-	public int getCode()
+	public Code getCode()
 	{
 		return code;
 	}

@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import SortedListModel.*;
 import wIRC.interfaces.UserInput;
+import wIRC.Message.TextColor;
 
 /**
  * Default GUI object
@@ -384,17 +385,17 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
 	}
 	
-	public synchronized void println(String input, C.COLOR style)
+	public synchronized void println(String input, TextColor style)
 	{
 		print("\n" + input, "Console", style);
 	}
 	
-	public synchronized void println(String input, String channel, C.COLOR style)
+	public synchronized void println(String input, String channel, TextColor style)
 	{
 		print("\n" + input, channel, style);
 	}
 	
-	public synchronized void print(final String input, String channel, C.COLOR style)
+	public synchronized void print(final String input, String channel, TextColor style)
 	{
 		if (tabList.containsKey(channel.toLowerCase()) == false)
 		{

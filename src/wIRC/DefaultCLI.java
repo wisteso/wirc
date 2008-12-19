@@ -1,5 +1,6 @@
 package wIRC;
 import SortedListModel.SortedListModel;
+import wIRC.Message.TextColor;
 import wIRC.interfaces.UserInput;
 import java.util.Scanner;
 
@@ -107,17 +108,17 @@ public class DefaultCLI implements UserInput
 		return true;
 	}
 	
-	public void println(String input, C.COLOR style)
+	public void println(String input, TextColor style)
 	{
 		this.println(input, "Console", style);
 	}
 	
-	public void println(String input, String channel, C.COLOR style)
+	public void println(String input, String channel, TextColor style)
 	{
 		System.out.print("\n(" + channel + ") " + input);
 	}
 	
-	public void print(String input, String channel, C.COLOR style)
+	public void print(String input, String channel, TextColor style)
 	{
 		System.out.print(input);
 	}

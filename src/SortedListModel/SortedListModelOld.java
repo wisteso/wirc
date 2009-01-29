@@ -4,18 +4,18 @@ import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import java.util.Collections;
 
-public class SortedListModel extends AbstractListModel
+public class SortedListModelOld extends AbstractListModel
 {
 	static final long serialVersionUID = 1L;
     
 	private LinkedList<StringIRC> list;
     
-    public SortedListModel()
+    public SortedListModelOld()
     {       
         list = new LinkedList<StringIRC>();
     }
     
-    public SortedListModel(LinkedList<String> data)
+    public SortedListModelOld(LinkedList<String> data)
     {
         list = new LinkedList<StringIRC>();
         

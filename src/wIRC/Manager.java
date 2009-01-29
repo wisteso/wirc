@@ -54,9 +54,10 @@ public class Manager
 	
 	private MessageHandler mesgHandler;
 	
-	// hack!
+	{	staticInit();	}
+	private void staticInit()
 	{
-		MessageParser unkwn = new MessageParser()
+		MessageParser unknown = new MessageParser()
 		{
 			@Override
 			public void parseMessage(Message mesg)
@@ -65,12 +66,6 @@ public class Manager
 			}
 		};
 		
-		mesgHandler = new MessageHandler(unkwn);
-		
-		/* * * * * * * * * * * *
-		 *   Message Parsers   *
-		 * * * * * * * * * * * */
-		// notice, ping, join
 		MessageParser notice = new MessageParser()
 		{
 			@Override
@@ -82,9 +77,9 @@ public class Manager
 		
 		// more declarations here
 		
-		// ....
-		
 		// add parsers
+
+		this.mesgHandler = new MessageHandler(unknown);
 		this.mesgHandler.addParser(Code.NOTICE, notice);
 	}
 	
@@ -795,7 +790,15 @@ public class Manager
 					
 					tList.add(t);
 					
-					l.add(tList.toArray(new String[tList.size()]));
+					Object[] tListObjs = tList.toArray();
+					
+					for (int i = 0; i < tList.size(); ++i)
+					{
+						if (!l.contains(tListObjs[i]))
+							l.addElement(tListObjs[i]);
+					}
+					
+					//l.addElement(tList.toArray(new String[tList.size()]));
 					
 					if (!users.containsKey(t))
 						users.put(t, new User(t, null, x.getChannel()));

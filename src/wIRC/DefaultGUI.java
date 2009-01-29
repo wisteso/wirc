@@ -234,7 +234,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 									{
 										SortedListModel tl = (SortedListModel)temp[1];
 										
-										tl.update();
+										//tl.update();
 										
 										usrList.put(t.toLowerCase(), tl);
 									}
@@ -412,7 +412,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			{
 				SortedListModel tl = (SortedListModel)temp[1];
 				
-				tl.update();
+				//tl.update();
 				
 				usrList.put(channel.toLowerCase(), tl);
 			}
@@ -473,7 +473,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			for (int x = 0; x < nicks.length; ++x)
 			{
 				if (!l.contains(nicks[x]))
-					l.add(nicks[x]);
+					l.addElement(nicks[x]);
 			}
 		}
 		else
@@ -523,7 +523,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				{
 					l.remove(i);
 					
-					if (newNick != null) l.add(newNick);
+					if (newNick != null) l.addElement(newNick);
 				}
 				else
 					m.printDebugMsg(oldNick + " not found in ListModel.");

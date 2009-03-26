@@ -8,9 +8,11 @@ public interface UserInput
 	
 	public abstract String getFocusedChat();
 	
+	public abstract void setFocusedChat(String chatName);
+	
 	public abstract void setServerInfo(String newServer);
 	
-	public abstract Object[] addChat(String title);
+	public abstract boolean addChat(String title);
 	
 	public abstract boolean removeChat(String title);
 	

@@ -66,6 +66,12 @@ public class Manager
 			}
 		};
 		
+		/* * * * * * * * * * * *
+		 *   Message Parsers   *
+		 * * * * * * * * * * * */
+		
+		// notice, ping, join
+
 		MessageParser notice = new MessageParser()
 		{
 			@Override
@@ -309,9 +315,31 @@ public class Manager
 			else if (command.equals("JOIN"))
 			{				
 				if (spaceIndex > -1)
-					s.sendData(msg.substring(1));
+				{
+					String channel = msg.split(" ")[1];
+					
+					s.sendData("JOIN " + channel);
+					window.addChat(channel);
+					window.setFocusedChat(channel);
+				}
 				else if (!chanName.equals("Console"))
+				{
 					s.sendData("JOIN " + chanName);
+				}
+			}
+			else if (command.equals("SJOIN"))
+			{				
+				if (spaceIndex > -1)
+				{
+					String channel = msg.split(" ")[1];
+					
+					s.sendData("JOIN " + channel);
+					window.addChat(channel);
+				}
+				else if (!chanName.equals("Console"))
+				{
+					s.sendData("JOIN " + chanName);
+				}
 			}
 			else if (command.equals("REJOIN"))
 			{
@@ -380,7 +408,7 @@ public class Manager
 				if (pluginName != null)
 					window.println("(SYSTEM) " + pluginName + " loaded.", chan, TextColor.BLUE);
 				else
-					window.println("(SYSTEM) Plugin loading failed - path: " + pluginPath, chan, TextColor.BLUE);
+					window.println("(SYSTEM) Plug-in failed to load or does not exist using path: " + pluginPath, chan, TextColor.BLUE);
 			}
 			else if (command.equals("SCRIPT"))
 			{
@@ -403,7 +431,7 @@ public class Manager
 				if (scriptName != null)
 					window.println("(SYSTEM) " + scriptName + " finished.", chan, TextColor.BLUE);
 				else
-					window.println("(SYSTEM) Script loading failed - path: " + scriptPath, chan, TextColor.BLUE);
+					window.println("(SYSTEM) Script failed to load or does not exist using path: " + scriptPath, chan, TextColor.BLUE);
 			}
 			else if (command.equals("DEBUG"))
 			{
@@ -508,7 +536,7 @@ public class Manager
 		String msg = x.getMessage();
 		String chan = x.getChannel();
 		
-		if (code == Code.UNKNOWN) System.out.println("ADD (" + x.getCode().ircCode + ") : " + msg);
+		if (code == Code.UNKNOWN) System.out.println("\tUnknown command signature: " + msg);
 		
 		if (!plugins.isEmpty())
 		{
@@ -795,7 +823,7 @@ public class Manager
 					for (int i = 0; i < tList.size(); ++i)
 					{
 						if (!l.contains(tListObjs[i]))
-							l.addElement(tListObjs[i]);
+							l.add(tListObjs[i]);
 					}
 					
 					//l.addElement(tList.toArray(new String[tList.size()]));

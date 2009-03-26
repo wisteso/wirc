@@ -88,16 +88,23 @@ public class DefaultCLI implements UserInput
 		return focus;
 	}
 	
+	public void setFocusedChat(String chatName)
+	{
+		focus = chatName;
+		
+		// TODO: Can't be that simple...
+	}
+	
 	public void setServerInfo(String newServer)
 	{
 		
 	}
 	
-	public Object[] addChat(String title)
+	public boolean addChat(String title)
 	{
 		focus = title;
 		
-		return null;
+		return true;
 	}
 	
 	public boolean removeChat(String title)

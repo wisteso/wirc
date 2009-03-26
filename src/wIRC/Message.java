@@ -40,6 +40,7 @@ public class Message
 		RPL_LOCALUSERS(265),
 		RPL_GLOBALUSERS(266),
 		CHAN_TOPIC(332),
+		RPL_TOPICWHOTIME(333),
 		NAMELIST_CONTENT(353),
 		NAMELIST_FOOTER(366),
 		MOTD_CONTENT(372),
@@ -73,19 +74,18 @@ public class Message
 				case 255: return RPL_LUSERME;
 				case 265: return RPL_LOCALUSERS;
 				case 266: return RPL_GLOBALUSERS;
+				case 332: return CHAN_TOPIC;
+				case 333: return RPL_TOPICWHOTIME;
 				case 376: return MOTD_FOOTER; 
 				case 372: return MOTD_CONTENT;
 				case 375: return MOTD_HEADER;
 				case 366: return NAMELIST_FOOTER;
 				case 353: return NAMELIST_CONTENT;
-				case 332: return CHAN_TOPIC;
 			}
 			
-			Code unknown = UNKNOWN;
+			System.err.println("Unknown numberic command: " + signature);
 			
-			unknown.ircCode = signature;
-			
-			return unknown;
+			return UNKNOWN;
 		}
 		
 		/*

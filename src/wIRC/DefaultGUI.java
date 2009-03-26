@@ -170,18 +170,64 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		return tabs.getTitleAt(tabs.getSelectedIndex());
 	}
 	
-	public synchronized void focusChat(final String title)
+	public void setFocusedChat(final String chatName)
 	{
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
-				tabs.setSelectedIndex(tabs.indexOfTab(title));
+				int index = tabs.indexOfTab(chatName);
+				
+				if (index > -1)
+					tabs.setSelectedIndex(index);
+				else
+					System.err.println("Cannot find " + index);
 			}
 		});
 	}
 	
-	public synchronized Object[] addChat(final String title)
+	public synchronized void focusInput()
+	{
+		// TODO: Make me work!! Java bug maybe?
+		
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				txtOut.requestFocusInWindow();
+			}
+		});
+	}
+	
+	public boolean addChat(String channel)
+	{
+		if (tabList.containsKey(channel.toLowerCase()) == false)
+		{
+			Object[] temp = addChatWindow(channel);
+			
+			if (temp == null)
+				return false;
+			
+			JEditorPane tp = (JEditorPane)temp[0];
+			
+			tabList.put(channel.toLowerCase(), tp);
+			
+			if (temp.length > 1)
+			{
+				SortedListModel tl = (SortedListModel)temp[1];
+				
+				//tl.update();
+				
+				usrList.put(channel.toLowerCase(), tl);
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public synchronized Object[] addChatWindow(final String title)
 	{
 		if (tabList.size() < 11)
 		{
@@ -221,25 +267,11 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 									if (firstChar == '@' || firstChar == '+' || firstChar == '%')
 										t = t.substring(1);
 									
-									Object[] temp = addChat(t);
+									addChat(t);
 									
-									if (temp == null)
-										return;
+									setFocusedChat(t);
 									
-									JEditorPane tp = (JEditorPane)temp[0];
-									
-									tabList.put(t.toLowerCase(), tp);
-									
-									if (temp.length > 1)
-									{
-										SortedListModel tl = (SortedListModel)temp[1];
-										
-										//tl.update();
-										
-										usrList.put(t.toLowerCase(), tl);
-									}
-									
-									focusChat(t);
+									focusInput();
 								}
 							}
 						});
@@ -397,26 +429,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 	
 	public synchronized void print(final String input, String channel, TextColor style)
 	{
-		if (tabList.containsKey(channel.toLowerCase()) == false)
-		{
-			Object[] temp = addChat(channel);
-			
-			if (temp == null)
-				return;
-			
-			JEditorPane tp = (JEditorPane)temp[0];
-			
-			tabList.put(channel.toLowerCase(), tp);
-			
-			if (temp.length > 1)
-			{
-				SortedListModel tl = (SortedListModel)temp[1];
-				
-				//tl.update();
-				
-				usrList.put(channel.toLowerCase(), tl);
-			}
-		}
+		addChat(channel);	// Checks existence and often does not add.
 		
 		final JEditorPane p = tabList.get(channel.toLowerCase());
 		
@@ -446,6 +459,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				try
 				{
 					p.getDocument().insertString(p.getDocument().getLength(), input, styling);
+					//p.getDocument().remove(offs, len);
 				}
 				catch (Exception e)
 				{
@@ -454,10 +468,12 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				
 				if (!isReading)
 				{
-					p.setCaretPosition(p.getDocument().getLength());
+					//p.setCaretPosition(p.getDocument().getLength());
 				}
 			}
 		});
+		
+		//e);
 	}
 	
 	/* * * * * * * * * * * * *
@@ -473,7 +489,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			for (int x = 0; x < nicks.length; ++x)
 			{
 				if (!l.contains(nicks[x]))
-					l.addElement(nicks[x]);
+					l.add(nicks[x]);
 			}
 		}
 		else
@@ -523,7 +539,7 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				{
 					l.remove(i);
 					
-					if (newNick != null) l.addElement(newNick);
+					if (newNick != null) l.add(newNick);
 				}
 				else
 					m.printDebugMsg(oldNick + " not found in ListModel.");

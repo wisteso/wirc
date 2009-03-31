@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import javaext.SortedListModel;
+import jext.SortedListModel;
 
 import wIRC.Message.Code;
 import wIRC.Message.TextColor;

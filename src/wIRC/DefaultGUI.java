@@ -1,13 +1,14 @@
 package wIRC;
 import java.util.*;
 
-import javaext.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import jext.*;
 import wIRC.interfaces.UserInput;
 import wIRC.Message.TextColor;
 

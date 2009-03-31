@@ -1,5 +1,5 @@
 package wIRC.interfaces;
-import javaext.SortedListModel;
+import jext.SortedListModel;
 
 import wIRC.Message.TextColor;
 

@@ -81,14 +81,6 @@ public class IRCSocket
 	public boolean reconnect = true;
 	
 	/**
-	 * Main method to run this IRC client.
-	 */
-	public static void main(String[] args)
-	{
-		new IRCSocket();
-	}
-	
-	/**
 	 * Constructs a new IRC socket.
 	 * Configures the UIManager, creates managers, etc.
 	 * This constructor will not return; initalizes an 

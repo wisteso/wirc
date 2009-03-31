@@ -1,8 +1,9 @@
 package wIRC;
-import SortedListModel.SortedListModel;
 import wIRC.Message.TextColor;
 import wIRC.interfaces.UserInput;
 import java.util.Scanner;
+
+import javaext.SortedListModel;
 
 /**
  * Default CLI object

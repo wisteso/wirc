@@ -1,10 +1,13 @@
 package wIRC;
 import java.util.*;
+
+import javaext.*;
+
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
-import SortedListModel.*;
 import wIRC.interfaces.UserInput;
 import wIRC.Message.TextColor;
 
@@ -233,6 +236,23 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 		{
 			final JEditorPane t1 = new JEditorPane();
 			final SortedListModel t3 = new SortedListModel();
+			t3.addListDataListener(new ListDataListener()
+			{
+				public void intervalRemoved(ListDataEvent e)
+				{
+					
+				}
+				
+				public void intervalAdded(ListDataEvent e)
+				{
+					
+				}
+				
+				public void contentsChanged(ListDataEvent e)
+				{
+					frame.repaint();
+				}
+			});
 			
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -489,11 +509,13 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 			for (int x = 0; x < nicks.length; ++x)
 			{
 				if (!l.contains(nicks[x]))
-					l.add(nicks[x]);
+					l.addElement(nicks[x]);
 			}
 		}
 		else
+		{
 			m.printDebugMsg("ListModel not found to add nick: " + channel);
+		}
 	}
 	
 	public synchronized void removeNicks(String channel, String... nicks)
@@ -539,10 +561,12 @@ public class DefaultGUI implements UserInput, ActionListener, MouseListener
 				{
 					l.remove(i);
 					
-					if (newNick != null) l.add(newNick);
+					if (newNick != null) l.addElement(newNick);
 				}
 				else
+				{
 					m.printDebugMsg(oldNick + " not found in ListModel.");
+				}
 			}
 		}
 	}

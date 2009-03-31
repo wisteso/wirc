@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 import java.util.TreeMap;
+
+import javaext.SortedListModel;
+
 import wIRC.Message.Code;
 import wIRC.Message.TextColor;
 import wIRC.interfaces.MessageParser;
 import wIRC.interfaces.Plugin;
 import wIRC.interfaces.UserInput;
-import SortedListModel.SortedListModel;
 
 /**
  * Chat structural-object
@@ -823,7 +825,7 @@ public class Manager
 					for (int i = 0; i < tList.size(); ++i)
 					{
 						if (!l.contains(tListObjs[i]))
-							l.add(tListObjs[i]);
+							l.addElement(tListObjs[i]);
 					}
 					
 					//l.addElement(tList.toArray(new String[tList.size()]));

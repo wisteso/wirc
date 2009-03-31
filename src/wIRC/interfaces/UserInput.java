@@ -1,5 +1,6 @@
 package wIRC.interfaces;
-import SortedListModel.SortedListModel;
+import javaext.SortedListModel;
+
 import wIRC.Message.TextColor;
 
 public interface UserInput

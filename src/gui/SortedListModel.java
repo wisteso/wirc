@@ -1,4 +1,4 @@
-package jext;
+package gui;
 import javax.swing.DefaultListModel;
 
 /**

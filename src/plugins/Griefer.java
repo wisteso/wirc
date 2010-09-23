@@ -1,5 +1,4 @@
 package plugins;
-import wIRC.interfaces.Plugin;
 
 /**
  * Griefing tools plugin

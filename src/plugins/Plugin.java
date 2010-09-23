@@ -1,4 +1,4 @@
-package wIRC.interfaces;
+package plugins;
 
 public interface Plugin
 {	

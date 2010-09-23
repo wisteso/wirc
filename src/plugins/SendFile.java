@@ -1,5 +1,4 @@
 package plugins;
-import wIRC.interfaces.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.BufferedInputStream;

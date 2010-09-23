@@ -1,4 +1,5 @@
-package wIRC;
+package core;
+import static core.Constants.*;
 
 /**
  * Message structural-object
@@ -8,7 +9,7 @@ package wIRC;
  * <br><br>
  * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
-public class Message 
+public class Message
 {
 	public static enum Code
 	{
@@ -83,8 +84,6 @@ public class Message
 				case 353: return NAMELIST_CONTENT;
 			}
 			
-			System.err.println("Unknown numberic command: " + signature);
-			
 			return UNKNOWN;
 		}
 		
@@ -96,32 +95,15 @@ public class Message
 		*/
 	}
 	
-	// Color constants:
-	
-	public static enum TextColor
-	{
-		BLACK_BOLD,
-		BLACK,
-		GRAY,
-		RED,
-		ORANGE,
-		YELLOW,
-		GREEN,
-		BLUE,
-		BLUE_BOLD,
-		BLUEGRAY,
-		VIOLET;
-	}
-	
 	private String sender = new String();
 	private String nickname = new String();
 	private String command = new String();
 	private String target = new String();
 	private String message = new String();
-	private String channel = new String("Console");
+	private ServerChannel channel = CONSOLE;
 	private Code code = Code.UNKNOWN;
 	
-	public Message(String rawData, Manager m)
+	public Message(String rawData, Manager mgr)
 	{
 		String rawMsg = new String();
 		
@@ -137,8 +119,6 @@ public class Message
 					nickname = sender.substring(0, sender.indexOf("!"));
 				}
 			}
-			else
-				m.printDebugMsg("Unhandled header: " + rawData);
 		}
 		else
 		{
@@ -197,41 +177,29 @@ public class Message
 		{	
 			if (command.indexOf("PRIVMSG") == 0)
 			{
-				if (rawMsg.charAt(rawMsg.indexOf(":") + 1) == 0x1)  // CTCP type message.
+				if (rawMsg.charAt(rawMsg.indexOf(":") + 1) == 0x1)  // CTCP type message check 1
 				{
-					if (rawMsg.charAt(rawMsg.length() - 1) == 0x1)
+					if (rawMsg.charAt(rawMsg.length() - 1) == 0x1)	// CTCP type message check 2
 					{
 						code = Code.CTCP_MSG;
 						message = rawMsg.substring(rawMsg.indexOf(":") + 2, rawMsg.length() - 1);
 						channel = rawMsg.substring(0, rawMsg.indexOf(":") - 1);
 						
-						if (channel.equalsIgnoreCase(m.nickName))
+						if (channel.equalsIgnoreCase(mgr.profile.nickName))
 							channel = sender.substring(0, sender.indexOf("!"));
 					}
 				}
 				else  // Normal message.
 				{
-					code = Code.MESSAGE;
 					message = rawMsg.substring(rawMsg.indexOf(":") + 1);
 					channel = rawMsg.substring(0, rawMsg.indexOf(":") - 1);
 					
-					if (channel.equalsIgnoreCase(m.nickName))
+					if (channel.equalsIgnoreCase(mgr.profile.nickName))
 						channel = sender.substring(0, sender.indexOf("!"));
 				}
 			}
-			else if (command.indexOf("NOTICE") == 0)
-			{
-				code = Code.NOTICE;
-				message = rawMsg.substring(rawMsg.indexOf(":") + 1);
-			}
-			else if (command.indexOf("PING") == 0)
-			{
-				code = Code.PING;
-				message = rawMsg.substring(rawMsg.indexOf(":") + 1);
-			}
 			else if (command.indexOf("JOIN") == 0)
 			{
-				code = Code.JOIN;
 				channel = rawMsg.substring(rawMsg.indexOf("#"));
 			}
 			else if (command.indexOf("PART") == 0)
@@ -254,7 +222,9 @@ public class Message
 						channel = channel.substring(0, sIndex);
 				}
 				else
-					channel = "Console";
+				{
+					channel = CONSOLE;
+				}
 			}
 			else if (command.indexOf("QUIT") == 0)
 			{
@@ -273,14 +243,14 @@ public class Message
 				else if (rawMsg.indexOf("#") == 0)
 				{
 					message = rawMsg.substring(rawMsg.indexOf(" ") + 1).trim();
-					nickname = m.hostName;
+					nickname = mgr.profile.hostName;
 					channel = rawMsg.substring(0, rawMsg.indexOf(" ")).trim();
 				}
 				else
 				{
 					message = rawMsg.trim();
 					nickname = "UNKNOWN";
-					m.printDebugMsg("Bad mode: " + rawData);
+					mgr.printDebugMsg("Bad mode: " + rawData);
 				}
 			}
 			else if (command.indexOf("NICK") == 0)
@@ -304,7 +274,6 @@ public class Message
 			}
 			else
 			{
-				m.printDebugMsg("Unhandled textual header: " + command);
 				message = rawMsg;
 			}
 		}

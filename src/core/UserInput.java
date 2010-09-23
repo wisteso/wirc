@@ -1,7 +1,6 @@
-package wIRC.interfaces;
-import jext.SortedListModel;
-
-import wIRC.Message.TextColor;
+package core;
+import gui.TextColor;
+import gui.SortedListModel;
 
 public interface UserInput
 {
@@ -20,6 +19,8 @@ public interface UserInput
 	public abstract void println(String input, TextColor style);
 	
 	public abstract void println(String input, String channel, TextColor style);
+
+	public abstract void print(String input, TextColor style);
 	
 	public abstract void print(String input, String channel, TextColor style);
 	

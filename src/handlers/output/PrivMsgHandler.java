@@ -1,7 +1,7 @@
 package handlers.output;
 
 import handlers.OutputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import gui.TextColor;
 
@@ -13,7 +13,7 @@ public class PrivMsgHandler extends OutputHandler
 {
 	private static final String[] HOOKS = {"PRIVMSG", "MSG"};
 
-	public PrivMsgHandler(Manager mgr)
+	public PrivMsgHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -27,11 +27,11 @@ public class PrivMsgHandler extends OutputHandler
 	@Override
 	public void process(String msg, ServerChannel dest)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		
 		mgr.sendMessage(msg, dest);
 
-		mgr.println("<" + mgr.profile.nickName + "> ", dest, TextColor.BLUE_BOLD);
+		mgr.println("<" + mgr.profile.getNick() + "> ", dest, TextColor.BLUE_BOLD);
 		mgr.print(msg.substring(msg.indexOf(" :") + 2), dest, TextColor.BLACK);
 	}
 }

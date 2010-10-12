@@ -1,5 +1,5 @@
 package handlers;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 
 /**
@@ -8,14 +8,14 @@ import data.ServerChannel;
  */
 public abstract class OutputHandler
 {
-	private final Manager mgr;
+	private final Facade mgr;
 
-	public OutputHandler(Manager mgr)
+	public OutputHandler(Facade mgr)
 	{
 		this.mgr = mgr;
 	}
 
-	public Manager getManager()
+	public Facade getManager()
 	{
 		return mgr;
 	}

@@ -1,7 +1,7 @@
 package handlers.output;
 import static data.Constants.*;
 import handlers.OutputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import gui.TextColor;
 
@@ -13,7 +13,7 @@ public class JoinHandler extends OutputHandler
 {
 	private static final String[] HOOKS = {"JOIN", "SJOIN"};
 
-	public JoinHandler(Manager mgr)
+	public JoinHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -29,7 +29,7 @@ public class JoinHandler extends OutputHandler
 	{
 		String[] splitMsg = msg.split("\\s");
 
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		
 		if (splitMsg.length == 2)
 		{

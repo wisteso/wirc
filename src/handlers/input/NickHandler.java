@@ -1,7 +1,7 @@
 package handlers.input;
 import static data.Constants.*;
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
@@ -14,7 +14,7 @@ public class NickHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"NICK"};
 
-	public NickHandler(Manager mgr)
+	public NickHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -28,7 +28,7 @@ public class NickHandler extends InputHandler
 	@Override
 	public void process(String msg, ServerSource source)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		
 		String nickMsg;
 
@@ -38,9 +38,9 @@ public class NickHandler extends InputHandler
 			nickMsg = "";
 
 		// TODO: Show this notification on the right channels.
-		if (source.nickname.equals(mgr.profile.nickName) == true)
+		if (source.nickname.equals(mgr.profile.getNick()) == true)
 		{
-			mgr.profile.nickName = nickMsg;
+			mgr.profile.setNick(nickMsg);
 			mgr.replaceNick(source.nickname, nickMsg);
 			mgr.println("<You are now known as " + nickMsg + ">", mgr.getFocusedChat(), TextColor.BLUE);
 

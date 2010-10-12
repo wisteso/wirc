@@ -6,7 +6,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -18,7 +18,7 @@ public class ServerInfoHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"001", "002", "003", "004", "005", "006"};
 
-	public ServerInfoHandler(Manager mgr)
+	public ServerInfoHandler(Facade mgr)
 	{
 		super(mgr);
 	}

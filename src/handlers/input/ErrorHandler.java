@@ -6,7 +6,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -18,7 +18,7 @@ public class ErrorHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"ERROR"};
 
-	public ErrorHandler(Manager mgr)
+	public ErrorHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -35,7 +35,7 @@ public class ErrorHandler extends InputHandler
 		String errorMsg = msg.substring(msg.indexOf(" :") + 2);
 
 		if (msg.indexOf("Closing Link") > -1)
-			getManager().disconnect(errorMsg, source.server);
+			getManager().disconnect(false, source.server);
 		else
 			getManager().println("(ERROR) " + errorMsg, TextColor.RED);
 	}

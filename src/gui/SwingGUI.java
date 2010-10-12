@@ -1,6 +1,6 @@
 package gui;
 import static data.Constants.*;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import java.util.*;
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class SwingGUI implements ActionListener, MouseListener
 	private final Map<ServerChannel, ChannelNode> chanTabs;
 
 	private final SwingGUI me = this;
-	private final Manager mgr;
+	private final Facade mgr;
 
 	private JFrame frame;
 	private Container mainPane;
@@ -40,7 +40,7 @@ public class SwingGUI implements ActionListener, MouseListener
 	private String title;
 	private ImageIcon icon;
 	
-	public SwingGUI(Manager mgr)
+	public SwingGUI(Facade mgr)
 	{
 		this.mgr = mgr;
 		
@@ -72,7 +72,7 @@ public class SwingGUI implements ActionListener, MouseListener
 			{
 				frame.dispose();
 
-				mgr.disconnectAll("user termination");
+				mgr.disconnectAll(true);
 
 				mgr.running = false;
 			}

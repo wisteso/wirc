@@ -1,6 +1,6 @@
 package handlers.input;
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -12,7 +12,7 @@ public class UnknownHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"421"};
 
-	public UnknownHandler(Manager mgr)
+	public UnknownHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -27,7 +27,7 @@ public class UnknownHandler extends InputHandler
 	public void process(String msg, ServerSource source)
 	{
 		// :leguin.freenode.net 421 Wisteso auth :Unknown command
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 
 		mgr.print("(ERROR) Server did not recognize the command: " + msg.split("\\s")[2], mgr.getFocusedChat(), TextColor.ORANGE);
 	}

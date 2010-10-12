@@ -1,7 +1,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
@@ -14,7 +14,7 @@ public class TopicHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"TOPIC", "332"};
 
-	public TopicHandler(Manager mgr)
+	public TopicHandler(Facade mgr)
 	{
 		super(mgr);
 	}

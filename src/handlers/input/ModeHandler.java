@@ -1,7 +1,7 @@
 package handlers.input;
 import static data.Constants.*;
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
@@ -14,7 +14,7 @@ public class ModeHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"MODE"};
 
-	public ModeHandler(Manager mgr)
+	public ModeHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -33,7 +33,7 @@ public class ModeHandler extends InputHandler
 
 		System.out.println("^^^ ADD THIS ^^^");
 
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		
 		String modeMsg;
 		ServerChannel channel;
@@ -61,7 +61,7 @@ public class ModeHandler extends InputHandler
 			mgr.printDebugMsg("Unsupported MODE arguments: " + msg);
 		}
 
-		if (!src.equals(mgr.profile.hostName))
+		if (!src.equals(mgr.profile.getHost()))
 		{
 			mgr.println("<" + src + " is now " + modeMsg + ">", channel, TextColor.BLUEGRAY);
 			//mgr.replaceNick(nick, msg);	// why was this added?

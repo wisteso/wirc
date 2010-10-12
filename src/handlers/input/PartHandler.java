@@ -6,7 +6,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
@@ -19,7 +19,7 @@ public class PartHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"PART"};
 
-	public PartHandler(Manager mgr)
+	public PartHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -33,10 +33,10 @@ public class PartHandler extends InputHandler
 	@Override
 	public void process(String msg, ServerSource source)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		ServerChannel channel = new ServerChannel(source.server, msg.split("\\s")[1]);
 
-		if (source.nickname.equals(mgr.profile.nickName))
+		if (source.nickname.equals(mgr.profile.getNick()))
 		{
 			mgr.println("<You have left " + channel + ">", TextColor.BLUEGRAY);
 		}

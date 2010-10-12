@@ -1,7 +1,7 @@
 package handlers.output;
 
 import handlers.OutputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import gui.TextColor;
 
@@ -13,7 +13,7 @@ public class QuitHandler extends OutputHandler
 {
 	private static final String[] HOOKS = {"QUIT", "DISCONNECT"};
 
-	public QuitHandler(Manager mgr)
+	public QuitHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -29,15 +29,15 @@ public class QuitHandler extends OutputHandler
 	{
 		String[] splitMsg = msg.split("\\s");
 
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		
 		if (splitMsg.length == 1)
 		{
-			mgr.disconnect("user termination", dest.server);
+			mgr.disconnect(true, dest.server);
 		}
 		else if (splitMsg.length == 2)
 		{
-			mgr.disconnect("user termination", dest.server);	// pass parts[1] to disconnect
+			mgr.disconnect(true, dest.server);	// pass parts[1] to disconnect
 		}
 		else
 		{

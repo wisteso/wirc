@@ -1,7 +1,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
@@ -14,7 +14,7 @@ public class JoinHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"JOIN"};
 
-	public JoinHandler(Manager mgr)
+	public JoinHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -28,7 +28,7 @@ public class JoinHandler extends InputHandler
 	@Override
 	public void process(String msg, ServerSource source)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		// below code supports formats seen:
 		// :Wisteso!Wisteso@CPE-70-92-227-228.wi.res.rr.com JOIN #chan
 		// :Wisteso!~Wisteso@CPE-70-92-227-228.wi.res.rr.com JOIN :#chan
@@ -44,7 +44,7 @@ public class JoinHandler extends InputHandler
 
 			mgr.println("<" + source.nickname + " has joined>", temp, TextColor.BLUEGRAY);
 
-			if (source.nickname.equalsIgnoreCase(mgr.profile.nickName))
+			if (source.nickname.equalsIgnoreCase(mgr.profile.getNick()))
 			{
 				mgr.focusChat(temp);
 			}

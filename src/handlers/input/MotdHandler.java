@@ -1,7 +1,7 @@
 package handlers.input;
 import static data.Constants.*;
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -13,7 +13,7 @@ public class MotdHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"372", "375", "376"};
 
-	public MotdHandler(Manager mgr)
+	public MotdHandler(Facade mgr)
 	{
 		super(mgr);
 	}

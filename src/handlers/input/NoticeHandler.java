@@ -6,7 +6,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -18,7 +18,7 @@ public class NoticeHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"NOTICE"};
 
-	public NoticeHandler(Manager mgr)
+	public NoticeHandler(Facade mgr)
 	{
 		super(mgr);
 	}

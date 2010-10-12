@@ -6,7 +6,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -18,7 +18,7 @@ public class PingHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"PING"};
 
-	public PingHandler(Manager mgr)
+	public PingHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -32,7 +32,7 @@ public class PingHandler extends InputHandler
 	@Override
 	public void process(String msg, ServerSource source)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 		String host = msg.split("\\s")[1].replaceFirst(":", "");
 
 		mgr.sendData("PONG " + host, source.server);

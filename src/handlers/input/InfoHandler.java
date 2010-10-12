@@ -1,6 +1,6 @@
 package handlers.input;
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -12,7 +12,7 @@ public class InfoHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"250", "251", "252", "253", "254", "255", "265", "266"};
 
-	public InfoHandler(Manager mgr)
+	public InfoHandler(Facade mgr)
 	{
 		super(mgr);
 	}

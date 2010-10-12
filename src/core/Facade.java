@@ -1,28 +1,19 @@
 package core;
-import data.ServerChannel;
+import java.net.InetSocketAddress;
 import gui.TextColor;
-import static data.Constants.*;
-import data.ServerMessage;
 import gui.SwingGUI;
-import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.net.URL;
-import java.lang.reflect.Constructor;
+import data.ServerChannel;
+import data.ServerMessage;
 import handlers.DefaultOutputHandler;
 import handlers.DefaultInputHandler;
-import handlers.OutputHandler;
-import handlers.InputHandler;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.swing.UIManager;
-import plugins.Plugin;
+import static data.Constants.*;
 
 /**
  * Chat structural-object
@@ -34,13 +25,13 @@ import plugins.Plugin;
  * <br><br>
  * @author 	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
-public class Manager implements Runnable
+public class Facade
 {
 	private HandlerRegistry handlerReg;
-	private List<Plugin> plugins;
+	//private List<Plugin> plugins;
 	private SwingGUI window;
 
-	private final Map<String, IRCSocket> outboundMap;
+	private final Map<String, ChatSocket> outboundMap;
 	private final BlockingQueue<ServerMessage> inboundQueue;
 	
 	public UserProfile profile;
@@ -48,29 +39,25 @@ public class Manager implements Runnable
 	public boolean debug;
 	public boolean running;
 
-	private Thread ioThread;
+	private Thread chatSocketPoller;
 	
-	public Manager() throws Exception
+	public Facade() throws Exception
 	{
 		debug = true;
 
 		running = true;
 
-		profile = new UserProfile();
+		window = new SwingGUI(this);
 
-		plugins = new ArrayList<Plugin>();
-
-		outboundMap = new HashMap<String, IRCSocket>();
+		outboundMap = new HashMap<String, ChatSocket>();
 
 		inboundQueue = new LinkedBlockingQueue<ServerMessage>();
 
-		window = new SwingGUI(this);
-
 		handlerReg = new HandlerRegistry(this, new DefaultOutputHandler(this), new DefaultInputHandler(this));
 
-		ioThread = new Thread(this);
+		chatSocketPoller = new InputListener();
 
-		ioThread.start();
+		chatSocketPoller.start();
 		
 		endInit();
 	}
@@ -81,80 +68,18 @@ public class Manager implements Runnable
 		printSystemMsg("Working path: " + RUN_PATH, TextColor.BLUEGRAY);
 
 		printSystemMsg("Loading message handlers...", TextColor.GREEN);
-		loadHandlers(this, new File(RUN_PATH + SLASH + "wIRC.jar"));
+		handlerReg.loadHandlers(new File(RUN_PATH + SLASH + "wIRC.jar"));
 
-		printSystemMsg("Requesting login info...", TextColor.GREEN);
-		addServer(profile.hostName, IRCSocket.DEFAULT_PORT, profile);
-	}
-
-	public void loadHandlers(Manager mgr, File path)
-	{
 		try
 		{
-			ClassLoader loader = new RemoteClassLoader();
-
-			String name, urlStr;
-			URL urlFile = path.toURI().toURL();
-
-			ZipInputStream zipIn = new ZipInputStream(urlFile.openStream());
-			ZipEntry entry;
-			
-			while ((entry = zipIn.getNextEntry()) != null)
-			{
-				name = entry.getName();
-
-				if (name.matches("handlers/input/.+\\.class"))
-				{
-					System.out.println("Loading input handler: " + name);
-
-					urlStr = getClass().getResource("/" + name).toString();
-					Class<InputHandler> cls = (Class<InputHandler>)loader.loadClass(urlStr);
-					Constructor<InputHandler> con = (Constructor<InputHandler>)cls.getConstructors()[0];
-
-					InputHandler in = con.newInstance(this);	// store me
-
-					registerHandler(in, in.getHooks());
-				}
-				else if (name.matches("handlers/output/.+\\.class"))
-				{
-					System.out.println("Loading output handler: " + name);
-
-					urlStr = getClass().getResource("/" + name).toString();
-					Class<OutputHandler> cls = (Class<OutputHandler>)loader.loadClass(urlStr);
-					Constructor<OutputHandler> con = (Constructor<OutputHandler>)cls.getConstructors()[0];
-
-					OutputHandler out = con.newInstance(this);	// store me
-					
-					registerHandler(out, out.getHooks());
-				}
-			}
-
-			zipIn.close();
+			profile = new UserProfile();
+			addServer(profile);
+			//printSystemMsg("Requesting login info...", TextColor.GREEN);
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			System.out.println("Could not load handlers: " + e);
+			printSystemMsg("Invalid profile.", TextColor.RED);
 		}
-	}
-	
-	public void registerHandler(Object handler, String[] handles)
-	{
-		if (handler == null || handles == null || handles.length == 0)
-			return;
-
-		if (handler instanceof handlers.OutputHandler)
-		{
-			handlerReg.addOutputHandler((handlers.OutputHandler)handler, handles);
-		}
-		else if (handler instanceof handlers.InputHandler)
-		{
-			handlerReg.addInputHandler((handlers.InputHandler)handler, handles);
-		}
-	}
-
-	public void unregisterHandler(Object handler, String[] handles)
-	{
-
 	}
 
 	/*
@@ -259,29 +184,27 @@ public class Manager implements Runnable
 		return window.getFocusedChat();
 	}
 
-	public void disconnectAll(String reason)
+	public void disconnectAll(boolean userTriggered)
 	{
 		Iterator<String> keys = outboundMap.keySet().iterator();
 
 		while (keys.hasNext())
-			outboundMap.get(keys.next()).disconnect(reason);
+		{
+			outboundMap.get(keys.next()).disconnect(true);
+		}
 	}
 
-	public void disconnect(String reason, String server)
+	public void disconnect(boolean userTriggered, String server)
 	{
-		outboundMap.get(server).disconnect(reason);
+		outboundMap.get(server).disconnect(true);
 
 		outboundMap.remove(server);
 	}
 
-	/*
-	 * END OF HANDLER API
-	 */
-
 	public void sendMessage(String msg, ServerChannel sChan)
 	{
 		// TODO: add cases for all consoles, not just master
-		
+
 		if (msg.startsWith("/"))
 		{
 			handlerReg.postOutputMessage(msg.substring(1), sChan);
@@ -301,51 +224,54 @@ public class Manager implements Runnable
 		System.out.println(msg);
 
 		handlerReg.postInputMessage(msg.message, msg.server);
-
-//		oldHandleMessage(data);
 	}
 
-	public void addServer(String hostname, Integer port, UserProfile user)
+	public void addServer(UserProfile profile)
 	{
-		IRCSocket sock = new IRCSocket(inboundQueue);
-
-		// TODO add asking
+		ChatSocket sock = new ChatSocket(inboundQueue);
 
 		try
 		{
-			sock.connect(hostname, port, user);
+			sock.connect(profile.getAddress(), profile);
 
-			outboundMap.put(hostname, sock);
+			outboundMap.put(profile.getHost(), sock);
 		}
 		catch (Exception ex)
 		{
-			sock.disconnect("failed connection");
+			sock.disconnect(false);
 		}
 	}
 
-	@Override
-	public void run()
+	/*
+	 * END OF HANDLER API
+	 */
+
+	private class InputListener extends Thread
 	{
-		ServerMessage buffer;
-
-		try
+		@Override
+		public void run()
 		{
-			while (running)
+			ServerMessage buffer;
+
+			try
 			{
-				if (!inboundQueue.isEmpty())
+				while (running)
 				{
-					buffer = inboundQueue.take();
+					if (!inboundQueue.isEmpty())
+					{
+						buffer = inboundQueue.take();
 
-					handleMessage(buffer);
+						handleMessage(buffer);
+					}
+
+					Thread.sleep(5);
 				}
-				
-				Thread.sleep(5);
 			}
-		}
-		catch (InterruptedException ex)
-		{
-			inboundQueue.add(new ServerMessage("localhost",
-				":debug!debug@localhost Socket reading thread was interrupted."));
+			catch (InterruptedException ex)
+			{
+				inboundQueue.add(new ServerMessage("localhost",
+					":debug!debug@localhost Socket reading thread was interrupted."));
+			}
 		}
 	}
 
@@ -366,7 +292,7 @@ public class Manager implements Runnable
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		new Manager();
+		Facade m = new Facade();
 	}
 }
 

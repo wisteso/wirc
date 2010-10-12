@@ -1,6 +1,6 @@
 package handlers;
 
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 
 /**
@@ -9,7 +9,7 @@ import data.ServerSource;
  */
 public class DefaultInputHandler extends InputHandler
 {
-	public DefaultInputHandler(Manager mgr)
+	public DefaultInputHandler(Facade mgr)
 	{
 		super(mgr);
 	}

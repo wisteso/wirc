@@ -1,7 +1,7 @@
 package handlers.input;
 import static data.Constants.*;
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
@@ -18,7 +18,7 @@ public class PrivMsgHandler extends InputHandler
 
 	private static final String[] HOOKS = {"PRIVMSG"};
 
-	public PrivMsgHandler(Manager mgr)
+	public PrivMsgHandler(Facade mgr)
 	{
 		super(mgr);
 	}
@@ -48,7 +48,7 @@ public class PrivMsgHandler extends InputHandler
 
 	public void processCTCP(String msg, ServerSource source)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 
 		ServerChannel temp = new ServerChannel(source.server, source.nickname);
 		
@@ -89,7 +89,7 @@ public class PrivMsgHandler extends InputHandler
 
 	public void processSTD(String msg, ServerSource sender, String recip)
 	{
-		Manager mgr = getManager();
+		Facade mgr = getManager();
 
 		if (recip.startsWith("#"))
 		{
@@ -97,13 +97,13 @@ public class PrivMsgHandler extends InputHandler
 
 			mgr.println("<" + sender.nickname + "> ", servChan, TextColor.BLUE);
 
-			String[] split = msg.split(mgr.profile.nickName);
+			String[] split = msg.split(mgr.profile.getName());
 
 			mgr.print(split[0], servChan, TextColor.BLACK);
 
 			for (int i = 1; i < split.length; ++i)
 			{
-				mgr.print(mgr.profile.nickName, servChan, TextColor.BLACK_BOLD);
+				mgr.print(mgr.profile.getNick(), servChan, TextColor.BLACK_BOLD);
 				mgr.print(split[i], servChan, TextColor.BLACK);
 			}
 

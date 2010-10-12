@@ -6,7 +6,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerSource;
 
 /**
@@ -17,7 +17,7 @@ public class QuitHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"QUIT"};
 
-	public QuitHandler(Manager mgr)
+	public QuitHandler(Facade mgr)
 	{
 		super(mgr);
 	}

@@ -2,7 +2,7 @@
 package handlers.input;
 
 import handlers.InputHandler;
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 import data.ServerSource;
 
@@ -14,7 +14,7 @@ public class NamesHandler extends InputHandler
 {
 	private static final String[] HOOKS = {"333", "353", "366"};
 
-	public NamesHandler(Manager mgr)
+	public NamesHandler(Facade mgr)
 	{
 		super(mgr);
 	}

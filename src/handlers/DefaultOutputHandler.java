@@ -1,6 +1,6 @@
 package handlers;
 
-import core.Manager;
+import core.Facade;
 import data.ServerChannel;
 
 /**
@@ -11,7 +11,7 @@ public class DefaultOutputHandler extends OutputHandler
 {
 	private static final String[] HOOKS = null;
 
-	public DefaultOutputHandler(Manager mgr)
+	public DefaultOutputHandler(Facade mgr)
 	{
 		super(mgr);
 	}

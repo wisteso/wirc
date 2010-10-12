@@ -13,12 +13,9 @@ import java.util.concurrent.BlockingQueue;
  * <br><br>
  * @author	see http://code.google.com/p/wirc/wiki/AUTHORS
  */
-public class IRCSocket extends Thread
+public class ChatSocket extends Thread
 {
-	/**
-	 * The default port for the IRC sever.
-	 */
-	public static final int DEFAULT_PORT = 6667;
+	public static final int TIMEOUT = 5000;
 	
 	/**
 	 * Internal Socket
@@ -41,32 +38,21 @@ public class IRCSocket extends Thread
 	private BlockingQueue<ServerMessage> buffer; // blockinglinkedlist?
 
 	/**
-	 * Runnable class to handle the <code>Socket</code> to <code>Manager</code> IO.
-	 */
-	private SocketPoller poller;
-	
-	/**
 	 * Thread to handle the runnable class, <code>cThread</code>.
 	 */
-	private Thread messageThread;
+	private Thread socketPoller;
 	
 	/**
 	 * The current mode of this socket.
 	 * @see	Mode
 	 */
 	private Mode mode = Mode.INITIATING;
-	
+
 	/**
-	 * Option to reconnect on disconnect.
+	 *
+	 * @param queue
 	 */
-	public boolean reconnect = true;
-
-//	/**
-//	 *
-//	 */
-//	private Thread readingThread;
-
-	public IRCSocket(BlockingQueue<ServerMessage> queue)
+	public ChatSocket(BlockingQueue<ServerMessage> queue)
 	{
 		buffer = queue;
 	}
@@ -82,18 +68,6 @@ public class IRCSocket extends Thread
 			out.println(output);
 	}
 
-//	public ServerMessage pollData()
-//	{
-//		try
-//		{
-//			return buffer.take();
-//		}
-//		catch (InterruptedException ex)
-//		{
-//			return null;
-//		}
-//	}
-
 	/**
 	 *
 	 * @param input
@@ -107,7 +81,7 @@ public class IRCSocket extends Thread
 	 *
 	 * @param input
 	 */
-	public void addSystemMessage(String input)
+	public void pushSystemMessage(String input)
 	{
 		buffer.add(new ServerMessage("localhost", ":system!localhost NOTICE * :" + input));
 	}
@@ -121,54 +95,54 @@ public class IRCSocket extends Thread
 	 * 
 	 * @param	whether or not to retry after a connection failure.
 	 */
-	public void connect(String host, Integer port, UserProfile user) throws IOException
+	public void connect(SocketAddress server, UserProfile user) throws IOException
 	{
 		this.mode = Mode.CONNECTING;
 		
 		try
 		{
-			addSystemMessage("Connecting to " + host + "..."); // green
+			pushSystemMessage("Connecting to [" + server + "]..."); // green
 
 			this.sock = new Socket();
-			this.sock.connect(new InetSocketAddress(host, port), 5000);
+			this.sock.connect(server, TIMEOUT);
 
 			this.out = new PrintWriter(sock.getOutputStream(), true);
 			this.in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 		}
 		catch (IOException ex)
 		{
-			addSystemMessage("Connection was aborted."); // orange
+			pushSystemMessage("Connection was aborted."); // orange
 
 			this.sock = null;
-
 			this.out = null;
 			this.in = null;
 
-			throw new IOException("Connection failed.", ex);
+			return;
+			//throw new IOException("Connection failed.", ex);
 		}
 		
 		this.mode = Mode.CONNECTED;
 
 		this.buffer.clear();
-		this.poller = new SocketPoller();
-		this.messageThread = new Thread(this.poller);
-		this.messageThread.start();
+
+		this.socketPoller = new SocketPoller();
+		this.socketPoller.start();
 		
-		this.sendData("NICK " + user.nickName);
-		this.sendData("USER " + user.nickName + " 0 * :" + user.realName);
+		this.sendData("NICK " + user.getNick());
+		this.sendData("USER " + user.getNick() + " 0 * :" + user.getName());
 	}
 
 	/**
 	 *
 	 * @param reason
 	 */
-	public void disconnect(String reason)
+	public void disconnect(boolean userTriggered)
 	{
 		if (mode.isActive())
 		{
 			this.sendData("QUIT :client quit");
 
-			if (reason.startsWith("user termination"))
+			if (userTriggered)
 			{
 				mode = Mode.USER_DISCONNECT;
 			}
@@ -183,20 +157,28 @@ public class IRCSocket extends Thread
 				if (in != null) in.close();
 				if (sock != null) sock.close();
 
-				pushDebugMessage("Connection closed: " + reason);
+				if (userTriggered)
+					pushDebugMessage("Connection closed by user.");
+				else
+					pushDebugMessage("Connection closed by host.");
 			}
 			catch (IOException e)
 			{
 				pushDebugMessage("Connection closing error: " + e.toString());
 			}
+
+			out = null;
+			in = null;
+			sock = null;
 		}
 	}
 	
 	/**
 	 * A thread to read in from this socket.
 	 */
-	private class SocketPoller implements Runnable
+	private class SocketPoller extends Thread
 	{
+		@Override
 		public void run() 
 		{
 			try
@@ -233,14 +215,14 @@ public class IRCSocket extends Thread
 
 			pushDebugMessage("You have been disconnected.");
 
-			if (mode != Mode.USER_DISCONNECT)
+			if (mode == Mode.USER_DISCONNECT)
 			{
-				addSystemMessage("Reconnecting..."); // green
-				disconnect("abnormal termination");
+				disconnect(false);
 			}
 			else
 			{
-				disconnect("user termination");
+				disconnect(true);
+				pushSystemMessage("Reconnecting..."); // green
 			}
 		}
 	}
@@ -256,6 +238,14 @@ public class IRCSocket extends Thread
 		public boolean isActive()
 		{
 			if (this == CONNECTING || this == CONNECTED)
+				return true;
+
+			return false;
+		}
+
+		public boolean isDisconnected()
+		{
+			if (this == PEER_DISCONNECT || this == USER_DISCONNECT)
 				return true;
 
 			return false;

@@ -1,4 +1,8 @@
 package core;
+import java.rmi.activation.ActivationException;
+import java.net.InetSocketAddress;
+import data.Constants;
+import java.net.SocketAddress;
 import gui.SwingGUI;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -13,29 +17,40 @@ import static data.Constants.*;
  */
 public class UserProfile
 {
-	public File profilePath;
+	private File profilePath;
 
-	public String nickName;
-	public String realName;
-	public String userInfo;
-	public String hostName;
+	private SocketAddress address;
+
+	private String hostName;
+	private String nickName;
+	private String realName;
+	private String userInfo;
+	private Integer port;
 
 	public UserProfile()
 	{
 		// defaults
 		nickName = "Nullname" + (int)(Math.random() * 8999 + 1000);
 		realName = "Anonymous";
-		userInfo = "No info set.";
+		userInfo = "No user info entered.";
 		hostName = "chat.freenode.net";
+		port = 6667;
 
-		this.askAll();
+		if (initialize())
+		{
+			address = new InetSocketAddress(hostName, port);
+		}
+		else
+		{
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
 	 *
 	 * @return true if successful, false otherwise
 	 */
-	public boolean askAll()
+	private boolean initialize()
 	{
 		if (askProfile()) // using file profile
 		{
@@ -43,7 +58,7 @@ public class UserProfile
 		}
 		else // using temp profile or making a new one
 		{
-			if (askProfileDetails())
+			if (askProfileComponents())
 			{
 				if (isPersistent())
 				{
@@ -52,30 +67,33 @@ public class UserProfile
 
 				return true;
 			}
-			else // could not gather enough data for a temp profile
+			else // could not gather enough data for a profile
 			{
 				return false;
 			 }
 		}
 	}
 
-	public boolean isPersistent()
-	{
-		return profilePath != null;
-	}
-
 	/**
 	 *
-	 * @return true if the profilePath is write safe
+	 * @return true if successful, false otherwise
 	 */
-	public boolean isProfileWritable()
+	private boolean readProfile()
 	{
 		try
 		{
-			return PROFILE_DIRS_EXIST && profilePath != null &&
-				(profilePath.isFile() || profilePath.createNewFile());
+			Scanner in = new Scanner(profilePath);
+
+			nickName = in.nextLine().trim();
+			realName = in.nextLine().trim();
+			hostName = in.nextLine().trim();
+			port = in.nextInt();
+
+			in.close();
+
+			return true;
 		}
-		catch (Exception ex)
+		catch (IOException ex)
 		{
 			return false;
 		}
@@ -85,7 +103,16 @@ public class UserProfile
 	 *
 	 * @return true if successful, false otherwise
 	 */
-	public boolean askProfile()
+	private boolean askProfileComponents()
+	{
+		return askNick(true) && askName(true) && askHost(true) && askPort(true);
+	}
+
+	/**
+	 *
+	 * @return true if successful, false otherwise
+	 */
+	private boolean askProfile()
 	{
 		if (PROFILE_DIRS_EXIST)
 		{
@@ -106,9 +133,55 @@ public class UserProfile
 	 *
 	 * @return true if successful, false otherwise
 	 */
-	public boolean askProfileDetails()
+	private boolean askHost(boolean first)
 	{
-		return askNick(true) && askName(true) && askHost(true);
+		String answer;
+
+		if (first)
+			answer = SwingGUI.askQuestion("Enter the host-name:", hostName);
+		else
+			answer = SwingGUI.askQuestion("Invalid Host. Re-enter the host-name:", hostName);
+
+		if (answer != null)
+		{
+			hostName = answer;
+		}
+
+		return answer != null;
+	}
+
+	/**
+	 *
+	 * @return true if successful, false otherwise
+	 */
+	private boolean askPort(boolean first)
+	{
+		String answer;
+		Integer parsedPort = null;
+
+		if (first)
+			answer = SwingGUI.askQuestion("Enter the port:", port.toString());
+		else
+			answer = SwingGUI.askQuestion("Invalid Host. Re-enter the host-name:", port.toString());
+
+		if (answer != null)
+		{
+			try
+			{
+				parsedPort = Integer.valueOf(answer);
+			}
+			catch (NumberFormatException ex)
+			{
+				parsedPort = null;
+			}
+		}
+
+		if (parsedPort != null)
+		{
+			port = parsedPort;
+		}
+
+		return parsedPort != null;
 	}
 
 	/**
@@ -153,49 +226,34 @@ public class UserProfile
 		return answer != null;
 	}
 
-	/**
-	 *
-	 * @return true if successful, false otherwise
-	 */
-	public boolean askHost(boolean first)
+	public String getHost()
 	{
-		String answer;
-
-		if (first)
-			answer = SwingGUI.askQuestion("Enter the host-name:", hostName);
-		else
-			answer = SwingGUI.askQuestion("Invalid Host. Re-enter the host-name:", hostName);
-
-		if (answer != null)
-		{
-			hostName = answer;
-		}
-
-		return answer != null;
+		return hostName;
 	}
 
-	/**
-	 *
-	 * @return true if successful, false otherwise
-	 */
-	public boolean readProfile()
+	public Integer getPort()
 	{
-		try
-		{
-			Scanner in = new Scanner(profilePath);
+		return port;
+	}
 
-			nickName = in.nextLine().trim();
-			realName = in.nextLine().trim();
-			hostName = in.nextLine().trim();
+	public String getNick()
+	{
+		return nickName;
+	}
 
-			in.close();
+	public String getName()
+	{
+		return realName;
+	}
 
-			return true;
-		}
-		catch (IOException ex)
-		{
-			return false;
-		}
+	public SocketAddress getAddress()
+	{
+		return address;
+	}
+
+	public void setNick(String newNick)
+	{
+		nickName = newNick;
 	}
 
 	public boolean writeProfile()
@@ -211,6 +269,7 @@ public class UserProfile
 			out.write((nickName + "\n").getBytes());
 			out.write((realName + "\n").getBytes());
 			out.write((hostName + "\n").getBytes());
+			out.write((port + "\n").getBytes());
 
 			out.close();
 
@@ -223,6 +282,30 @@ public class UserProfile
 			return false;
 		}
 	}
+
+	public boolean isPersistent()
+	{
+		return profilePath != null;
+	}
+
+	/**
+	 *
+	 * @return true if the profilePath is write safe
+	 */
+	public boolean isProfileWritable()
+	{
+		try
+		{
+			return PROFILE_DIRS_EXIST && profilePath != null &&
+				(profilePath.isFile() || profilePath.createNewFile());
+		}
+		catch (Exception ex)
+		{
+			return false;
+		}
+	}
+
+
 
 	public static final String[] PROFILE_DIRS = {"profiles", "scripts", "plugins"};
 	public static final File PROFILE_PATH = new File(System.getProperty("user.home") + File.separator + ".wIRC");

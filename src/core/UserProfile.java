@@ -54,24 +54,20 @@ public class UserProfile
 	{
 		if (askProfile()) // using file profile
 		{
+			// TODO create if does not exist
 			return readProfile();
 		}
-		else // using temp profile or making a new one
+		else if (askProfileComponents()) // using temp profile or making a new one
 		{
-			if (askProfileComponents())
+			if (isPersistent())
 			{
-				if (isPersistent())
-				{
-					writeProfile();
-				}
-
-				return true;
+				writeProfile();
 			}
-			else // could not gather enough data for a profile
-			{
-				return false;
-			 }
+
+			return true;
 		}
+			
+		return false;  // could not gather enough data for a profile
 	}
 
 	/**
@@ -162,7 +158,7 @@ public class UserProfile
 		if (first)
 			answer = SwingGUI.askQuestion("Enter the port:", port.toString());
 		else
-			answer = SwingGUI.askQuestion("Invalid Host. Re-enter the host-name:", port.toString());
+			answer = SwingGUI.askQuestion("Invalid port. Re-enter the port:", port.toString());
 
 		if (answer != null)
 		{

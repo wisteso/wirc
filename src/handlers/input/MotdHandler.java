@@ -1,7 +1,8 @@
 package handlers.input;
-import static data.Constants.*;
 import handlers.InputHandler;
 import core.Facade;
+import data.Constants;
+import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -29,7 +30,8 @@ public class MotdHandler extends InputHandler
 	{
 		String line = msg.substring(msg.indexOf(" :") + 2);
 
-		getManager().println("(MOTD) " + line, CONSOLE, TextColor.GREEN);
+		ServerChannel sc = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);
+		getManager().println("(MOTD) " + line, sc, TextColor.GREEN);
 	}
 
 }

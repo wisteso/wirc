@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package handlers.input;
-
 import handlers.InputHandler;
 import core.Facade;
+import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -37,6 +32,9 @@ public class ErrorHandler extends InputHandler
 		if (msg.indexOf("Closing Link") > -1)
 			getManager().disconnect(false, source.server);
 		else
-			getManager().println("(ERROR) " + errorMsg, TextColor.RED);
+		{
+			ServerChannel sc = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);
+			getManager().println("(ERROR) " + errorMsg, sc, TextColor.RED);
+		}
 	}
 }

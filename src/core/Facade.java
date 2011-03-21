@@ -1,4 +1,5 @@
 package core;
+import data.Constants;
 import java.net.InetSocketAddress;
 import gui.TextColor;
 import gui.SwingGUI;
@@ -102,20 +103,20 @@ public class Facade
 		throw new UnsupportedOperationException("Method not supported yet.");
 	}
 
-	public void print(String msg, TextColor style)
-	{
-		window.print(msg, style);
-	}
+//	public void print(String msg, TextColor style)
+//	{
+//		window.print(msg, style);
+//	}
 
 	public void print(String msg, ServerChannel channel, TextColor style)
 	{
 		window.print(msg, channel, style);
 	}
 
-	public void println(String msg, TextColor style)
-	{
-		window.println(msg, style);
-	}
+//	public void println(String msg, TextColor style)
+//	{
+//		window.println(msg, style);
+//	}
 
 	public void println(String msg, ServerChannel channel, TextColor style)
 	{
@@ -124,7 +125,7 @@ public class Facade
 
 	public void printSystemMsg(String msg, TextColor style)
 	{
-		window.println("(SYSTEM) " + msg, style);
+		window.println("(SYSTEM) " + msg, ServerChannel.CONSOLE, style);
 	}
 	
 	public void printDebugMsg(String msg)
@@ -133,7 +134,7 @@ public class Facade
 		{
 			String timeStamp = TIME.format(new java.util.Date());
 	        
-			window.println("[" + timeStamp + "] " + msg, DEBUG, TextColor.RED);
+			window.println("[" + timeStamp + "] " + msg, ServerChannel.DEBUG, TextColor.RED);
 		}
 	}
 

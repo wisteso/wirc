@@ -227,7 +227,7 @@ public class SwingGUI implements ActionListener, MouseListener
 		public SortedListModel chatMembers;
 	}
 	
-	public boolean removeChat(ServerChannel sChan)
+	public boolean removeChat(final ServerChannel sChan)
 	{
 		final int index = tabs.indexOfTab(sChan.toString());
 
@@ -237,7 +237,7 @@ public class SwingGUI implements ActionListener, MouseListener
 			{
 				public void run()
 				{
-					chanTabs.remove(title.toLowerCase());
+					chanTabs.remove(sChan);
 					tabs.remove(index);
 				}
 			});
@@ -363,18 +363,18 @@ public class SwingGUI implements ActionListener, MouseListener
 	 * * * * * * * * * * * * * * * */
 
 	/* normal attributes */
-	private static SimpleAttributeSet BLACK = new SimpleAttributeSet();
-	private static SimpleAttributeSet GRAY = new SimpleAttributeSet();
-	private static SimpleAttributeSet RED = new SimpleAttributeSet();
-	private static SimpleAttributeSet ORANGE = new SimpleAttributeSet();
-	private static SimpleAttributeSet YELLOW = new SimpleAttributeSet();
-	private static SimpleAttributeSet GREEN = new SimpleAttributeSet();
-	private static SimpleAttributeSet BLUE = new SimpleAttributeSet();
-	private static SimpleAttributeSet BLUEGRAY = new SimpleAttributeSet();
-	private static SimpleAttributeSet VIOLET = new SimpleAttributeSet();
+	private static final SimpleAttributeSet BLACK = new SimpleAttributeSet();
+	private static final SimpleAttributeSet GRAY = new SimpleAttributeSet();
+	private static final SimpleAttributeSet RED = new SimpleAttributeSet();
+	private static final SimpleAttributeSet ORANGE = new SimpleAttributeSet();
+	private static final SimpleAttributeSet YELLOW = new SimpleAttributeSet();
+	private static final SimpleAttributeSet GREEN = new SimpleAttributeSet();
+	private static final SimpleAttributeSet BLUE = new SimpleAttributeSet();
+	private static final SimpleAttributeSet BLUEGRAY = new SimpleAttributeSet();
+	private static final SimpleAttributeSet VIOLET = new SimpleAttributeSet();
 	/* bold attributes */
-	private static SimpleAttributeSet BLACK_BOLD = new SimpleAttributeSet();
-	private static SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
+	private static final SimpleAttributeSet BLACK_BOLD = new SimpleAttributeSet();
+	private static final SimpleAttributeSet BLUE_BOLD = new SimpleAttributeSet();
 	
 	static
 	{
@@ -408,20 +408,20 @@ public class SwingGUI implements ActionListener, MouseListener
 		StyleConstants.setForeground(BLUE_BOLD,	Color.getHSBColor(new Float(0.666), new Float(0.666), new Float(0.666)));
 	}
 	
-	public void println(String input, TextColor style)
-	{
-		print("\n" + input, CONSOLE, style);
-	}
+//	public void println(String input, TextColor style)
+//	{
+//		print("\n" + input, CONSOLE, style);
+//	}
 	
 	public void println(String input, ServerChannel channel, TextColor style)
 	{
 		print("\n" + input, channel, style);
 	}
 
-	public void print(String input, TextColor style)
-	{
-		print(input, CONSOLE, style);
-	}
+//	public void print(String input, TextColor style)
+//	{
+//		print(input, CONSOLE, style);
+//	}
 	
 	public void print(final String input, final ServerChannel sChan, final TextColor style)
 	{

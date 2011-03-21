@@ -1,7 +1,9 @@
 package handlers;
 
 import core.Facade;
+import data.Constants;
 import data.ServerChannel;
+import gui.TextColor;
 
 /**
  *
@@ -25,6 +27,14 @@ public class DefaultOutputHandler extends OutputHandler
 	@Override
 	public void process(String msg, ServerChannel dest)
 	{
-		getManager().sendData(msg, dest.server);
+		if (dest.equals(ServerChannel.CONSOLE) || dest.equals(ServerChannel.DEBUG))
+		{
+			getManager().println("(ERROR) Cannot do that on a virtual channel.", dest, TextColor.RED);
+		}
+		else
+		{
+			getManager().printDebugMsg("Sending unhandled command: " + msg);
+			getManager().sendData(msg, dest.server);
+		}
 	}
 }

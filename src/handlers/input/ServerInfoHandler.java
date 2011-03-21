@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package handlers.input;
-
 import handlers.InputHandler;
 import core.Facade;
+import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -33,6 +28,7 @@ public class ServerInfoHandler extends InputHandler
 	public void process(String msg, ServerSource source)
 	{
 		Integer cmd = Integer.parseInt(msg.substring(0, msg.indexOf(" ")));
+		ServerChannel sc = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);
 
 		switch (cmd)
 		{
@@ -40,16 +36,16 @@ public class ServerInfoHandler extends InputHandler
 			case 002: // RPL_YOURHOST
 			case 003: // RPL_CREATED
 				String line = msg.substring(msg.indexOf(" :"));
-				getManager().println("(INFO) " + line, TextColor.BLUEGRAY);
+				getManager().println("(INFO) " + line, sc, TextColor.BLUEGRAY);
 				break;
 			case 004: // RPL_MYINFO
-				getManager().println("(INFO) Recieving server information.", TextColor.BLUEGRAY);
+				getManager().println("(INFO) Recieving server information.", sc, TextColor.BLUEGRAY);
 				break;
 			case 005: // RPL_BOUNCE or server's supported modes???
-				getManager().println("(INFO) Recieving server's supported modes.", TextColor.BLUEGRAY);
+				getManager().println("(INFO) Recieving server's supported modes.", sc, TextColor.BLUEGRAY);
 				break;
 			default:
-				getManager().println("(INFO) Recieving server configuration.", TextColor.BLUEGRAY);
+				getManager().println("(INFO) Recieving server configuration.", sc, TextColor.BLUEGRAY);
 				break;
 		}
 	}

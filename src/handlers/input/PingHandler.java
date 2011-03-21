@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package handlers.input;
-
 import handlers.InputHandler;
 import core.Facade;
+import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -34,8 +29,9 @@ public class PingHandler extends InputHandler
 	{
 		Facade mgr = getManager();
 		String host = msg.split("\\s")[1].replaceFirst(":", "");
+		ServerChannel sc = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);
 
 		mgr.sendData("PONG " + host, source.server);
-		mgr.println("(PING) " + host, TextColor.GREEN);
+		mgr.println("(PING) " + host, sc, TextColor.GREEN);
 	}
 }

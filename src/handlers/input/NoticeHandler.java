@@ -1,12 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package handlers.input;
-
 import handlers.InputHandler;
 import core.Facade;
+import data.Constants;
+import data.ServerChannel;
 import data.ServerSource;
 import gui.TextColor;
 
@@ -35,8 +31,13 @@ public class NoticeHandler extends InputHandler
 		int sIndex = msg.indexOf(" :");
 
 		if (sIndex > -1)
-			getManager().println("(NOTICE) " + msg.substring(sIndex + 2), TextColor.ORANGE);
+		{
+			ServerChannel sc = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);
+			getManager().println("(NOTICE) " + msg.substring(sIndex + 2), sc, TextColor.ORANGE);
+		}
 		else
+		{
 			getManager().printDebugMsg("Malformed notice message: " + msg);
+		}
 	}
 }

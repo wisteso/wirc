@@ -1,5 +1,4 @@
 package handlers.input;
-
 import handlers.InputHandler;
 import core.Facade;
 import data.ServerChannel;

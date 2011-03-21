@@ -17,8 +17,6 @@ public class Constants
 	public static final String CHAR_NULL = String.valueOf(0);
 	public static final String CHAR_CTCP = String.valueOf(1);
 	public static final String SLASH = File.separator;
-	public static final ServerChannel CONSOLE = new ServerChannel("localhost", "console");
-	public static final ServerChannel DEBUG = new ServerChannel("localhost", "debug");
 	
 	public static class Codes
 	{

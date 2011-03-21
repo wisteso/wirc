@@ -1,10 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package handlers.input;
-
 import handlers.InputHandler;
 import core.Facade;
 import data.ServerChannel;
@@ -38,7 +32,8 @@ public class PartHandler extends InputHandler
 
 		if (source.nickname.equals(mgr.profile.getNick()))
 		{
-			mgr.println("<You have left " + channel + ">", TextColor.BLUEGRAY);
+			ServerChannel sc = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);
+			mgr.println("<You have left " + channel + ">", sc, TextColor.BLUEGRAY);
 		}
 		else
 		{

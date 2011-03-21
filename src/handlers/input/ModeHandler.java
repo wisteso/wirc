@@ -1,5 +1,4 @@
 package handlers.input;
-import static data.Constants.*;
 import handlers.InputHandler;
 import core.Facade;
 import data.ServerChannel;
@@ -42,7 +41,7 @@ public class ModeHandler extends InputHandler
 
 		if (msg.indexOf(":") > -1)
 		{
-			channel = CONSOLE;
+			channel = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);;
 			modeMsg = msg.substring(msg.indexOf(":") + 1).trim();
 			//nickname = input.substring(0, input.indexOf(":")).trim();
 		}
@@ -54,7 +53,7 @@ public class ModeHandler extends InputHandler
 		}
 		else
 		{
-			channel = CONSOLE;
+			channel = new ServerChannel(source.server, ServerChannel.CONSOLE.channel);;
 			modeMsg = msg.trim();
 			//nickname = "UNKNOWN";
 

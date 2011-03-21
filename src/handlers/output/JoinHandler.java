@@ -1,5 +1,4 @@
 package handlers.output;
-import static data.Constants.*;
 import handlers.OutputHandler;
 import core.Facade;
 import data.ServerChannel;
@@ -35,7 +34,7 @@ public class JoinHandler extends OutputHandler
 		{
 			mgr.sendData("JOIN " + splitMsg[1], dest.server);
 		}
-		else if ((splitMsg.length == 1) && !dest.equals(CONSOLE))
+		else if ((splitMsg.length == 1) && !dest.equals(ServerChannel.CONSOLE))
 		{
 			mgr.sendData("JOIN " + dest.channel, dest.server);
 		}

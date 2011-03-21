@@ -1,7 +1,5 @@
 package core;
-import java.rmi.activation.ActivationException;
 import java.net.InetSocketAddress;
-import data.Constants;
 import java.net.SocketAddress;
 import gui.SwingGUI;
 import java.io.BufferedOutputStream;
@@ -52,20 +50,23 @@ public class UserProfile
 	 */
 	private boolean initialize()
 	{
-		if (askProfile()) // using file profile
+		if (askProfile())
 		{
-			// TODO create if does not exist
-			return readProfile();
-		}
-		else if (askProfileComponents()) // using temp profile or making a new one
-		{
-			if (isPersistent())
+			if (isProfileReadable()) // using existing
 			{
-				writeProfile();
+				return readProfile();
 			}
-
+			else if (askProfileComponents() && isCreated() && isProfileWritable())
+			{
+				return writeProfile();
+			}
+		}
+		else if (askProfileComponents()) // using temp profile
+		{
 			return true;
 		}
+
+		profilePath = PROFILE_PATH_DNE;
 			
 		return false;  // could not gather enough data for a profile
 	}
@@ -115,11 +116,11 @@ public class UserProfile
 			String answer = SwingGUI.askQuestion("Enter the new or existing profile to use:", "default");
 
 			if (answer != null)
+			{
 				profilePath = new File(PROFILE_PATH + SLASH + PROFILE_DIRS[0] + SLASH + answer.toLowerCase());
-			else
-				profilePath = PROFILE_PATH_DNE;
 
-			return isProfileWritable();
+				return true;
+			}
 		}
 
 		return false;
@@ -254,9 +255,6 @@ public class UserProfile
 
 	public boolean writeProfile()
 	{
-		if (!isProfileWritable())
-			throw new IllegalStateException("Profile is not writable");
-
 		try
 		{
 			BufferedOutputStream out =
@@ -292,8 +290,7 @@ public class UserProfile
 	{
 		try
 		{
-			return PROFILE_DIRS_EXIST && profilePath != null &&
-				(profilePath.isFile() || profilePath.createNewFile());
+			return profilePath != null && profilePath.canWrite();
 		}
 		catch (Exception ex)
 		{
@@ -301,7 +298,33 @@ public class UserProfile
 		}
 	}
 
+	public boolean isCreated()
+	{
+		try
+		{
+			return profilePath != null && (profilePath.exists() || profilePath.createNewFile());
+		}
+		catch (IOException ex)
+		{
+			return false;
+		}
+	}
 
+	/**
+	 *
+	 * @return true if the profilePath is write safe
+	 */
+	public boolean isProfileReadable()
+	{
+		try
+		{
+			return profilePath != null && profilePath.canRead();
+		}
+		catch (Exception ex)
+		{
+			return false;
+		}
+	}
 
 	public static final String[] PROFILE_DIRS = {"profiles", "scripts", "plugins"};
 	public static final File PROFILE_PATH = new File(System.getProperty("user.home") + File.separator + ".wIRC");

@@ -1,5 +1,4 @@
 package handlers.output;
-import static data.Constants.*;
 import handlers.OutputHandler;
 import core.Facade;
 import data.ServerChannel;
@@ -37,7 +36,7 @@ public class PartHandler extends OutputHandler
 		}
 		else if (splitMsg.length == 1)
 		{
-			if (dest.equals(CONSOLE))
+			if (dest.equals(ServerChannel.CONSOLE))
 				mgr.println("(ERROR) Cannot leave the console.", dest, TextColor.RED);
 			else
 				sendChatPart(dest);

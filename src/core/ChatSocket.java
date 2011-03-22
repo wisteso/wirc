@@ -1,5 +1,5 @@
 package core;
-import data.ServerMessage;
+import structures.ServerMessage;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.BlockingQueue;

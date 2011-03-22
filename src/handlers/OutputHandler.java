@@ -1,6 +1,6 @@
 package handlers;
 import core.Facade;
-import data.ServerChannel;
+import structures.ServerChannel;
 
 /**
  *

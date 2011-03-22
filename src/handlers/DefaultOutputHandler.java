@@ -1,8 +1,8 @@
 package handlers;
 
 import core.Facade;
-import data.Constants;
-import data.ServerChannel;
+import structures.Constants;
+import structures.ServerChannel;
 import gui.TextColor;
 
 /**

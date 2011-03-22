@@ -2,7 +2,7 @@ package handlers.output;
 
 import handlers.OutputHandler;
 import core.Facade;
-import data.ServerChannel;
+import structures.ServerChannel;
 import gui.TextColor;
 
 /**

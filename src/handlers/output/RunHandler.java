@@ -1,8 +1,8 @@
 package handlers.output;
-import static data.Constants.*;
+import static structures.Constants.*;
 import handlers.OutputHandler;
 import core.Facade;
-import data.ServerChannel;
+import structures.ServerChannel;
 import gui.TextColor;
 import core.UserProfile;
 

@@ -1,9 +1,9 @@
 package handlers.input;
-import static data.Constants.*;
+import static structures.Constants.*;
 import handlers.InputHandler;
 import core.Facade;
-import data.ServerChannel;
-import data.ServerSource;
+import structures.ServerChannel;
+import structures.ServerSource;
 import gui.TextColor;
 
 /**

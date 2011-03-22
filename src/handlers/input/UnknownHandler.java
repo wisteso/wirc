@@ -1,7 +1,7 @@
 package handlers.input;
 import handlers.InputHandler;
 import core.Facade;
-import data.ServerSource;
+import structures.ServerSource;
 import gui.TextColor;
 
 /**

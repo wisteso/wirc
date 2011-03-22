@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
-import static data.Constants.*;
+import static structures.Constants.*;
 
 /**
  *

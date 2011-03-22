@@ -1,7 +1,7 @@
 package gui;
-import static data.Constants.*;
+import static structures.Constants.*;
 import core.Facade;
-import data.ServerChannel;
+import structures.ServerChannel;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.text.*;

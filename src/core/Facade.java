@@ -1,10 +1,11 @@
 package core;
-import data.Constants;
+import handlers.HandlerRegistry;
+import structures.Constants;
 import java.net.InetSocketAddress;
 import gui.TextColor;
 import gui.SwingGUI;
-import data.ServerChannel;
-import data.ServerMessage;
+import structures.ServerChannel;
+import structures.ServerMessage;
 import handlers.DefaultOutputHandler;
 import handlers.DefaultInputHandler;
 import java.io.File;
@@ -14,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.swing.UIManager;
-import static data.Constants.*;
+import static structures.Constants.*;
 
 /**
  * Chat structural-object

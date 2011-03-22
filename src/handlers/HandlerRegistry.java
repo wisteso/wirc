@@ -1,6 +1,8 @@
-package core;
-import data.ServerChannel;
-import data.ServerSource;
+package handlers;
+import core.Facade;
+import core.RemoteClassLoader;
+import structures.ServerChannel;
+import structures.ServerSource;
 import handlers.InputHandler;
 import handlers.OutputHandler;
 import java.util.HashMap;
@@ -8,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -202,15 +205,17 @@ public class HandlerRegistry
 
 	public void loadHandlers(File path)
 	{
+		String name, urlStr;
+		ZipInputStream zipIn = null;
+		ZipEntry entry;
+
 		try
 		{
 			ClassLoader loader = new RemoteClassLoader();
 
-			String name, urlStr;
 			URL urlFile = path.toURI().toURL();
 
-			ZipInputStream zipIn = new ZipInputStream(urlFile.openStream());
-			ZipEntry entry;
+			zipIn = new ZipInputStream(urlFile.openStream());
 
 			while ((entry = zipIn.getNextEntry()) != null)
 			{
@@ -241,12 +246,22 @@ public class HandlerRegistry
 					registerHandler(out, out.getHooks());
 				}
 			}
-
-			zipIn.close();
 		}
 		catch (Exception e)
 		{
 			System.out.println("Could not load handlers: " + e);
+		}
+		finally
+		{
+			try
+			{
+				if (zipIn != null)
+					zipIn.close();
+			}
+			catch (IOException ex)
+			{
+				System.out.println("Could not close zip input stream: " + ex);
+			}
 		}
 	}
 }

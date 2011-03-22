@@ -3,8 +3,8 @@ package handlers.input;
 
 import handlers.InputHandler;
 import core.Facade;
-import data.ServerChannel;
-import data.ServerSource;
+import structures.ServerChannel;
+import structures.ServerSource;
 
 /**
  *

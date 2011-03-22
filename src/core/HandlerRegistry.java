@@ -157,9 +157,11 @@ public class HandlerRegistry
 
 		if (msgParts.length != 2) return;
 
-		if (outputHandlers.containsKey(msgParts[0]))
+		String command = msgParts[0].toUpperCase();
+
+		if (outputHandlers.containsKey(command))
 		{
-			for (OutputHandler mp : outputHandlers.get(msgParts[0]))
+			for (OutputHandler mp : outputHandlers.get(command))
 			{
 				try
 				{
@@ -167,7 +169,7 @@ public class HandlerRegistry
 				}
 				catch (Exception ex)
 				{
-					mgr.printDebugMsg(mp.getClass().getName() + " was passed a malformed message: [" + msg);
+					mgr.printDebugMsg(mp.getClass().getName() + " was passed a malformed message: [" + msg + "]");
 				}
 			}
 		}

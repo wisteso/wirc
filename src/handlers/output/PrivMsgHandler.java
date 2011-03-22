@@ -29,7 +29,7 @@ public class PrivMsgHandler extends OutputHandler
 	{
 		Facade mgr = getManager();
 		
-		mgr.sendMessage(msg, dest);
+		mgr.sendData(msg, dest.server);
 
 		mgr.println("<" + mgr.profile.getNick() + "> ", dest, TextColor.BLUE_BOLD);
 		mgr.print(msg.substring(msg.indexOf(" :") + 2), dest, TextColor.BLACK);

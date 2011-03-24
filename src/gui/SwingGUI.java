@@ -198,34 +198,6 @@ public class SwingGUI implements ActionListener, MouseListener
 			}
 		});
 	}
-
-	private static class ChannelNode
-	{
-		public ChannelNode(ServerChannel sChan)
-		{
-			this(sChan.server, sChan.channel);
-		}
-
-		public ChannelNode(String server, String channel)
-		{
-			serverName = server;
-			channelName = channel;
-
-			if (channel.startsWith(("#")))
-				isPublicChat = true;
-			else
-				isPublicChat = false;
-		}
-
-		public final boolean isPublicChat;
-
-		public final String channelName;
-		public final String serverName;
-		
-		public JTextField chatAddress;
-		public JEditorPane chatPane;
-		public SortedListModel chatMembers;
-	}
 	
 	public boolean removeChat(final ServerChannel sChan)
 	{
@@ -264,81 +236,11 @@ public class SwingGUI implements ActionListener, MouseListener
 
 	private void addChatUnsafely(ServerChannel sChan)
 	{
-		ChannelNode node = new ChannelNode(sChan.server, sChan.channel);
-		node.chatAddress = new JTextField("irc://" + node.serverName + "/" + node.channelName);
-		node.chatAddress.setBorder(BorderFactory.createCompoundBorder(
-			BorderFactory.createEmptyBorder(0, 0, 5, 0), node.chatAddress.getBorder()));
-		node.chatPane = new JEditorPane();
-		node.chatPane.setContentType("text/rtf");
-		node.chatPane.setFont(new Font("Arial", Font.PLAIN, 10));
-		node.chatPane.setEditable(false);
-		node.chatPane.addMouseListener(me);
+		ChatPane cp = new ChatPane(sChan);
 
-		JScrollPane t2 = new JScrollPane(node.chatPane);
-		t2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		t2.getVerticalScrollBar().addMouseListener(me);
+		tabs.addTab(sChan.toString(), cp);
 
-		JPanel t6 = new JPanel();
-		t6.setLayout(new BorderLayout());
-		t6.add(node.chatAddress, BorderLayout.PAGE_START);
-		t6.add(t2, BorderLayout.CENTER);
-			t6.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createCompoundBorder(
-					BorderFactory.createTitledBorder(""),
-					BorderFactory.createEmptyBorder(0, 5, 5, 5)),
-					t6.getBorder()));
-
-		if (node.isPublicChat)
-		{
-			node.chatMembers = new SortedListModel();
-			node.chatMembers.addListDataListener(new ListDataListener()
-			{
-				public void intervalRemoved(ListDataEvent e) { }
-
-				public void intervalAdded(ListDataEvent e) { }
-
-				public void contentsChanged(ListDataEvent e)
-				{
-					frame.repaint();
-				}
-			});
-
-			JList t4 = new JList(node.chatMembers);
-			t4.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			t4.setSelectedIndex(0);
-			t4.addMouseListener(new MouseAdapter()
-			{
-				@Override
-				public void mouseClicked(MouseEvent evt)
-				{
-					if (evt.getClickCount() > 1)
-					{
-						// TODO: make this work with multiserver
-
-//						String selNick = ((JList)evt.getSource()).getSelectedValue().toString();
-//
-//						char firstChar = selNick.charAt(0);
-//
-//						if (firstChar == '@' || firstChar == '+' || firstChar == '%')
-//							selNick = selNick.substring(1);
-//
-//						addChatUnsafely(selNick);
-//						setFocusedChat(selNick);
-//						focusInput();
-					}
-				}
-			});
-
-			JScrollPane t5 = new JScrollPane(t4);
-			t5.setPreferredSize(new Dimension(100, -1));
-			t5.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-			t6.add(t5, BorderLayout.LINE_END);
-		}
-
-		tabs.addTab(sChan.toString(), t6);
-
-		chanTabs.put(sChan, node);
+		chanTabs.put(sChan, cp.channelNode);
 	}
 	
 	public void actionPerformed(ActionEvent e) 
@@ -602,4 +504,122 @@ public class SwingGUI implements ActionListener, MouseListener
 	public void mousePressed(MouseEvent e) {}
 	
 	public void mouseReleased(MouseEvent e) {}
+
+	// *** Private classes ***
+	
+	private static class ChannelNode
+	{
+		public ChannelNode(ServerChannel sChan)
+		{
+			this(sChan.server, sChan.channel);
+		}
+
+		public ChannelNode(String server, String channel)
+		{
+			serverName = server;
+			channelName = channel;
+
+			if (channel.startsWith(("#")))
+				isPublicChat = true;
+			else
+				isPublicChat = false;
+		}
+
+		public final boolean isPublicChat;
+
+		public final String channelName;
+		public final String serverName;
+
+		public JTextField chatAddress;
+		public JEditorPane chatPane;
+		public SortedListModel chatMembers;
+	}
+
+	public class ChatPane extends JPanel
+	{
+		ChannelNode channelNode;
+
+		JTextField chatAddressField;
+		JEditorPane chatLog;
+		JScrollPane chatLogScroller;
+		JList userList;
+		JScrollPane userListScroller;
+
+		public ChatPane(ServerChannel src)
+		{
+			chatAddressField = new JTextField("irc://" + src.server + "/" + src.channel);
+			chatAddressField.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createEmptyBorder(0, 0, 5, 0), chatAddressField.getBorder()));
+
+			chatLog = new JEditorPane();
+			chatLog.setContentType("text/rtf");
+			chatLog.setFont(new Font("Arial", Font.PLAIN, 10));
+			chatLog.setEditable(false);
+			chatLog.addMouseListener(me);
+
+			channelNode = new ChannelNode(src.server, src.channel);
+			channelNode.chatAddress = chatAddressField;
+			channelNode.chatPane = chatLog;
+
+			chatLogScroller = new JScrollPane(channelNode.chatPane);
+			chatLogScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			chatLogScroller.getVerticalScrollBar().addMouseListener(me);
+
+			this.setLayout(new BorderLayout());
+			this.add(channelNode.chatAddress, BorderLayout.PAGE_START);
+			this.add(chatLogScroller, BorderLayout.CENTER);
+				this.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createCompoundBorder(
+						BorderFactory.createTitledBorder(""),
+						BorderFactory.createEmptyBorder(0, 5, 5, 5)),
+						this.getBorder()));
+
+			if (channelNode.isPublicChat)
+			{
+				channelNode.chatMembers = new SortedListModel();
+				channelNode.chatMembers.addListDataListener(new ListDataListener()
+				{
+					public void intervalRemoved(ListDataEvent e) { }
+
+					public void intervalAdded(ListDataEvent e) { }
+
+					public void contentsChanged(ListDataEvent e)
+					{
+						frame.repaint();
+					}
+				});
+
+				userList = new JList(channelNode.chatMembers);
+				userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+				userList.setSelectedIndex(0);
+				userList.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseClicked(MouseEvent evt)
+					{
+						if (evt.getClickCount() > 1)
+						{
+							String selNick = ((JList)evt.getSource()).getSelectedValue().toString();
+
+							char firstChar = selNick.charAt(0);
+
+							if (firstChar == '@' || firstChar == '+' || firstChar == '%')
+								selNick = selNick.substring(1);
+
+							ServerChannel im = new ServerChannel(getFocusedChat().server, selNick);
+							addChatUnsafely(im);
+							setFocusedChat(im);
+							focusInput();
+						}
+					}
+				});
+
+				userListScroller = new JScrollPane(userList);
+				userListScroller.setPreferredSize(new Dimension(100, -1));
+				userListScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+				this.add(userListScroller, BorderLayout.LINE_END);
+			}
+		}
+	}
 }
